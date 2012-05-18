@@ -228,7 +228,7 @@ class Report extends \lithium\core\Object {
 		$config = $this->_config + array(
 			'paths' => array(
 				'template' => '{:library}/test/templates/{:type}/{:template}.{:type}.php',
-				'layout'   => '{:library}/test/template/{:type}/layout.{:type}.php',
+				'layout'   => '{:library}/test/templates/{:type}/layout.{:type}.php',
 				'element'  => '{:library}/test/templates/{:type}/{:template}.{:type}.php'
 			)
 		);
