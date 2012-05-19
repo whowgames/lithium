@@ -233,7 +233,7 @@ class Report extends \lithium\core\Object {
 			)
 		);
 
-		if ($template == "stats" && !$data) {
+		if ($template == 'stats' && !$data) {
 			$data = $this->stats();
 		}
 		$params = compact('template', 'data', 'config');
