@@ -601,6 +601,7 @@ EOD;
 			'lithium\console\command\Route',
 			'lithium\console\command\Test',
 			'lithium\console\command\g11n\Extract',
+			'lithium\console\command\create\Adapter',
 			'lithium\console\command\create\Controller',
 			'lithium\console\command\create\Mock',
 			'lithium\console\command\create\Model',
