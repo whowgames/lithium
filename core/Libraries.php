@@ -72,6 +72,13 @@ class Libraries {
 	protected static $_configurations = array();
 
 	/**
+	 * A Composer-compatible SPL autoloader implementation.
+	 *
+	 * @var object
+	 */
+	protected static $_loader = null;
+
+	/**
 	 * Contains a cascading list of search path templates, indexed by base object type.
 	 *
 	 * Used by `Libraries::locate()` to perform service location. This allows new types of
@@ -334,6 +341,20 @@ class Libraries {
 		if (!empty($config['loader'])) {
 			spl_autoload_register($config['loader']);
 		}
+	}
+
+	/**
+	 * Configures dependency libraries using Composer's generated autoloader to introspect
+	 * dependencies.
+	 *
+	 * @param string $file A Composer-generated autoload file, which returns a PSR-0-compatible
+	 *        autloader instance.
+	 */
+	public static function loadConfig($file) {
+		if (static::$_loader) {
+			throw new ConfigException("Class loader already configured.");
+		}
+		static::$_loader = require $file;
 	}
 
 	/**
