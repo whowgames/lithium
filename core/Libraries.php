@@ -947,7 +947,7 @@ class Libraries {
 	 * @param array $params Path parameters.
 	 * @return string|void Valid path name.
 	 */
-	protected static function _locatePath($type, $params) {
+	protected static function _locatePath($type, array $params) {
 		if (!isset(static::$_paths[$type])) {
 			return;
 		}
@@ -968,7 +968,7 @@ class Libraries {
 	 * @param string $name
 	 * @return array
 	 */
-	protected static function _search($config, $options, $name = null) {
+	protected static function _search($config, array $options, $name = null) {
 		$defaults = array(
 			'path' => null,
 			'suffix' => null,

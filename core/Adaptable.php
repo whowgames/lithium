@@ -228,7 +228,7 @@ class Adaptable extends \lithium\core\StaticObject {
 	 * @param array $paths Optional array of search paths that will be checked.
 	 * @return string Returns a fully-namespaced class reference to the adapter class.
 	 */
-	protected static function _class($config, $paths = array()) {
+	protected static function _class(array $config, array $paths = array()) {
 		if (!$name = $config['adapter']) {
 			$self = get_called_class();
 			throw new ConfigException("No adapter set for configuration in class `{$self}`.");
