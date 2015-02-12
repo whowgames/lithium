@@ -239,6 +239,7 @@ class RecordSet extends \lithium\data\Collection {
 			}
 			$index += count($value);
 		}
+		return array();
 	}
 }
 
