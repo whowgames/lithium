@@ -1399,7 +1399,7 @@ class Model extends \lithium\core\StaticObject {
 			if (!$connection = static::connection()) {
 				return;
 			}
-		} catch (ConfigExcepton $e) {
+		} catch (ConfigException $e) {
 			return;
 		}
 
