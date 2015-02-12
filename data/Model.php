@@ -834,7 +834,6 @@ class Model extends \lithium\core\StaticObject {
 		if (in_array($type, $self->_relationTypes, true)) {
 			return array_keys(static::_relations($type));
 		}
-		return null;
 	}
 
 	/**
@@ -1368,7 +1367,7 @@ class Model extends \lithium\core\StaticObject {
 		if (!strpos($method, '::')) {
 			$method = get_called_class() . '::' . $method;
 		}
-		list($class, $method) = explode('::', $method, 2);
+		list(, $method) = explode('::', $method, 2);
 		$instance = static::_object();
 
 		if (isset($instance->_instanceFilters[$method])) {

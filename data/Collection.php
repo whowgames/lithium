@@ -493,11 +493,9 @@ abstract class Collection extends \lithium\util\Collection implements \Serializa
 				if (is_array($a)) {
 					$a = (object) $a;
 				}
-
 				if (is_array($b)) {
 					$b = (object) $b;
 				}
-
 				return strcmp($a->$field, $b->$field);
 			};
 		} elseif (is_callable($field)) {
@@ -505,7 +503,6 @@ abstract class Collection extends \lithium\util\Collection implements \Serializa
 		} else {
 			return $this;
 		}
-
 		return parent::sort($sorter, $options);
 	}
 
