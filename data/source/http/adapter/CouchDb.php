@@ -136,8 +136,7 @@ class CouchDb extends \lithium\data\source\Http {
 	 * @param object $class
 	 * @return void
 	 */
-	public function sources($class = null) {
-	}
+	public function sources($class = null) {}
 
 	/**
 	 * Describe database, create if it does not exist.

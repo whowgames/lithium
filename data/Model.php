@@ -818,7 +818,6 @@ class Model extends \lithium\core\StaticObject {
 		if ($type === null) {
 			return static::_relations();
 		}
-
 		if (isset($self->_relationFieldNames[$type])) {
 			$type = $self->_relationFieldNames[$type];
 		}
@@ -826,11 +825,9 @@ class Model extends \lithium\core\StaticObject {
 		if (isset($self->_relations[$type])) {
 			return $self->_relations[$type];
 		}
-
 		if (isset($self->_relationsToLoad[$type])) {
 			return static::_relations(null, $type);
 		}
-
 		if (in_array($type, $self->_relationTypes, true)) {
 			return array_keys(static::_relations($type));
 		}
