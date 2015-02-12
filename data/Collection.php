@@ -502,6 +502,8 @@ abstract class Collection extends \lithium\util\Collection implements \Serializa
 			};
 		} elseif (is_callable($field)) {
 			$sorter = $field;
+		} else {
+			return $this;
 		}
 
 		return parent::sort($sorter, $options);
