@@ -180,7 +180,7 @@ class Response extends \lithium\net\http\Response {
 	/**
 	 * Writes raw headers to output.
 	 *
-	 * @param string|array $header Either a raw header string, or an array of header strings. Use
+	 * @param string|array $headers Either a raw header string, or an array of header strings. Use
 	 *        an array if a single header must be written multiple times with different values.
 	 *        Otherwise, additional values for duplicate headers will overwrite previous values.
 	 * @param integer $code Optional. If present, forces a specific HTTP response code.  Used
@@ -198,7 +198,7 @@ class Response extends \lithium\net\http\Response {
 	 *
 	 * @deprecated This method will be removed in a future version.
 	 * @param string|array $key
-	 * @param smixed $value
+	 * @param mixed $value
 	 * @param boolean $replace
 	 * @return mixed
 	 */

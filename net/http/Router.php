@@ -592,7 +592,8 @@ class Router extends \lithium\core\StaticObject {
 	 * routes for the current scope only, pass `true` for the `$scope` parameter.
 	 *
 	 * @param integer $route Index of the route.
-	 * @param string $scope Name of the scope to get routes from. Uses default scope if `true`.
+	 * @param string|boolean $scope Name of the scope to get routes from. Uses default
+	 *        scope if `true`.
 	 * @return object|array|void If $route is an integer, returns the route object at given index or
 	 *         if that fails returns `null`. If $route is `null` returns an array of routes or
 	 *         scopes with their respective routes depending on the value of $scope.
