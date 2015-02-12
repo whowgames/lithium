@@ -107,7 +107,7 @@ class Http extends \lithium\core\Object {
 	 * Handler for HTTP Basic Authentication
 	 *
 	 * @param string $request a `\lithium\action\Request` object
-	 * @return void
+	 * @return void|array
 	 */
 	protected function _basic($request) {
 		$users = $this->_config['users'];
@@ -130,7 +130,7 @@ class Http extends \lithium\core\Object {
 	 * Handler for HTTP Digest Authentication
 	 *
 	 * @param string $request a `\lithium\action\Request` object
-	 * @return void
+	 * @return boolean|array
 	 */
 	protected function _digest($request) {
 		$username = $password = null;

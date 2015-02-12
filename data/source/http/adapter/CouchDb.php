@@ -109,7 +109,7 @@ class CouchDb extends \lithium\data\source\Http {
 	 *
 	 * @param string $method
 	 * @param array $params
-	 * @return void
+	 * @return mixed
 	 */
 	public function __call($method, $params = array()) {
 		list($path, $data, $options) = ($params + array('/', array(), array()));
@@ -146,7 +146,7 @@ class CouchDb extends \lithium\data\source\Http {
 	 * @param string $entity
 	 * @param array $schema Any schema data pre-defined by the model.
 	 * @param array $meta
-	 * @return void
+	 * @return lithium\data\Schema
 	 */
 	public function describe($entity, $schema = array(), array $meta = array()) {
 		$database = $this->_config['database'];

@@ -945,11 +945,11 @@ class Libraries {
 	 * @see lithium\core\Libraries::$_paths
 	 * @param string $type Path type (specified in `Libraries::$_paths`).
 	 * @param array $params Path parameters.
-	 * @return string|void Valid path name.
+	 * @return string|null Valid path name or `null` when no of path of given tpe is set.
 	 */
 	protected static function _locatePath($type, array $params) {
 		if (!isset(static::$_paths[$type])) {
-			return;
+			return null;
 		}
 		$params += array('app' => LITHIUM_APP_PATH, 'root' => LITHIUM_LIBRARY_PATH);
 

@@ -51,7 +51,7 @@ class Response extends \lithium\net\http\Response {
 	 *        options are inherited from the parent classes.
 	 *        - `'buffer'` _integer_: Defaults to `null`
 	 *        - `'decode'` _boolean_: Defaults to `null`.
-	 *        - `'location'` _array|string|void_: Defaults to `null`.
+	 *        - `'location'` _array|string|null_: Defaults to `null`.
 	 *        - `'request'` _object_: Defaults to `null`.
 	 */
 	public function __construct(array $config = array()) {
@@ -91,7 +91,7 @@ class Response extends \lithium\net\http\Response {
 	 */
 	public function cache($expires) {
 		if ($expires === false) {
-			return $this->headers(array(
+			$headers = array(
 				'Expires' => 'Mon, 26 Jul 1997 05:00:00 GMT',
 				'Cache-Control' => array(
 					'no-store, no-cache, must-revalidate',
@@ -99,15 +99,17 @@ class Response extends \lithium\net\http\Response {
 					'max-age=0'
 				),
 				'Pragma' => 'no-cache'
-			));
-		}
-		$expires = is_int($expires) ? $expires : strtotime($expires);
+			);
+		} else {
+			$expires = is_int($expires) ? $expires : strtotime($expires);
 
-		$this->headers(array(
-			'Expires' => gmdate('D, d M Y H:i:s', $expires) . ' GMT',
-			'Cache-Control' => 'max-age=' . ($expires - time()),
-			'Pragma' => 'cache'
-		));
+			$headers = array(
+				'Expires' => gmdate('D, d M Y H:i:s', $expires) . ' GMT',
+				'Cache-Control' => 'max-age=' . ($expires - time()),
+				'Pragma' => 'cache'
+			);
+		}
+		$this->headers($headers);
 	}
 
 	/**

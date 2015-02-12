@@ -614,7 +614,7 @@ class Library extends \lithium\console\Command {
 	 * Send a plugin archive to the server. The plugin must have a formula.
 	 *
 	 * @param string $name the library name or full path to the archive to send
-	 * @return void
+	 * @return boolean
 	 */
 	public function push($name = null) {
 		if (!$name) {

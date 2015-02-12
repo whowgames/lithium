@@ -71,7 +71,7 @@ class Adaptable extends \lithium\core\StaticObject {
 	 *
 	 * @param array|string $config An array of configurations, indexed by name to set
 	 *        configurations in one go or a name for which to return the configuration.
-	 * @return array|void Configuration or `null` if setting configurations.
+	 * @return array|void Configuration or void if setting configurations.
 	 */
 	public static function config($config = null) {
 		if ($config && is_array($config)) {
@@ -103,7 +103,7 @@ class Adaptable extends \lithium\core\StaticObject {
 	 * Returns adapter class name for given `$name` configuration, using
 	 * the `$_adapter` path defined in Adaptable subclasses.
 	 *
-	 * @param string|void $name Class name of adapter to load.
+	 * @param string|null $name Class name of adapter to load.
 	 * @return object Adapter object.
 	 */
 	public static function adapter($name = null) {
@@ -286,7 +286,7 @@ class Adaptable extends \lithium\core\StaticObject {
 	 *
 	 * @see lithium\core\Environment
 	 * @param string $name Named configuration.
-	 * @return array|void Settings for the named configuration.
+	 * @return array|null Settings for the named configuration.
 	 */
 	protected static function _config($name) {
 		if (!isset(static::$_configurations[$name])) {
