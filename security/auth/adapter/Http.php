@@ -106,7 +106,7 @@ class Http extends \lithium\core\Object {
 	/**
 	 * Handler for HTTP Basic Authentication
 	 *
-	 * @param string $request a `\lithium\action\Request` object
+	 * @param \lithium\action\Request $request
 	 * @return void|array
 	 */
 	protected function _basic($request) {
@@ -129,7 +129,7 @@ class Http extends \lithium\core\Object {
 	/**
 	 * Handler for HTTP Digest Authentication
 	 *
-	 * @param string $request a `\lithium\action\Request` object
+	 * @param \lithium\action\Request $request
 	 * @return boolean|array
 	 */
 	protected function _digest($request) {

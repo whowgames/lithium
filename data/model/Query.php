@@ -544,8 +544,7 @@ class Query extends \lithium\core\Object {
 	/**
 	 * Convert the query's properties to the data sources' syntax and return it as an array.
 	 *
-	 * @param object $source Instance of the data source (`lithium\data\Source`) to use for
-	 *        conversion.
+	 * @param \lithium\data\Source $source Instance of the data source to use for conversion.
 	 * @param array $options Options to use when exporting the data.
 	 * @return array Returns an array containing a data source-specific representation of a query.
 	 */
@@ -592,8 +591,7 @@ class Query extends \lithium\core\Object {
 	/**
 	 * Helper method used by `export()` which delegate the query generation to the datasource.
 	 *
-	 * @param object $source Instance of the data source (`lithium\data\Source`) to use for
-	 *        conversion.
+	 * @param \lithium\data\Source $source Instance of the data source to use for conversion.
 	 */
 	public function applyStrategy(Source $source) {
 		if ($this->_built) {
@@ -699,8 +697,7 @@ class Query extends \lithium\core\Object {
 	/**
 	 * Return the generated aliases mapped to their relation path
 	 *
-	 * @param object $source Instance of the data source (`lithium\data\Source`) to use for
-	 *        conversion.
+	 * @param \lithium\data\Source $source Instance of the data source to use for conversion.
 	 * @return array Map between aliases and their corresponding dotted relation paths.
 	 */
 	public function paths(Source $source = null) {
@@ -713,8 +710,7 @@ class Query extends \lithium\core\Object {
 	/**
 	 * Return the generated aliases mapped to their corresponding model
 	 *
-	 * @param object $source Instance of the data source (`lithium\data\Source`) to use for
-	 *        conversion.
+	 * @param \lithium\data\Sourceobject $source Instance of the data source to use for conversion.
 	 * @return array Map between aliases and their corresponding fully-namespaced model names.
 	 */
 	public function models(Source $source = null) {
