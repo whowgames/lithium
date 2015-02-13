@@ -259,7 +259,7 @@ class Query extends \lithium\core\Object {
 	 * Will also set the source table, i.e. `$this->_config['source']` when setting the model.
 	 *
 	 * @param string|null $model Name of model to use, or `null` to retrieve current one.
-	 * @return string|lithium\data\Query Either the current model name in use when $model is `null`,
+	 * @return string|\lithium\data\Query Either the current model name in use when $model is `null`,
 	 *         or the query itself when setting the model name.
 	 */
 	public function model($model = null) {
@@ -280,7 +280,7 @@ class Query extends \lithium\core\Object {
 	 *
 	 * @param string|array|null $conditions Condition/s to append to existing conditions.
 	 *        Provide `null` to get current conditions.
-	 * @return string|lithium\data\Query Either the currrent conditions when $conditions is
+	 * @return string|\lithium\data\Query Either the currrent conditions when $conditions is
 	 *         `null` or the query itself when setting the conditions.
 	 */
 	public function conditions($conditions = null) {
@@ -297,7 +297,7 @@ class Query extends \lithium\core\Object {
 	 * Set and get _having_.
 	 *
 	 * @param mixed $having String or array to append to existing having.
-	 * @return string|lithium\data\Query Either the currrent _having_ when $having is
+	 * @return string|\lithium\data\Query Either the currrent _having_ when $having is
 	 *         `null` or the query itself when setting _having_.
 	 */
 	public function having($having = null) {
@@ -360,7 +360,7 @@ class Query extends \lithium\core\Object {
 	 *
 	 * @param integer|boolean $limit An integer indicating the number of results to limit or
 	 *        `false` to employ no limit at all. Or `null` to retrieve the current limit.
-	 * @return integer|null|lithium\data\Query Either the currrent limit when $limit is
+	 * @return integer|null|\lithium\data\Query Either the currrent limit when $limit is
 	 *         `null` or the query itself when setting the limit or providing `false`.
 	 */
 	public function limit($limit = null) {
@@ -379,7 +379,7 @@ class Query extends \lithium\core\Object {
 	 * Set and get method for query's offset, i.e. which records to get
 	 *
 	 * @param integer|null $offset
-	 * @return integer|lithium\data\Query
+	 * @return integer|\lithium\data\Query
 	 */
 	public function offset($offset = null) {
 		if ($offset !== null) {
@@ -393,7 +393,7 @@ class Query extends \lithium\core\Object {
 	 * Set and get method for page, in relation to limit, of which records to get
 	 *
 	 * @param integer|null $page
-	 * @return integer|lithium\data\Query
+	 * @return integer|\lithium\data\Query
 	 */
 	public function page($page = null) {
 		if ($page) {
@@ -408,7 +408,7 @@ class Query extends \lithium\core\Object {
 	 * Set and get method for the query's order specification.
 	 *
 	 * @param array|string|null $order
-	 * @return array|lithium\data\Query
+	 * @return array|\lithium\data\Query
 	 */
 	public function order($order = null) {
 		if ($order) {
@@ -422,7 +422,7 @@ class Query extends \lithium\core\Object {
 	 * Set and get method for the `Query` group config setting.
 	 *
 	 * @param string|array|null $group
-	 * @return array|null|lithium\data\Query
+	 * @return array|null|\lithium\data\Query
 	 */
 	public function group($group = null) {
 		if ($group) {
@@ -442,7 +442,7 @@ class Query extends \lithium\core\Object {
 	 * Comment will have no effect on query, but will be passed along so data source can log it.
 	 *
 	 * @param string|null $comment
-	 * @return string|lithium\data\Query
+	 * @return string|\lithium\data\Query
 	 */
 	public function comment($comment = null) {
 		if ($comment) {
@@ -456,7 +456,7 @@ class Query extends \lithium\core\Object {
 	 * Set and get method for the query's entity instance.
 	 *
 	 * @param object $entity Reference to the query's current entity object.
-	 * @return lithium\data\Query|lithium\data\Entity
+	 * @return \lithium\data\Query|\lithium\data\Entity
 	 */
 	public function &entity(&$entity = null) {
 		if ($entity) {
@@ -710,7 +710,7 @@ class Query extends \lithium\core\Object {
 	/**
 	 * Return the generated aliases mapped to their corresponding model
 	 *
-	 * @param \lithium\data\Sourceobject $source Instance of the data source to use for conversion.
+	 * @param \lithium\data\Source $source Instance of the data source to use for conversion.
 	 * @return array Map between aliases and their corresponding fully-namespaced model names.
 	 */
 	public function models(Source $source = null) {
