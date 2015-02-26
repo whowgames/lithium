@@ -11,7 +11,6 @@ namespace lithium\data\source\mongo_db;
 use MongoGridFSFile;
 
 class Result extends \lithium\data\source\Result {
-
 	public function prev() {
 		return null;
 	}
@@ -26,8 +25,8 @@ class Result extends \lithium\data\source\Result {
 	 * @return boolean Return `true` on success or `false` if it is not valid.
 	 */
 	protected function _fetchFromResource() {
-		if ($this->_resource && $this->_resource->hasNext()) {
-			$result = $this->_resource->getNext();
+		if ($this->_resource && $result = $this->_resource->getNext()) {
+			//$result = $this->_resource->getNext();
 			$isFile = ($result instanceof MongoGridFSFile);
 			$result = $isFile ? array('file' => $result) + $result->file : $result;
 			$this->_key = $this->_iterator;
