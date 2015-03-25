@@ -106,6 +106,7 @@ class Request extends \lithium\net\http\Request {
 	 */
 	protected $_detectors = array(
 		'mobile'  => array('HTTP_USER_AGENT', null),
+		'ios'     => array('HTTP_USER_AGENT', null),
 		'ajax'    => array('HTTP_X_REQUESTED_WITH', 'XMLHttpRequest'),
 		'flash'   => array('HTTP_USER_AGENT', 'Shockwave Flash'),
 		'ssl'     => 'HTTPS',
@@ -239,10 +240,20 @@ class Request extends \lithium\net\http\Request {
 			'Nokia', 'PalmOS', 'PalmSource', 'portalmmm', 'Plucker', 'ReqwirelessWeb', 'iPod',
 			'SonyEricsson', 'Symbian', 'UP\.Browser', 'Windows CE', 'Xiino', 'Android'
 		);
+
+		$ios = array(
+			'iPhone', 'iPod', 'iPad'
+		);
+
 		if (!empty($this->_config['detectors']['mobile'][1])) {
 			$mobile = array_merge($mobile, (array) $this->_config['detectors']['mobile'][1]);
 		}
 		$this->_detectors['mobile'][1] = $mobile;
+
+		if (!empty($this->_config['detectors']['ios'][1])) {
+			$mobile = array_merge($ios, (array) $this->_config['detectors']['ios'][1]);
+		}
+		$this->_detectors['ios'][1] = $ios;
 
 		$this->data = $this->_config['data'];
 		if (isset($this->data['_method'])) {
