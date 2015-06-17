@@ -44,7 +44,7 @@ class Schema extends \lithium\data\DocumentSchema {
 			'date' => function($v) {
 				$mv = 0;
 				if(is_float($v)) {
-					$mv = intval(($v - intval($v)) * 10000000);
+					$mv = intval(($v - intval($v)) * 1000000);
 				}
 				$v = is_numeric($v) ? intval($v) : strtotime($v);
 				return !$v ? new MongoDate() : new MongoDate($v, $mv);
