@@ -42,8 +42,12 @@ class Schema extends \lithium\data\DocumentSchema {
 				return is_string($v) && preg_match('/^[0-9a-f]{24}$/', $v) ? new MongoId($v) : $v;
 			},
 			'date' => function($v) {
+				$mv = 0;
+				if(is_float($v)) {
+					$mv = intval(($v - intval($v)) * 10000000);
+				}
 				$v = is_numeric($v) ? intval($v) : strtotime($v);
-				return !$v ? new MongoDate() : new MongoDate($v);
+				return !$v ? new MongoDate() : new MongoDate($v, $mv);
 			},
 			'regex'   => function($v) { return new MongoRegex($v); },
 			'integer' => function($v) { return (integer) $v; },
