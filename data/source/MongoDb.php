@@ -163,7 +163,7 @@ class MongoDb extends \lithium\data\Source {
 			'replicaSet' => false,
 			'schema'     => null,
 			'gridPrefix' => 'fs',
-			'safe'       => false,
+			'w'       	 => 0,
 			'readPreference' => null,
 			'autoConnect' => false
 		);
@@ -394,7 +394,7 @@ class MongoDb extends \lithium\data\Source {
 	 */
 	public function create($query, array $options = array()) {
 		$_config = $this->_config;
-		$defaults = array('safe' => $_config['safe'], 'fsync' => false);
+		$defaults = array('w' => 0, 'fsync' => false);
 		$options += $defaults;
 		$this->_checkConnection();
 
@@ -528,7 +528,7 @@ class MongoDb extends \lithium\data\Source {
 		$defaults = array(
 			'upsert' => false,
 			'multiple' => true,
-			'safe' => $_config['safe'],
+			'w' => $_config['w'],
 			'fsync' => false
 		);
 		$options += $defaults;
@@ -556,11 +556,14 @@ class MongoDb extends \lithium\data\Source {
 			if ($options['multiple'] && !preg_grep('/^\$/', array_keys($update))) {
 				$update = array('$set' => $update);
 			}
-			if ($self->connection->{$source}->update($args['conditions'], $update, $options)) {
+
+			$result = $self->connection->{$source}->update($args['conditions'], $update, $options);
+
+			if($result) {
 				$query->entity() ? $query->entity()->sync() : null;
-				return true;
 			}
-			return false;
+
+			return $result;
 		});
 	}
 
@@ -575,7 +578,7 @@ class MongoDb extends \lithium\data\Source {
 	public function delete($query, array $options = array()) {
 		$this->_checkConnection();
 		$_config = $this->_config;
-		$defaults = array('justOne' => false, 'safe' => $_config['safe'], 'fsync' => false);
+		$defaults = array('justOne' => false, 'w' => $_config['w'], 'fsync' => false);
 		$options = array_intersect_key($options + $defaults, $defaults);
 		$params = compact('query', 'options');
 
@@ -599,7 +602,7 @@ class MongoDb extends \lithium\data\Source {
 	}
 
 	protected function _deleteFile($conditions, $options = array()) {
-		$defaults = array('safe' => true);
+		$defaults = array('w' => 1);
 		$options += $defaults;
 		$prefix = $this->_config['gridPrefix'];
 		return $this->connection->getGridFS($prefix)->remove($conditions, $options);
