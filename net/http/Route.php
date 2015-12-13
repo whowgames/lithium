@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2013, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -16,20 +16,22 @@ namespace lithium\net\http;
  * Typically, `Route` objects are created and handled through the `lithium\net\http\Router` class,
  * as follows:
  *
- * {{{// This instantiates a Route object behind the scenes, and adds it to Router's collection:
+ * ```
+ * // This instantiates a Route object behind the scenes, and adds it to Router's collection:
  * Router::connect("/{:controller}/{:action}");
  *
  * // This matches a set of parameters against all Route objects contained in Router, and if a match
  * // is found, returns a string URL with parameters inserted into the URL pattern:
  * Router::match(array("controller" => "users", "action" => "login")); // returns "/users/login"
- * }}}
+ * ```
  *
  * For more advanced routing, however, you can directly instantiate a `Route` object, a subclass,
  * or any class that implements `parse()` and `match()` (see the documentation for each individual
  * method) and configure it manually -- if, for example, you want the route to match different
  * incoming URLs than it generates.
  *
- * {{{$route = new Route(array(
+ * ```
+ * $route = new Route(array(
  *        'template' => '/users/{:user}',
  *        'pattern' => '@^/u(?:sers)?(?:/(?P<user>[^\/]+))$@',
  *        'params' => array('controller' => 'users', 'action' => 'index'),
@@ -39,7 +41,7 @@ namespace lithium\net\http;
  *        'options' => array('compile' => false, 'wrap' => false)
  * ));
  * Router::connect($route); // this will match '/users/<username>' or '/u/<username>'.
- * }}}
+ * ```
  *
  * For additional information on the `'options'` constructor key, see
  * `lithium\net\http\Route::compile()`. To learn more about Lithium's routing system, see
@@ -145,7 +147,21 @@ class Route extends \lithium\core\Object {
 	 * `Response` object, in which case the response will be returned directly. This may be used to
 	 * handle redirects, or simple API services.
 	 *
-	 * @var object
+	 * ```
+	 * new Route(array(
+	 *     'template' => '/photos/{:id:[0-9]+}.jpg',
+	 *     'handler' => function($request) {
+	 *         return new Response(array(
+	 *             'headers' => array('Content-type' => 'image/jpeg'),
+	 *             'body' => Photos::first($request->id)->bytes()
+	 *         ));
+	 *     }
+	 * });
+	 * ```
+	 *
+	 * @see lithium\net\http\Route::parse()
+	 * @see lithium\net\http\Response
+	 * @var callable
 	 */
 	protected $_handler = null;
 
@@ -169,6 +185,25 @@ class Route extends \lithium\core\Object {
 		'keys', 'defaults', 'subPatterns', 'persist', 'handler'
 	);
 
+	/**
+	 * Constructor.
+	 *
+	 * @param array $config Available configuration options are:
+	 *         - `'params'` _array_
+	 *         - `'template'` _string_
+	 *         - `'pattern'` _string_
+	 *         - `'match'` _array_
+	 *         - `'meta'` _array_
+	 *         - `'defaults'` _array_
+	 *         - `'keys'` _array_
+	 *         - `'persist'` _array_
+	 *         - `'handler'` _callable_
+	 *         - `'continue'` _boolean_
+	 *         - `'modifiers'` _array_
+	 *         - `'formatters'` _array_
+	 *         - `'unicode'` _boolean_
+	 * @return void
+	 */
 	public function __construct(array $config = array()) {
 		$defaults = array(
 			'params'   => array(),
@@ -194,10 +229,10 @@ class Route extends \lithium\core\Object {
 		if (!$this->_config['continue'] && !preg_match('@{:action:.*?}@', $this->_template)) {
 			$this->_params += array('action' => 'index');
 		}
-		if (!$this->_config['pattern']) {
+		if (!$this->_pattern) {
 			$this->compile();
 		}
-		if ($isKey = isset($this->_keys['controller']) || isset($this->_params['controller'])) {
+		if (isset($this->_keys['controller']) || isset($this->_params['controller'])) {
 			$this->_persist = $this->_persist ?: array('controller');
 		}
 	}
@@ -205,14 +240,19 @@ class Route extends \lithium\core\Object {
 	/**
 	 * Attempts to parse a request object and determine its execution details.
 	 *
-	 * @param object $request A request object, usually an instance of `lithium\net\http\Request`,
-	 *        containing the details of the request to be routed.
+	 * @see lithium\net\http\Request
+	 * @see lithium\net\http\Request::$params
+	 * @see lithium\net\http\Route::$_handler
+	 * @param \lithium\net\http\Request $request A request object containing the details of
+	 *        the request to be routed.
 	 * @param array $options Used to determine the operation of the method, and override certain
 	 *              values in the `Request` object:
 	 *              - `'url'` _string_: If present, will be used to match in place of the `$url`
 	 *                 property of `$request`.
-	 * @return mixed If this route matches `$request`, returns an array of the execution details
-	 *         contained in the route, otherwise returns false.
+	 * @return object|boolean If this route matches `$request`, returns the request with
+	 *         execution details attached to it (inside `Request::$params`). Alternatively when
+	 *         a route handler function was used, returns the result of its invocation. Returns
+	 *         `false` if the route never matched.
 	 */
 	public function parse($request, array $options = array()) {
 		$defaults = array('url' => $request->url);
@@ -254,14 +294,13 @@ class Route extends \lithium\core\Object {
 	}
 
 	/**
-	 * Matches a set of parameters against the route, and returns a URL string if the route matches
-	 * the parameters, or false if it does not match.
+	 * Matches a set of parameters against the route, and returns a URL string
+	 * if the route matches the parameters.
 	 *
 	 * @param array $options
-	 * @param string $context
-	 * @return mixed
+	 * @return string|boolean URL string on success, else `false` if the route didn't match.
 	 */
-	public function match(array $options = array(), $context = null) {
+	public function match(array $options = array()) {
 		$defaults = array('action' => 'index', 'http:method' => 'GET');
 		$query = null;
 
@@ -279,6 +318,11 @@ class Route extends \lithium\core\Object {
 		}
 		if (!$options = $this->_matchKeys($options)) {
 			return false;
+		}
+		foreach ($options as $key => $value) {
+			if (isset($this->_config['formatters'][$key])) {
+				$options[$key] = $this->_config['formatters'][$key]($value);
+			}
 		}
 		foreach ($this->_subPatterns as $key => $pattern) {
 			if (isset($options[$key]) && !preg_match("/^{$pattern}$/", $options[$key])) {
@@ -336,6 +380,13 @@ class Route extends \lithium\core\Object {
 	protected function _matchKeys($options) {
 		$args = array('args' => 'args');
 
+		$scope = array();
+		if (!empty($options['scope'])) {
+			$scope = (array) $options['scope'] + array('params' => array());
+			$scope = array_flip($scope['params']);
+		}
+		unset($options['scope']);
+
 		if (array_intersect_key($options, $this->_match) != $this->_match) {
 			return false;
 		}
@@ -344,7 +395,7 @@ class Route extends \lithium\core\Object {
 				return false;
 			}
 		} else {
-			if (array_diff_key(array_diff_key($options, $this->_match), $this->_keys) !== array()) {
+			if (array_diff_key($options, $this->_match + $this->_keys + $scope)) {
 				return false;
 			}
 		}
@@ -385,9 +436,6 @@ class Route extends \lithium\core\Object {
 					continue;
 				}
 			}
-			if (isset($this->_config['formatters'][$key])) {
-				$value = $this->_config['formatters'][$key]($value);
-			}
 			if ($value === null) {
 				$template = str_replace("/{$rpl}", '', $template);
 				continue;
@@ -426,7 +474,6 @@ class Route extends \lithium\core\Object {
 	 * @return void
 	 */
 	public function compile() {
-
 		foreach ($this->_params as $key => $value) {
 			if (!strpos($key, ':')) {
 				continue;
@@ -462,7 +509,7 @@ class Route extends \lithium\core\Object {
 			$this->_keys[$param] = $param;
 			$this->_pattern = $this->_regex($regexs[$i], $param, $tokens[$i], $slashes[$i]);
 		}
-		$this->_defaults = array_intersect_key($this->_params, $this->_keys);
+		$this->_defaults += array_intersect_key($this->_params, $this->_keys);
 		$this->_match = array_diff_key($this->_params, $this->_defaults);
 	}
 

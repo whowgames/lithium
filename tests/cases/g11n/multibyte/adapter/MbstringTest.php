@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2013, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -136,9 +136,12 @@ class MbstringTest extends \lithium\test\Unit {
 		$haystack = 'abäab';
 		$needle = 'a';
 		$offset = -1;
+		$adapter = $this->adapter;
 
-		$this->expectException('/Offset not contained in string/');
-		$this->adapter->strpos($haystack, $needle, $offset);
+		$expected = '/Offset not contained in string/';
+		$this->assertException($expected, function() use ($adapter, $haystack, $needle, $offset) {
+			$adapter->strpos($haystack, $needle, $offset);
+		});
 	}
 
 	public function testStrrpos() {

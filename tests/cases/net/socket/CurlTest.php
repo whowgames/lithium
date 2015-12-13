@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2013, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -224,6 +224,23 @@ EOD;
 		$this->assertTrue($stream->write(new Request($postConfig + $this->_testConfig)));
 		$this->assertTrue(isset($stream->options[CURLOPT_CUSTOMREQUEST]));
 		$this->assertEqual($stream->options[CURLOPT_CUSTOMREQUEST],'PATCH');
+		$this->assertTrue(isset($stream->options[CURLOPT_POSTFIELDS]));
+		$this->assertEqual($stream->options[CURLOPT_POSTFIELDS],$postConfig['body']);
+		$this->assertTrue($stream->close());
+
+		$this->assertInternalType('resource', $stream->open());
+		$this->assertTrue($stream->write(new Request($this->_testConfig)));
+		$this->assertFalse(isset($stream->options[CURLOPT_CUSTOMREQUEST]));
+		$this->assertTrue($stream->close());
+	}
+
+	public function testSendDeleteThenGet() {
+		$postConfig = array('method' => 'DELETE', 'body' => '');
+		$stream = new Curl($this->_testConfig);
+		$this->assertInternalType('resource', $stream->open());
+		$this->assertTrue($stream->write(new Request($postConfig + $this->_testConfig)));
+		$this->assertTrue(isset($stream->options[CURLOPT_CUSTOMREQUEST]));
+		$this->assertEqual($stream->options[CURLOPT_CUSTOMREQUEST],'DELETE');
 		$this->assertTrue(isset($stream->options[CURLOPT_POSTFIELDS]));
 		$this->assertEqual($stream->options[CURLOPT_POSTFIELDS],$postConfig['body']);
 		$this->assertTrue($stream->close());
