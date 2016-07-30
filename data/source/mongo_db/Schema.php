@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2013, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -28,6 +28,13 @@ class Schema extends \lithium\data\DocumentSchema {
 		'int'          => 'integer'
 	);
 
+	/**
+	 * Constructor.
+	 *
+	 * @param array $config Available configuration options are:
+	 *        - `'fields'` _array_
+	 * @return void
+	 */
 	public function __construct(array $config = array()) {
 		$defaults = array('fields' => array('_id' => array('type' => 'id')));
 		parent::__construct(array_filter($config) + $defaults);

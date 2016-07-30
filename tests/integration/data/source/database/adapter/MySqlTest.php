@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2013, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -92,12 +92,37 @@ class MySqlTest extends \lithium\tests\integration\data\Base {
 			'database' => 'garbage', 'init' => true
 		) + $this->_dbConfig);
 
-		$this->expectException();
-		$this->assertFalse($db->connect());
+		$this->assertException('/.*/', function() use ($db) {
+			$db->connect();
+		});
 		$this->assertFalse($db->isConnected());
 
 		$this->assertTrue($db->disconnect());
 		$this->assertFalse($db->isConnected());
+	}
+
+	public function testDsnHostPort() {
+		$db = new MockMySql(array(
+			'autoConnect' => false,
+			'host' => 'localhost:3306',
+			'database' => 'test'
+		) + $this->_dbConfig);
+
+		$expected = 'mysql:host=localhost;port=3306;dbname=test';
+		$result = $db->dsn();
+		$this->assertEqual($expected, $result);
+	}
+
+	public function testDsnSocket() {
+		$db = new MockMySql(array(
+			'autoConnect' => false,
+			'host' => '/tmp/foo/bar.socket',
+			'database' => 'test'
+		) + $this->_dbConfig);
+
+		$expected = 'mysql:unix_socket=/tmp/foo/bar.socket;dbname=test';
+		$result = $db->dsn();
+		$this->assertEqual($expected, $result);
 	}
 
 	public function testDatabaseEncoding() {
@@ -205,8 +230,11 @@ class MySqlTest extends \lithium\tests\integration\data\Base {
 	}
 
 	public function testExecuteException() {
-		$this->expectException();
-		$this->_db->read('SELECT deliberate syntax error');
+		$db = $this->_db;
+
+		$this->assertException('/.*/', function() use ($db) {
+			$db->read('SELECT deliberate syntax error');
+		});
 	}
 
 	public function testEntityQuerying() {
@@ -313,7 +341,7 @@ class MySqlTest extends \lithium\tests\integration\data\Base {
 	}
 
 	/**
-	 * Contrary to other datasources, MySQL only support one TIMESTAMP column by table.
+	 * Contrary to other data sources, MySQL only support one TIMESTAMP column by table.
 	 */
 	public function testDefaultValues() {
 		$this->_db->dropSchema('galleries');
@@ -348,6 +376,18 @@ class MySqlTest extends \lithium\tests\integration\data\Base {
 
 		$this->assertPattern('$\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$', $result['created']);
 		$this->assertTrue(time() - strtotime($result['created']) < 24 * 3600);
+	}
+
+	/**
+	 * Verifies that setting options using a raw SQL string works, when
+	 * the operation returns no result.
+	 *
+	 * @link https://github.com/UnionOfRAD/lithium/issues/1210
+	 */
+	public function testRawOptionSettingWithNoResultResource() {
+		$expected = array();
+		$result = Galleries::connection()->read('SET @TEST = 1;');
+		$this->assertEqual($expected, $result);
 	}
 }
 

@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2013, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -10,6 +10,9 @@ namespace lithium\net\socket;
 
 /**
  * A socket adapter that uses PHP stream contexts.
+ *
+ * @link http://php.net/context.http
+ * @see lithium\net\socket\Stream
  */
 class Context extends \lithium\net\Socket {
 
@@ -28,9 +31,12 @@ class Context extends \lithium\net\Socket {
 	protected $_content = null;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 *
-	 * @param array $config
+	 * @param array $config Available configuration options are:
+	 *        - `'mode'` _string_
+	 *        - `'message'` _object_
+	 * @return void
 	 */
 	public function __construct(array $config = array()) {
 		$defaults = array('mode' => 'r', 'message' => null);
@@ -95,7 +101,7 @@ class Context extends \lithium\net\Socket {
 	/**
 	 * Reads from the socket. Does not apply to this implementation.
 	 *
-	 * @return void
+	 * @return boolean|string
 	 */
 	public function read() {
 		if (!is_resource($this->_resource)) {
