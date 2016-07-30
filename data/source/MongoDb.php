@@ -693,7 +693,7 @@ class MongoDb extends \lithium\data\Source {
 
 			if ($this->_ok($result)) {
 				$query->entity() ? $query->entity()->sync() : null;
-				return true;
+				return $result;
 			}
 			return false;
 		});
