@@ -236,7 +236,7 @@ class Dispatcher extends \lithium\core\StaticObject {
 			try {
 				return Libraries::instance('controllers', $controller, $options);
 			} catch (ClassNotFoundException $e) {
-				throw new DispatchException("Controller `{$controller}` not found. (Referer: '" . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'n/a') . "')", null, $e);
+				throw new DispatchException("Controller `{$controller}` not found. (Referer: '" . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'n/a') . "', URI: '" . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '') . "')", null, $e);
 			}
 		});
 	}
