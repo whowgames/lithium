@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright	 Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright	 Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license	   http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -65,23 +65,6 @@ class LibrariesTest extends \lithium\test\Unit {
 
 		Libraries::paths($paths + array('authAdapter' => false));
 		$this->assertEqual($paths, Libraries::paths());
-	}
-
-	public function testPathTemplateWithGlobBrace() {
-		Libraries::paths(array(
-			'analysis' => array(
-				'{:library}\analysis\*{Docblock,Debugger}',
-			),
-		));
-
-		$analysis = list($docblock, $debugger) = Libraries::locate('analysis', null, array(
-			'recursive' => false,
-			'format' => false,
-		));
-
-		$this->assertCount(2, $analysis);
-		$this->assertPattern('/Docblock\.php/', $docblock);
-		$this->assertPattern('/Debugger\.php/', $debugger);
 	}
 
 	public function testPathTransform() {
@@ -282,6 +265,14 @@ class LibrariesTest extends \lithium\test\Unit {
 			'namespaces' => true
 		));
 		$this->assertEmpty($result);
+	}
+
+	public function testSearchOptimizedNamespacesWithOnlyDir() {
+		$result = Libraries::find('lithium', array(
+			'namespaces' => true,
+			'filter' => false
+		));
+		$this->assertFalse(in_array('lithium\LICENSE.txt', $result));
 	}
 
 	/**
@@ -786,10 +777,39 @@ EOD;
 		$this->assertEqual('patched class', $result);
 	}
 
+	/* Deprecated / BC */
+
+	/**
+	 * @deprecated
+	 */
 	public function testDeprectatedInit() {
-		$this->assertException("/Deprecated/", function() {
+		$this->assertException("/has been removed/i", function() {
 			MockInitMethod::li3();
 		});
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public function testPathTemplateWithGlobBrace() {
+		error_reporting(($original = error_reporting()) & ~E_USER_DEPRECATED);
+
+		Libraries::paths(array(
+			'analysis' => array(
+				'{:library}\analysis\*{Docblock,Debugger}',
+			),
+		));
+
+		$analysis = list($docblock, $debugger) = Libraries::locate('analysis', null, array(
+			'recursive' => false,
+			'format' => false,
+		));
+
+		$this->assertCount(2, $analysis);
+		$this->assertPattern('/Docblock\.php/', $docblock);
+		$this->assertPattern('/Debugger\.php/', $debugger);
+
+		error_reporting($original);
 	}
 }
 

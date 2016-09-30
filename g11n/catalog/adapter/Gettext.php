@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -22,7 +22,7 @@ use lithium\core\Libraries;
  * the standard gettext directory structure with a few slight adjustments to the way
  * templates are being named.
  *
- * ```
+ * ```asciiart
  * resources/g11n/po
  * ├── <locale>
  * |   ├── LC_MESSAGES

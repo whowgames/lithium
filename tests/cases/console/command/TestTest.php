@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -143,6 +143,9 @@ class TestTest extends \lithium\test\Unit {
 	}
 
 	public function testRunMultipleTestsWithAbsolutePath() {
+		$backup = error_reporting();
+		error_reporting(E_ALL);
+
 		$command = new Test(array(
 			'request' => $this->request, 'classes' => $this->classes
 		));
@@ -154,6 +157,8 @@ class TestTest extends \lithium\test\Unit {
 		$expected = preg_quote($expected, '/');
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
+
+		error_reporting($backup);
 	}
 
 	public function testReturnRunTestPasses() {

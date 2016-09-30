@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -10,6 +10,9 @@ namespace lithium\net\socket;
 
 /**
  * A socket adapter that uses PHP stream contexts.
+ *
+ * @link http://php.net/context.http
+ * @see lithium\net\socket\Stream
  */
 class Context extends \lithium\net\Socket {
 

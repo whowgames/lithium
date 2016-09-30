@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -147,7 +147,7 @@ abstract class Database extends \lithium\data\Source {
 	 *
 	 * @see lithium\data\source\Database::renderCommand()
 	 * @param string $sql The sql string to execute
-	 * @return resource
+	 * @return \lithium\data\source\Result Returns a result object if the query was successful.
 	 */
 	abstract protected function _execute($sql);
 
@@ -729,7 +729,7 @@ abstract class Database extends \lithium\data\Source {
 	 * @param mixed $query The query to be executed.
 	 * @param array $options Optional arguments for the `read()` query that will be executed
 	 *        to obtain the calculation result.
-	 * @return integer Result of the calculation.
+	 * @return integer|null Result of the calculation or `null` if the calculation failed.
 	 */
 	public function calculation($type, $query, array $options = array()) {
 		$query->calculate($type);
@@ -741,8 +741,13 @@ abstract class Database extends \lithium\data\Source {
 				}
 				$query->fields("COUNT({$fields}) as count", true);
 				$query->map(array($query->alias() => array('count')));
-				list($record) = $this->read($query, $options)->data();
-				return isset($record['count']) ? (integer) $record['count'] : null;
+
+				$result = $this->read($query, $options)->data();
+
+				if (!$result || !isset($result[0]['count'])) {
+					return null;
+				}
+				return (integer) $result[0]['count'];
 		}
 	}
 
@@ -828,7 +833,7 @@ abstract class Database extends \lithium\data\Source {
 		}
 		$result = array();
 
-		if (!$resource) {
+		if (!$resource || !$resource->resource()) {
 			return $result;
 		}
 		$count = $resource->resource()->columnCount();
@@ -1226,7 +1231,7 @@ abstract class Database extends \lithium\data\Source {
 	 *
 	 * Also handles correct incremented/decremented fields.
 	 *
-	 * @see lithium\data\source\Entity::increment()
+	 * @see lithium\data\Entity::increment()
 	 * @see lithium\data\source\Database::_fieldsReturn()
 	 * @param array $data
 	 * @param array $schema An array defining the schema of the fields used in the criteria.
@@ -1797,8 +1802,8 @@ abstract class Database extends \lithium\data\Source {
 	/**
 	 * Helper for building columns metas
 	 *
-	 * @see DatabaseSchema::createSchema()
-	 * @see DatabaseSchema::_column()
+	 * @see lithium\data\soure\Database::createSchema()
+	 * @see lithium\data\soure\Database::column()
 	 * @param array $metas The array of column metas.
 	 * @param array $names If `$names` is not `null` only build meta present in `$names`
 	 * @param type $joiner The join character
@@ -1819,7 +1824,7 @@ abstract class Database extends \lithium\data\Source {
 	/**
 	 * Helper for building columns constraints
 	 *
-	 * @see DatabaseSchema::createSchema()
+	 * @see lithium\data\soure\Database::createSchema()
 	 * @param array $constraints The array of constraints
 	 * @param type $schema The schema of the table
 	 * @param type $joiner The join character

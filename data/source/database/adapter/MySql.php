@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -15,13 +15,10 @@ use PDOException;
  * MySQL database driver. Extends the `Database` class to implement the necessary
  * SQL-formatting and resultset-fetching features for working with MySQL databases.
  *
- * - Implements optional strict mode.
- *
  * For more information on configuring the database connection, see
  * the `__construct()` method.
  *
  * @see lithium\data\source\database\adapter\MySql::__construct()
- * @see lithium\data\source\database\adapter\MySql::strict()
  */
 class MySql extends \lithium\data\source\Database {
 
@@ -157,12 +154,34 @@ class MySql extends \lithium\data\source\Database {
 	 */
 	public function connect() {
 		if (!$this->_config['dsn']) {
-			$host = $this->_config['host'];
-			list($host, $port) = explode(':', $host) + array(1 => "3306");
-			$dsn = "mysql:host=%s;port=%s;dbname=%s";
-			$this->_config['dsn'] = sprintf($dsn, $host, $port, $this->_config['database']);
+			$this->_config['dsn'] = $this->_dsn();
 		}
 		return parent::connect();
+	}
+
+	/**
+	 * Builds DSN string.
+	 *
+	 * @return string
+	 */
+	protected function _dsn() {
+		$host = $this->_config['host'];
+
+		if ($host[0] === '/') {
+			return sprintf(
+				'mysql:unix_socket=%s;dbname=%s',
+				$host,
+				$this->_config['database']
+			);
+		}
+		list($host, $port) = explode(':', $host) + array(1 => "3306");
+
+		return  sprintf(
+			'mysql:host=%s;port=%s;dbname=%s',
+			$host,
+			$port,
+			$this->_config['database']
+		);
 	}
 
 	/**

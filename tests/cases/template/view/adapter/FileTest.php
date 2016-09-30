@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -40,6 +40,9 @@ class FileTest extends \lithium\test\Unit {
 	}
 
 	public function testRenderingWithNoExtraction() {
+		$backup = error_reporting();
+		error_reporting(E_ALL);
+
 		$file = new File(array('extract' => false));
 		$path = $this->_path;
 
@@ -49,6 +52,8 @@ class FileTest extends \lithium\test\Unit {
 
 		$content = $file->render("{$this->_path}/template2.html.php", array('foo' => 'bar'));
 		$this->assertEqual('bar', $content);
+
+		error_reporting($backup);
 	}
 
 	public function testContextOffsetManipulation() {

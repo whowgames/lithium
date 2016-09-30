@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright	  Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright	  Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license		  http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -134,7 +134,7 @@ class PostgreSql extends \lithium\data\source\Database {
 	 * the parent class. Will set specific options on the connection as provided (timezone,
 	 * schema).
 	 *
-	 * @see lithium\data\source\dataase\adapter\PostgreSql::timezone()
+	 * @see lithium\data\source\database\adapter\PostgreSql::timezone()
 	 * @return boolean Returns `true` if a database connection could be established,
 	 *         otherwise `false`.
 	 */
@@ -486,7 +486,7 @@ class PostgreSql extends \lithium\data\source\Database {
 	/**
 	 * Helper for `Database::column()`.
 	 *
-	 * @see lithium\data\Database::column()
+	 * @see lithium\data\source\Database::column()
 	 * @param array $field A field array.
 	 * @return string SQL column string.
 	 */
@@ -520,10 +520,10 @@ class PostgreSql extends \lithium\data\source\Database {
 	}
 
 	/**
-	 * Helper method for `PostgreSql::_quryExport()` to export data
+	 * Helper method for `PostgreSql::_queryExport()` to export data
 	 * for use in distinct query.
 	 *
-	 * @see lithium\data\source\PostgreSql::_quryExport()
+	 * @see lithium\data\source\PostgreSql::_queryExport()
 	 * @param object $query The query object.
 	 * @return array Returns an array with the fields as the first
 	 *         value and the orders as the second value.

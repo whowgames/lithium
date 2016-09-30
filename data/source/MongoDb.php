@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -307,14 +307,15 @@ class MongoDb extends \lithium\data\Source {
 			$server = $this->_classes['server'];
 			$this->server = new $server($connection, $options);
 
-			if ($this->connection = $this->server->{$cfg['database']}) {
-				$this->_isConnected = true;
-			}
-
 			if ($prefs = $cfg['readPreference']) {
 				$prefs = !is_array($prefs) ? array($prefs, array()) : $prefs;
 				$this->server->setReadPreference($prefs[0], $prefs[1]);
 			}
+
+			if ($this->connection = $this->server->{$cfg['database']}) {
+				$this->_isConnected = true;
+			}
+
 		} catch (Exception $e) {
 			throw new NetworkException("Could not connect to the database.", 503, $e);
 		}

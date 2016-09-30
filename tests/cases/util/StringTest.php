@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -430,6 +430,9 @@ class StringTest extends \lithium\test\Unit {
 	}
 
 	public function testCompare() {
+		$backup = error_reporting();
+		error_reporting(E_ALL);
+
 		$this->assertTrue(String::compare('Foo', 'Foo'));
 		$this->assertFalse(String::compare('Foo', 'foo'));
 		$this->assertFalse(String::compare('Foo', 'Bar'));
@@ -455,6 +458,8 @@ class StringTest extends \lithium\test\Unit {
 		$this->assertException('/to be (a )?string/', function() {
 			String::compare(1, '1');
 		});
+
+		error_reporting($backup);
 	}
 
 	/**

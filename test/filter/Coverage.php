@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -164,7 +164,7 @@ class Coverage extends \lithium\test\Filter {
 	/**
 	 * Collects code coverage analysis results from `xdebug_get_code_coverage()`.
 	 *
-	 * @see lithium\test\Coverage::analyze()
+	 * @see lithium\test\filter\Coverage::analyze()
 	 * @param array $filterResults An array of results arrays from `xdebug_get_code_coverage()`.
 	 * @param array $options Set of options defining how results should be collected.
 	 * @return array The packaged filter results.

@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -590,7 +590,7 @@ class Query extends \lithium\core\Object {
 	}
 
 	/**
-	 * Helper method used by `export()` which delegate the query generation to the datasource.
+	 * Helper method used by `export()` which delegate the query generation to the data source.
 	 *
 	 * @param \lithium\data\Source $source Instance of the data source to use for conversion.
 	 */

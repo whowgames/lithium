@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -14,12 +14,21 @@ class IconvTest extends \lithium\test\Unit {
 
 	public $adapter;
 
+	protected $_backup = array();
+
 	public function skip() {
 		$this->skipIf(!Iconv::enabled(), 'The `Iconv` adapter is not enabled.');
 	}
 
 	public function setUp() {
 		$this->adapter = new Iconv();
+
+		$this->_backup['error_reporting'] = error_reporting();
+		error_reporting(E_ALL);
+	}
+
+	public function tearDown() {
+		error_reporting($this->_backup['error_reporting']);
 	}
 
 	public function testStrlen() {

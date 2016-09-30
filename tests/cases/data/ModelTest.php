@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -110,7 +110,11 @@ class ModelTest extends \lithium\test\Unit {
 			'conditions' => null,
 			'fields' => null,
 			'order' => null,
-			'page' => null
+			'page' => null,
+			'having' => null,
+			'group' => null,
+			'offset' => null,
+			'joins' => array()
 		);
 		$this->assertEqual($expected, MockPost::query());
 
@@ -127,7 +131,11 @@ class ModelTest extends \lithium\test\Unit {
 			'page' => null,
 			'with' => array('MockComment'),
 			'type' => 'read',
-			'model' => 'lithium\tests\mocks\data\MockPost'
+			'model' => 'lithium\tests\mocks\data\MockPost',
+			'having' => null,
+			'group' => null,
+			'offset' => null,
+			'joins' => array()
 		);
 		$this->assertEqual($expected, $result['options']);
 
@@ -423,7 +431,11 @@ class ModelTest extends \lithium\test\Unit {
 			'page' => null,
 			'with' => array(),
 			'type' => 'read',
-			'model' => 'lithium\tests\mocks\data\MockPost'
+			'model' => 'lithium\tests\mocks\data\MockPost',
+			'having' => null,
+			'group' => null,
+			'offset' => null,
+			'joins' => array()
 		);
 		$this->assertEqual($expected, $result['options']);
 	}
@@ -1012,6 +1024,19 @@ class ModelTest extends \lithium\test\Unit {
 
 		$result = MockPost::count(array('conditions' => array('email' => 'foo@example.com')));
 		$this->assertEqual($query, $result['query']);
+	}
+
+	/**
+	 * Test that magic count condition-less syntax works.
+	 *
+	 * @link https://github.com/UnionOfRAD/lithium/issues/1282
+	 */
+	public function testCountSyntaxWithoutConditions() {
+		$result = MockPost::count(array(
+			'group' => 'name'
+		));
+		$this->assertEqual('name', $result['query']->group());
+		$this->assertIdentical(array(), $result['query']->conditions());
 	}
 
 	public function testSettingNestedObjectDefaults() {

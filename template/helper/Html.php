@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -160,7 +160,7 @@ class Html extends \lithium\template\Helper {
 	 * `'/'`, the path will be relative to the base path of your application.  Otherwise, the path
 	 * will be relative to your JavaScript path, usually `webroot/js`.
 	 *
-	 * @link http://li3.me/docs/manual/handling-http-requests/views.wiki
+	 * @link http://li3.me/docs/book/manual/1.x/views/
 	 * @param mixed $path String The name of a JavaScript file, or an array of names.
 	 * @param array $options Available options are:
 	 *              - `'inline'` _boolean_: Whether or not the `<script />` element should be output
@@ -208,8 +208,7 @@ class Html extends \lithium\template\Helper {
 	 *              inline. When set to `false`, the `styles()` handler prints out the styles,
 	 *              and other specified styles to be included in the layout. Defaults to `true`.
 	 *              This is useful when page-specific styles are created inline in the page, and
-	 *              you'd like to place them in
-	 *              the `<head />` along with your other styles.
+	 *              you'd like to place them in the `<head />` along with your other styles.
 	 *              - `'type'` _string_: By default, accepts `stylesheet` or `import`, which
 	 *              respectively correspond to `style-link` and `style-import` strings templates
 	 *              defined in `Html::$_strings`.

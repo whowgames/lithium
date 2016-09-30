@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -36,7 +36,7 @@ class Response extends \lithium\net\http\Message {
 	 * of PHP `setcookie()`.
 	 *
 	 * @see lithium\net\http\Response::cookies()
-	 * @see http://php.net/function.setcookie.php
+	 * @link http://php.net/function.setcookie.php
 	 * @var array
 	 */
 	public $cookies = array();
@@ -223,7 +223,7 @@ class Response extends \lithium\net\http\Message {
 	 * Cookies which have been set multiple times do not overwrite each other.  Rather they are stored
 	 * as an array of associative arrays.
 	 *
-	 * @see http://php.net/function.setcookie.php
+	 * @link http://php.net/function.setcookie.php
 	 * @param string $key
 	 * @param string $value
 	 * @return mixed

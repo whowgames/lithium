@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -14,8 +14,8 @@ use ReflectionProperty;
 /**
  * Base message class for any URI based request/response.
  *
- * @see http://tools.ietf.org/html/rfc3986#section-1.1.1
- * @see http://en.wikipedia.org/wiki/URI_scheme#Generic_syntax
+ * @link http://tools.ietf.org/html/rfc3986#section-1.1.1
+ * @link http://en.wikipedia.org/wiki/URI_scheme#Generic_syntax
  */
 class Message extends \lithium\core\Object {
 

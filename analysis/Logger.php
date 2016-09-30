@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -118,7 +118,10 @@ class Logger extends \lithium\core\Adaptable {
 		foreach ($methods as $name => $method) {
 			$params = compact('priority', 'message', 'options');
 			$config = static::_config($name);
-			$result &= static::_filter(__FUNCTION__, $params, $method, $config['filters']);
+
+			if (!static::_filter(__FUNCTION__, $params, $method, $config['filters'])) {
+				$result = false;
+			}
 		}
 		return $methods ? $result : false;
 	}

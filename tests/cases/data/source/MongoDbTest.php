@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -933,6 +933,27 @@ class MongoDbTest extends \lithium\test\Unit {
 		$result = $db->server->call;
 		$this->assertEqual('setReadPreference', $result['method']);
 		$this->assertEqual($prefs, $result['params']);
+	}
+
+	public function testSetReadPreferenceBeforeAccessCollection() {
+		$prefs = array(
+			"SECONDARY",
+			array('dc' => 'east', 'use' => 'reporting')
+		);
+		$db = new MongoDb(array(
+			'database' => 'test',
+			'autoConnect' => true,
+			'readPreference' => $prefs,
+			'classes' => array(
+				'server' => 'lithium\tests\mocks\core\MockCallable'
+			)
+		));
+
+		$trace = $db->server->trace;
+		$this->assertEqual('__call', $trace[1][0]);
+		$this->assertEqual('setReadPreference', $trace[1][1][0]);
+		$this->assertEqual('__get', $trace[2][0]);
+		$this->assertEqual('test', $trace[2][1][0]);
 	}
 
 	public function testDefaultSafeOptions() {

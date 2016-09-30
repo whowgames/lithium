@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -139,14 +139,14 @@ class Code extends \lithium\g11n\catalog\Adapter {
 				if (!is_array($token)) {
 					$token = array(0 => null, 1 => $token, 2 => null);
 				}
-				if ($token[1] === '(') {
+				if ($token[1] === '[' || $token[1] === '(') {
 					$open++;
-				} elseif ($token[1] === ')' && --$open === 0) {
+				} elseif (($token[1] === ']' || $token[1] === ')') && --$open === 0) {
 					break;
 				}
-				if ($token[0] === T_ARRAY || $token[1] === '[') {
+				if ($token[1] === '[' || $token[0] === T_ARRAY) {
 					$depth++;
-				} elseif ($depth > 1 && ($token[1] === ')' || $token[1] === ']')) {
+				} elseif ($depth > 1 && ($token[1] === ']' || $token[1] === ')')) {
 					$depth--;
 				}
 				if ($depth === 1 && $open === 2) {

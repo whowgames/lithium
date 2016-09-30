@@ -3,7 +3,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -140,7 +140,7 @@ class PhpExtensions {
 	 *
 	 * Note that in HHVM we currently cannot access the loaded ini file.
 	 *
-	 * @see http://php.net/php_ini_loaded_file
+	 * @link http://php.net/php_ini_loaded_file
 	 * @param array $data INI settings to add.
 	 * @return void
 	 */

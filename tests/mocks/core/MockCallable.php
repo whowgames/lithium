@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -16,13 +16,17 @@ class MockCallable extends \lithium\core\Object {
 
 	public $get = '';
 
+	public $trace = array();
+
 	public static $callStatic = array();
 
 	public function __construct() {
+		$this->trace[] = array(__FUNCTION__, func_get_args());
 		$this->construct = func_get_args();
 	}
 
 	public function __call($method, $params = array()) {
+		$this->trace[] = array(__FUNCTION__, func_get_args());
 		return $this->call = compact('method', 'params');
 	}
 
@@ -31,6 +35,7 @@ class MockCallable extends \lithium\core\Object {
 	}
 
 	public function __get($value) {
+		$this->trace[] = array(__FUNCTION__, func_get_args());
 		return $this->get = $value;
 	}
 }

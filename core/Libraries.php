@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -502,9 +502,14 @@ class Libraries {
 
 		if ($path && include $path) {
 			static::$_cachedPaths[$class] = $path;
+
 			if (method_exists($class, '__init')) {
-				$msg = "Deprecated `{$class}::__init()` method, needs to be called it manually.";
-				throw new RuntimeException($msg);
+				$message  = "Support for automatic initialization of static classes has been ";
+				$message .= "removed. `{$class}::__init()` exists, please remove it to get rid ";
+				$message .= "of this message. Static classes must now be initialized manually. ";
+				$message .= "i.e. by creating an `init()` method and calling it at the end of ";
+				$message .= "the file and outside of the class.";
+				throw new RuntimeException($message);
 			}
 		} elseif ($require) {
 			throw new RuntimeException("Failed to load class `{$class}` from path `{$path}`.");
@@ -987,8 +992,18 @@ class Libraries {
 		$suffix = $options['namespaces'] ? '' : $config['suffix'];
 		$suffix = ($options['suffix'] === null) ? $suffix : $options['suffix'];
 
-		$dFlags = GLOB_ONLYDIR & GLOB_BRACE;
-		$libs = (array) glob($path . $suffix, $options['namespaces'] ? $dFlags : GLOB_BRACE);
+
+		$dFlags = GLOB_ONLYDIR;
+		$zFlags = 0;
+		if (strpos($path, '{') !== false) {
+			$message  = "Search path `{$path}` relies on brace globbing. ";
+			$message .= 'Support for brace globbing in search paths has been deprecated.';
+			trigger_error($message, E_USER_DEPRECATED);
+
+			$dFlags |= GLOB_BRACE;
+			$zFlags |= GLOB_BRACE;
+		}
+		$libs = (array) glob($path . $suffix, $options['namespaces'] ? $dFlags : $zFlags);
 
 		if ($options['recursive']) {
 			list($current, $match) = explode('/*', $path, 2);

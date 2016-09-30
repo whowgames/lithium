@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -80,6 +80,9 @@ class CompilerTest extends \lithium\test\Unit {
 	}
 
 	public function testFallbackWithNonWritableDirectory() {
+		$backup = error_reporting();
+		error_reporting(E_ALL);
+
 		$path = $this->_path;
 		$file = $this->_file;
 
@@ -97,6 +100,8 @@ class CompilerTest extends \lithium\test\Unit {
 				'fallback' => false
 			));
 		});
+
+		error_reporting($backup);
 	}
 
 	public function testTemplateCacheHit() {

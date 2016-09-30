@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -206,14 +206,17 @@ abstract class Collection extends \lithium\util\Collection implements \Serializa
 	}
 
 	/**
-	 * Allows several properties to be assigned at once.
+	 * Allows several items to be assigned at once.
 	 *
 	 * For example:
 	 * ```
-	 * $collection->set(array('title' => 'Lorem Ipsum', 'value' => 42));
+	 * $collection->set(array(
+	 *	42 => array('title' => 'Lorem Ipsum'),
+	 *	43 => array('title' => 'Dolor Amet')
+	 * ));
 	 * ```
 	 *
-	 * @param $values An associative array of fields and values to assign to the `Collection`.
+	 * @param arary $values An associative array of fields and values to assign to the `Collection`.
 	 * @return void
 	 */
 	public function set($values) {
@@ -684,7 +687,7 @@ abstract class Collection extends \lithium\util\Collection implements \Serializa
 	 * offset and wraps all data array in its appropriate object type.
 	 *
 	 * @see lithium\data\Collection::_populate()
-	 * @see lithium\data\Collection::_offsetSet()
+	 * @see lithium\data\Collection::offsetSet()
 	 * @param mixed $data An array or an `Entity` object to set.
 	 * @param mixed $offset The offset. If offset is `null` data is simply appended to the set.
 	 * @param array $options Any additional options to pass to the `Entity`'s constructor.

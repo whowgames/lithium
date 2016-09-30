@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -16,7 +16,7 @@ use lithium\core\NetworkException;
  * This stream adapter provides the required method implementations of the abstract `Socket` class
  * for the `open()`, `close()`, `read()`, `write()`, `timeout()` `eof()` and `encoding()` methods.
  *
- * @link http://php.net/book.stream.php PHP Manual: Streams
+ * @link http://php.net/book.stream.php
  * @see lithium\net\socket\Stream
  */
 class Stream extends \lithium\net\Socket {

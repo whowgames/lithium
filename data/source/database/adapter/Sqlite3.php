@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -20,8 +20,7 @@ use lithium\core\ConfigException;
  * For more information on configuring the database connection, see
  * the `__construct()` method.
  *
- * @todo fix encoding methods to use class query methods instead of sqlite3 natives
- * @see lithium\data\source\database\adapter\Sqlite::__construct()
+ * @see lithium\data\source\database\adapter\Sqlite3::__construct()
  */
 class Sqlite3 extends \lithium\data\source\Database {
 

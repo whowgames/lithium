@@ -2,7 +2,7 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2015, Union of RAD (http://union-of-rad.org)
+ * @copyright     Copyright 2016, Union of RAD (http://union-of-rad.org)
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
@@ -718,7 +718,7 @@ class Request extends \lithium\net\http\Request {
 
 	/**
 	 * Sets or returns the current locale string. For more information, see
-	 * "[Globalization](http://li3.me/docs/manual/common-tasks/globalization.md)" in the manual.
+	 * "[Globalization](http://li3.me/docs/book/manual/1.x/common-tasks/globalization)" in the manual.
 	 *
 	 * @param string $locale An optional locale string like `'en'`, `'en_US'` or `'de_DE'`. If
 	 *        specified, will overwrite the existing locale.
