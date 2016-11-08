@@ -692,7 +692,7 @@ class Libraries {
 				throw new ClassNotFoundException("Invalid class type `{$type}`.");
 			}
 			if (!$class = $self::locate($type, $name)) {
-				throw new ClassNotFoundException("Class `{$name}` of type `{$type}` not found.");
+				throw new ClassNotFoundException("Class `{$name}` of type `{$type}` not found. (Referer: '" . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'n/a') . "', URI: '" . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '') . "')");
 			}
 			if (is_object($class)) {
 				return $class;
