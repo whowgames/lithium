@@ -262,6 +262,9 @@ class MongoDb extends \lithium\data\Source {
 			if ($persist = $cfg['persistent']) {
 				$options['persist'] = $persist === true ? 'default' : $persist;
 			}
+			\MongoLog::setLevel(\MongoLog::ALL);
+			\MongoLog::setModule(\MongoLog::ALL);
+			\MongoLog::setCallback(array($this, '_x_log'));
 			$server = $this->_classes['server'];
 			$this->server = new $server($connection, $options);
 
@@ -274,8 +277,14 @@ class MongoDb extends \lithium\data\Source {
 				$this->server->setReadPreference($prefs[0], $prefs[1]);
 			}
 		} catch (Exception $e) {
+			$this->_x_log_dump();
 			throw new NetworkException("Could not connect to the database.", 503, $e);
 		}
+
+		\MongoLog::setLevel(\MonogLog::NONE);
+		\MongoLog::setModule(\MongoLog::NONE);
+
+
 		return $this->_isConnected;
 	}
 
@@ -896,6 +905,52 @@ class MongoDb extends \lithium\data\Source {
 		}
 		return $fieldName;
 	}
-}
 
-?>
+	private $_x_logs = [];
+
+	public function _x_log($module, $level, $message)
+	{
+		switch ($module) {
+			case \MongoLog::RS:
+				$module = 'REPLSET';
+				break;
+			case \MongoLog::CON:
+				$module = 'CON';
+				break;
+			case \MongoLog::IO:
+				$module = 'IO';
+				break;
+			case \MongoLog::SERVER:
+				$module = 'SERVER';
+				break;
+			case \MongoLog::PARSE:
+				$module = 'PARSE';
+				break;
+			default:
+				$module = 'UNKNOWN';
+				break;
+		}
+
+		switch ($level) {
+			case \MongoLog::WARNING:
+				$level = 'WARN';
+				break;
+			case \MongoLog::INFO:
+				$level = 'INFO';
+				break;
+			case \MongoLog::FINE:
+				$level = 'FINE';
+				break;
+			default:
+				$level = 'UNKNOWN';
+				break;
+		}
+
+		$this->_x_logs[] = date("Y-m-d H:i:s - ") . sprintf("%s (%s): %s\n", $module, $level, $message);
+	}
+
+	public function _x_log_dump()
+	{
+		error_log(json_encode($this->_x_logs));
+	}
+}
