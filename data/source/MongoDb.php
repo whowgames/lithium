@@ -281,7 +281,7 @@ class MongoDb extends \lithium\data\Source {
 			throw new NetworkException("Could not connect to the database.", 503, $e);
 		}
 
-		\MongoLog::setLevel(\MonogLog::NONE);
+		\MongoLog::setLevel(\MongoLog::NONE);
 		\MongoLog::setModule(\MongoLog::NONE);
 
 
