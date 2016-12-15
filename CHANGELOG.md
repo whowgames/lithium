@@ -250,8 +250,8 @@
 - The XCache caching adapter has been deprecated as it is not compatible with the wildly
   deployed OPcache and does not perform better.
 
- - The FirePhp logging adapter has been deprecated as Firebug's usage share is shrinking
-   in favor of builtin developer tools.
+- The FirePhp logging adapter has been deprecated as Firebug's usage share is shrinking
+  in favor of builtin developer tools.
 
 - The builtin mocking framework (`lithium\test\Mocker`) has been deprecated as alternatives
   exist and it is not needed as a core test dependency. This takes the task of maintaining full
@@ -367,6 +367,20 @@
 - Fixed parsing certain exception details in `Database` i.e. `pgsql unknown role exception`.
 
 - Fixed retrieval of property default values in concrete classes through `Inspector`.
+
+## v1.0.2
+
+### Deprecated
+
+- Brace globbing support has been deprecated in `Libraries`. This feature
+  cannot be reliably be provided crossplatform and will already not work
+  if `GLOB_BRACE` is not available. (reported by Aaron Santiago)
+
+### Fixed
+
+- Optimized searching for a library's namespaces has been reenabled. 
+
+- Per connection read preference settings for MongoDB were ignored. (Fitz Agard)
 
 ## v1.0.1
 

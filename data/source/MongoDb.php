@@ -35,13 +35,16 @@ use Exception;
  * By default, it will attempt to connect to a Mongo instance running on `localhost` on port
  * 27017. See `__construct()` for details on the accepted configuration settings.
  *
- * Needs the mongo pecl extension version 1.2.0 or later.
+ * This adapter is officially supported on PHP 5, where it simply needs the `mongo`
+ * extension. Usage on top of PHP 7 is unofficially supported by using the new `mongodb`
+ * extension in conjunction with a compatibility layer (i.e. `mongo-php-adapter`).
  *
  * @see lithium\data\entity\Document
  * @see lithium\data\Connections::add()
  * @see lithium\data\source\MongoDb::__construct()
  * @link https://pecl.php.net/package/mongo
  * @link http://www.mongodb.org/
+ * @link https://github.com/alcaeus/mongo-php-adapter
  */
 class MongoDb extends \lithium\data\Source {
 
@@ -174,8 +177,12 @@ class MongoDb extends \lithium\data\Source {
 	protected $_autoConfig = ['schema', 'classes' => 'merge'];
 
 	/**
-	 * With no parameter, checks to see if the `mongo` extension is installed. With a parameter,
-	 * queries for a specific supported feature.
+	 * With no parameter, checks to see if adapter's dependencies are installed. With a
+	 * parameter, queries for a specific supported feature.
+	 *
+	 * A compatibility layer cannot be detected via `extension_loaded()`, thus we check
+	 * for the existence of one of the legacy classes to determine if this adapter can be
+	 * enabled at all.
 	 *
 	 * @param string $feature Test for support for a specific feature, i.e. `"transactions"` or
 	 *               `"arrays"`.
@@ -184,7 +191,7 @@ class MongoDb extends \lithium\data\Source {
 	 */
 	public static function enabled($feature = null) {
 		if (!$feature) {
-			return extension_loaded('mongo');
+			return class_exists('MongoClient');
 		}
 		$features = [
 			'arrays' => true,
@@ -380,13 +387,13 @@ class MongoDb extends \lithium\data\Source {
 		try {
 			$this->server = new $server($this->_config['dsn'], $options);
 
-			if ($this->connection = $this->server->{$this->_config['database']}) {
-				$this->_isConnected = true;
-			}
-
 			if ($prefs = $this->_config['readPreference']) {
 				$prefs = !is_array($prefs) ? [$prefs, []] : $prefs;
 				$this->server->setReadPreference($prefs[0], $prefs[1]);
+			}
+
+			if ($this->connection = $this->server->{$this->_config['database']}) {
+				$this->_isConnected = true;
 			}
 		} catch (Exception $e) {
 			throw new NetworkException("Could not connect to the database.", 503, $e);
