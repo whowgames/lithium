@@ -201,7 +201,7 @@ class MongoDb extends \lithium\data\Source {
 	 */
 	public static function enabled($feature = null) {
 		if (!$feature) {
-			return extension_loaded('mongo');
+			return class_exists('MongoClient');
 		}
 		$features = array(
 			'arrays' => true,
