@@ -500,7 +500,14 @@ class MongoDb extends \lithium\data\Source {
 			if ($source === "{$_config['gridPrefix']}.files") {
 				$collection = $self->connection->getGridFS($_config['gridPrefix']);
 			}
-			$result = $collection->find($args['conditions'], $args['fields']);
+
+			$fields = [];
+
+			foreach ($args['fields'] as $x) {
+				$fields[$x] = 1;
+			}
+
+			$result = $collection->find($args['conditions'], $fields);
 
 			if ($query->calculate()) {
 				return $result;
