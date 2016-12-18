@@ -8,7 +8,7 @@
 
 namespace lithium\data\source;
 
-use lithium\util\String;
+use lithium\util\StringDeprecated;
 use lithium\data\model\Query;
 
 /**
@@ -167,7 +167,7 @@ class Http extends \lithium\data\Source {
 			$keys = array_flip($matches[1]);
 			$data = array_diff_key($data,  array_flip($matches[1]));
 		}
-		$path = String::insert($path, $insert, array('clean' => true));
+		$path = StringDeprecated::insert($path, $insert, array('clean' => true));
 		$data += (array) $query->conditions() + array('limit' => $query->limit());
 		return $this->connection->{$method}($path, $data, (array) $options);
 	}

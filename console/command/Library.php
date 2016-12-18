@@ -12,7 +12,7 @@ use Phar;
 use Exception;
 use RuntimeException;
 use lithium\core\Libraries;
-use lithium\util\String;
+use lithium\util\StringDeprecated;
 use lithium\util\Inflector;
 
 /**
@@ -293,10 +293,10 @@ class Library extends \lithium\console\Command {
 	 *          as `*` or `*.php` or `resources/g11n/*`.  If the filename starts
 	 *          with `*`, then that filename pattern will be recursively found
 	 *          in every sub-directory.  Additionally, each replacement can
-	 *          use `String::insert()` style strings that will be replaced
+	 *          use `StringDeprecated::insert()` style strings that will be replaced
 	 *          with the data in the `data` option.
 	 *        - `'data'`: an array with data that will be used to replace
-	 *          `String::insert`-style placeholders in the `replacements` option.
+	 *          `StringDeprecated::insert`-style placeholders in the `replacements` option.
 	 *          By default, this includes 'namespace' and 'library' which are
 	 *          both set to the extracted library's namespace.
 	 * @return boolean
@@ -339,8 +339,8 @@ class Library extends \lithium\console\Command {
 		foreach ($replacements as $filename => $definitions) {
 			foreach ($definitions as $search => $replace) {
 				unset($definitions[$search]);
-				$search = String::insert($search, $data);
-				$replace = String::insert($replace, $data);
+				$search = StringDeprecated::insert($search, $data);
+				$replace = StringDeprecated::insert($replace, $data);
 				$definitions[$search] = $replace;
 			}
 			$paths = $this->_wildcardPaths($filename, $extracted);

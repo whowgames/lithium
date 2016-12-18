@@ -8,7 +8,7 @@
 
 namespace lithium\analysis\logger\adapter;
 
-use lithium\util\String;
+use lithium\util\StringDeprecated;
 use Closure;
 
 /**
@@ -71,7 +71,7 @@ class Cache extends \lithium\core\Object {
 		return function($self, $params) use ($config) {
 			$params += array('timestamp' => strtotime('now'));
 			$key = $config['key'];
-			$key = is_callable($key) ? $key($params) : String::insert($key, $params);
+			$key = is_callable($key) ? $key($params) : StringDeprecated::insert($key, $params);
 
 			$cache = $config['cache'];
 			return $cache::write($config['config'], $key, $params['message'], $config['expiry']);

@@ -17,7 +17,7 @@ use Exception;
  * {:tag} and regex replacement, and tokenization. Also includes a cryptographically-strong random
  * number generator, and a base64 encoder for use with DES and XDES.
  */
-class String {
+class StringDeprecated {
 
 	/**
 	 * UUID-related constant. Clears all bits of version byte (`00001111`).
@@ -40,7 +40,7 @@ class String {
 	const UUID_VAR_RFC = 128;
 
 	/**
-	 * Option flag used in `String::random()`.
+	 * Option flag used in `StringDeprecated::random()`.
 	 */
 	const ENCODE_BASE_64 = 1;
 
@@ -77,7 +77,7 @@ class String {
 	 * (when available) a cryptographically strong random number generator.
 	 *
 	 * {{{
-	 * $bits = String::random(8); // 64 bits
+	 * $bits = StringDeprecated::random(8); // 64 bits
 	 * $hex = bin2hex($bits); // [0-9a-f]+
 	 * }}}
 	 *
@@ -90,7 +90,7 @@ class String {
 	 *
 	 * @param integer $bytes The number of random bytes to generate.
 	 * @param array $options The options used when generating random bytes:
-	 *              - `'encode'` _integer_: If specified, and set to `String::ENCODE_BASE_64`, the
+	 *              - `'encode'` _integer_: If specified, and set to `StringDeprecated::ENCODE_BASE_64`, the
 	 *                resulting value will be base64-encoded, per the notes above.
 	 * @return string Returns a string of random bytes.
 	 */
@@ -108,7 +108,7 @@ class String {
 	}
 
 	/**
-	 * Initializes `String::$_source` using the best available random number generator.
+	 * Initializes `StringDeprecated::$_source` using the best available random number generator.
 	 *
 	 * When available, `/dev/urandom` and COM gets used on *nix and
 	 * [Windows systems](http://msdn.microsoft.com/en-us/library/aa388182%28VS.85%29.aspx?ppud=4),
@@ -117,7 +117,7 @@ class String {
 	 * If all else fails, a Mersenne Twister gets used. (Strictly
 	 * speaking, this fallback is inadequate, but good enough.)
 	 *
-	 * @see lithium\util\String::$_source
+	 * @see lithium\util\StringDeprecated::$_source
 	 * @return Closure Returns a closure containing a random number generator.
 	 */
 	protected static function _source() {
@@ -211,7 +211,7 @@ class String {
 	 *
 	 * Usage:
 	 * {{{
-	 * String::insert(
+	 * StringDeprecated::insert(
 	 *     'My name is {:name} and I am {:age} years old.',
 	 *     array('name' => 'Bob', 'age' => '65')
 	 * ); // returns 'My name is Bob and I am 65 years old.'
@@ -225,7 +225,7 @@ class String {
 	 *          (defaults to `}`).
 	 *        - `'before'`: The character or string in front of the name of the variable
 	 *          place-holder (defaults to `'{:'`).
-	 *        - `'clean'`: A boolean or array with instructions for `String::clean()`.
+	 *        - `'clean'`: A boolean or array with instructions for `StringDeprecated::clean()`.
 	 *        - `'escape'`: The character or string used to escape the before character or string
 	 *          (defaults to `'\'`).
 	 *        - `'format'`: A regular expression to use for matching variable place-holders
@@ -302,9 +302,9 @@ class String {
 	}
 
 	/**
-	 * Cleans up a `String::insert()` formatted string with given `$options` depending
+	 * Cleans up a `StringDeprecated::insert()` formatted string with given `$options` depending
 	 * on the `'clean'` option. The goal of this function is to replace all whitespace
-	 * and unneeded mark-up around place-holders that did not get replaced by `String::insert()`.
+	 * and unneeded mark-up around place-holders that did not get replaced by `StringDeprecated::insert()`.
 	 *
 	 * @param string $str The string to clean.
 	 * @param array $options Available options are:

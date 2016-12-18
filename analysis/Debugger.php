@@ -9,7 +9,7 @@
 namespace lithium\analysis;
 
 use ReflectionClass;
-use lithium\util\String;
+use lithium\util\StringDeprecated;
 use lithium\analysis\Inspector;
 
 /**
@@ -90,7 +90,7 @@ class Debugger {
 			if ($options['format'] === 'points' && $trace['file'] !== '[internal]') {
 				$back[] = array('file' => $trace['file'], 'line' => $trace['line']);
 			} elseif (is_string($options['format']) && $options['format'] !== 'array') {
-				$back[] = String::insert($options['format'], array_map(
+				$back[] = StringDeprecated::insert($options['format'], array_map(
 					function($data) { return is_object($data) ? get_class($data) : $data; },
 					$trace
 				));

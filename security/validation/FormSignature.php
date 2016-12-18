@@ -8,7 +8,7 @@
 
 namespace lithium\security\validation;
 
-use lithium\util\String;
+use lithium\util\StringDeprecated;
 use lithium\util\Set;
 
 /**

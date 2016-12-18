@@ -8,7 +8,7 @@
 
 namespace lithium\action;
 
-use lithium\util\String;
+use lithium\util\StringDeprecated;
 use lithium\util\Inflector;
 use lithium\core\Libraries;
 use lithium\action\DispatchException;
@@ -51,9 +51,9 @@ class Dispatcher extends \lithium\core\StaticObject {
 	 * not empty) in a route, (i.e. the result of `lithium\net\http\Router::parse()`) then the
 	 * rule's value will be applied to the route before it is dispatched.  When applying a rule, any
 	 * array elements of the flag which are present in the route will be modified
-	 * using a `lithium\util\String::insert()`-formatted string.  Alternatively,
+	 * using a `lithium\util\StringDeprecated::insert()`-formatted string.  Alternatively,
 	 * a callback can be used to do custom transformations other than the
-	 * default `lithium\util\String::insert()`.
+	 * default `lithium\util\StringDeprecated::insert()`.
 	 *
 	 * For example, to implement action prefixes (i.e. `admin_index()`), set a rule named 'admin',
 	 * with a value array containing a modifier key for the `action` element of a route, i.e.:
@@ -88,7 +88,7 @@ class Dispatcher extends \lithium\core\StaticObject {
 	 * }}}
 	 *
 	 * @see lithium\action\Dispatcher::config()
-	 * @see lithium\util\String::insert()
+	 * @see lithium\util\StringDeprecated::insert()
 	 */
 	protected static $_rules = array();
 
@@ -208,7 +208,7 @@ class Dispatcher extends \lithium\core\StaticObject {
 				if (preg_match('/' . $match . '/i', $values[$k])) {
 					continue;
 				}
-				$result[$k] = String::insert($v, $values);
+				$result[$k] = StringDeprecated::insert($v, $values);
 			}
 		}
 		return $result + $values;
