@@ -501,11 +501,17 @@ class MongoDb extends \lithium\data\Source {
 				$collection = $self->connection->getGridFS($_config['gridPrefix']);
 			}
 
-			$fields = [];
+            $fields = [];
 
-			foreach ($args['fields'] as $x) {
-				$fields[$x] = 1;
-			}
+            $x = array_values($args['fields']);
+
+            if (!is_numeric($x[0])) {
+    			foreach ($args['fields'] as $x) {
+	    			$fields[$x] = 1;
+		    	}
+            } else {
+                $fields = $args['fields'];
+            }
 
 			$result = $collection->find($args['conditions'], $fields);
 
