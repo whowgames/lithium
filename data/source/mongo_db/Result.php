@@ -25,16 +25,17 @@ class Result extends \lithium\data\source\Result {
 	 * @return boolean Return `true` on success or `false` if it is not valid.
 	 */
 	protected function _fetchFromResource() {
-		if ($this->_resource && $result = $this->_resource->getNext()) {
-			//$result = $this->_resource->getNext();
+		if ($this->_resource && $this->_resource->hasNext()) {
+			$this->_resource->next();
+			$result = $this->_resource->current();
+
 			$isFile = ($result instanceof MongoGridFSFile);
 			$result = $isFile ? array('file' => $result) + $result->file : $result;
 			$this->_key = $this->_iterator;
 			$this->_current = $result;
 			return true;
 		}
+
 		return false;
 	}
 }
-
-?>
