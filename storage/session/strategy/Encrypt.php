@@ -56,7 +56,7 @@ use lithium\core\ConfigException;
  * @link http://www.php.net/manual/en/mcrypt.ciphers.php List of supported ciphers.
  * @link http://www.php.net/manual/en/mcrypt.constants.php List of supported modes.
  */
-class Encrypt extends \lithium\core\Object {
+class Encrypt extends \lithium\core\DynamicObject {
 
 	/**
 	 * Holds the initialization vector.

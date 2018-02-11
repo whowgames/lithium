@@ -38,7 +38,7 @@ use Closure;
  *
  * @see lithium\storage\cache\adapter
  */
-class File extends \lithium\core\Object {
+class File extends \lithium\core\DynamicObject {
 
 	/**
 	 * Class constructor.

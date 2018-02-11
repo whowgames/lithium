@@ -39,7 +39,7 @@ use lithium\core\Libraries;
  * @see lithium\action\Dispatcher
  * @see lithium\action\Controller::$_render
  */
-class Controller extends \lithium\core\Object {
+class Controller extends \lithium\core\DynamicObject {
 
 	/**
 	 * Contains an instance of the `Request` object with all the details of the HTTP request that

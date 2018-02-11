@@ -46,7 +46,7 @@ use Closure;
  * @see lithium\storage\Cache::adapter()
  * @link https://github.com/nicolasff/phpredis GitHub: PhpRedis Extension
  */
-class Redis extends \lithium\core\Object {
+class Redis extends \lithium\core\DynamicObject {
 
 	/**
 	 * Redis object instance used by this adapter.

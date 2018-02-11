@@ -23,10 +23,10 @@ use Closure;
  * - **Initialization / automatic configuration**: After the constructor, the `_init()` method is
  *   called. This method can be used to initialize the object, keeping complex logic and
  *   high-overhead or difficult to test operations out of the constructor. This method is called
- *   automatically by `Object::__construct()`, but may be disabled by passing `'init' => false` to
+ *   automatically by `DynamicObject::__construct()`, but may be disabled by passing `'init' => false` to
  *   the constructor. The initializer is also used for automatically assigning object properties.
  *   See the documentation on the `_init()` method for more details.
- * - **Filters**: The `Object` class implements two methods which allow an object to easily
+ * - **Filters**: The `DynamicObject` class implements two methods which allow an object to easily
  *   implement filterable methods. The `_filter()` method allows methods to be implemented as
  *   filterable, and the `applyFilter()` method allows filters to be wrapped around them.
  * - **Testing / misc.**: The `__set_state()` method provides a default implementation of the PHP
@@ -36,7 +36,7 @@ use Closure;
  *
  * @see lithium\core\StaticObject
  */
-class Object {
+class DynamicObject {
 
 	/**
 	 * Stores configuration information for object instances at time of construction.
@@ -52,7 +52,7 @@ class Object {
 	 * an array, the property name should be the key and the value should be `'merge'`. See the
 	 * `_init()` method for more details.
 	 *
-	 * @see lithium\core\Object::_init()
+	 * @see lithium\core\DynamicObject::_init()
 	 * @var array
 	 */
 	protected $_autoConfig = array();
@@ -61,8 +61,8 @@ class Object {
 	 * Contains a 2-dimensional array of filters applied to this object's methods, indexed by method
 	 * name. See the associated methods for more details.
 	 *
-	 * @see lithium\core\Object::_filter()
-	 * @see lithium\core\Object::applyFilter()
+	 * @see lithium\core\DynamicObject::_filter()
+	 * @see lithium\core\DynamicObject::applyFilter()
 	 * @var array
 	 */
 	protected $_methodFilters = array();
@@ -70,7 +70,7 @@ class Object {
 	/**
 	 * Parents of the current class.
 	 *
-	 * @see lithium\core\Object::_parents()
+	 * @see lithium\core\DynamicObject::_parents()
 	 * @var array
 	 */
 	protected static $_parents = array();
@@ -79,8 +79,8 @@ class Object {
 	 * Initializes class configuration (`$_config`), and assigns object properties using the
 	 * `_init()` method, unless otherwise specified by configuration. See below for details.
 	 *
-	 * @see lithium\core\Object::$_config
-	 * @see lithium\core\Object::_init()
+	 * @see lithium\core\DynamicObject::$_config
+	 * @see lithium\core\DynamicObject::_init()
 	 * @param array $config The configuration options which will be assigned to the `$_config`
 	 *              property. This method accepts one configuration option:
 	 *              - `'init'` _boolean_: Controls constructor behavior for calling the `_init()`
@@ -104,7 +104,7 @@ class Object {
 	 * to automatically assign configuration settings to their corresponding properties.
 	 *
 	 * For example, given the following: {{{
-	 * class Bar extends \lithium\core\Object {
+	 * class Bar extends \lithium\core\DynamicObject {
 	 * 	protected $_autoConfig = array('foo');
 	 * 	protected $_foo;
 	 * }
@@ -116,7 +116,7 @@ class Object {
 	 * an array, `$_autoConfig` could be set to `array('foo' => 'merge')`, and the constructor value
 	 * of `'foo'` would be merged with the default value of `$_foo` and assigned to it.
 	 *
-	 * @see lithium\core\Object::$_autoConfig
+	 * @see lithium\core\DynamicObject::$_autoConfig
 	 * @return void
 	 */
 	protected function _init() {
@@ -136,7 +136,7 @@ class Object {
 	/**
 	 * Apply a closure to a method of the current object instance.
 	 *
-	 * @see lithium\core\Object::_filter()
+	 * @see lithium\core\DynamicObject::_filter()
 	 * @see lithium\util\collection\Filters
 	 * @param mixed $method The name of the method to apply the closure to. Can either be a single
 	 *        method name as a string, or an array of method names. Can also be false to remove
@@ -191,7 +191,7 @@ class Object {
 	/**
 	 * PHP magic method used in conjunction with `var_export()` to allow objects to be
 	 * re-instantiated with their pre-existing properties and values intact. This method can be
-	 * called statically on any class that extends `Object` to return an instance of it.
+	 * called statically on any class that extends `DynamicObject` to return an instance of it.
 	 *
 	 * @param array $data An array of properties and values with which to re-instantiate the object.
 	 *        These properties can be both public and protected.
@@ -241,7 +241,7 @@ class Object {
 	 * object's methods which are marked as _filterable_, and intercept calls to those methods,
 	 * optionally modifying parameters or return values.
 	 *
-	 * @see lithium\core\Object::applyFilter()
+	 * @see lithium\core\DynamicObject::applyFilter()
 	 * @see lithium\util\collection\Filters
 	 * @param string $method The name of the method being executed, usually the value of
 	 *               `__METHOD__`.

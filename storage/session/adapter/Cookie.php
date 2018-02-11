@@ -21,7 +21,7 @@ use Closure;
  * per the Lithium filtering system.
  *
  */
-class Cookie extends \lithium\core\Object {
+class Cookie extends \lithium\core\DynamicObject {
 
 	/**
 	 * Default settings for this session adapter.

@@ -146,7 +146,7 @@ class ObjectTest extends \lithium\test\Unit {
 	}
 
 	public function testParents() {
-		$expected = array('lithium\core\Object' => 'lithium\core\Object');
+		$expected = array('lithium\core\DynamicObject' => 'lithium\core\DynamicObject');
 
 		$result = MockObjectForParents::parents();
 		$this->assertEqual($expected, $result);

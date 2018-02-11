@@ -8,7 +8,7 @@
 
 namespace lithium\data\source;
 
-abstract class Result extends \lithium\core\Object implements \Iterator {
+abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 
 	/**
 	 * Contains the cached result set.

@@ -15,7 +15,7 @@ use lithium\core\ClassNotFoundException;
  * Basic Http Service.
  *
  */
-class Service extends \lithium\core\Object {
+class Service extends \lithium\core\DynamicObject {
 
 	/**
 	 * The `Socket` instance used to send `Service` calls.

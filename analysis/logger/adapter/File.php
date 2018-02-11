@@ -31,7 +31,7 @@ use Closure;
  *
  * @see lithium\analysis\logger\adapter\File::__construct()
  */
-class File extends \lithium\core\Object {
+class File extends \lithium\core\DynamicObject {
 
 	/**
 	 * Class constructor.

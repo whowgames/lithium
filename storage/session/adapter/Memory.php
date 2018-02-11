@@ -14,7 +14,7 @@ use Closure;
 /**
  * Simple memory session storage engine. Used for testing.
  */
-class Memory extends \lithium\core\Object {
+class Memory extends \lithium\core\DynamicObject {
 
 	/**
 	 * Holds the array that corresponds to session keys & values.

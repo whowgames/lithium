@@ -11,7 +11,7 @@ namespace lithium\storage\cache\strategy;
 /**
  * A PHP base64-encoding strategy.
  */
-class Base64 extends \lithium\core\Object {
+class Base64 extends \lithium\core\DynamicObject {
 
 	/**
 	 * Write strategy method.

@@ -8,7 +8,7 @@
 
 namespace lithium\tests\mocks\core;
 
-class MockObjectForParents extends \lithium\core\Object {
+class MockObjectForParents extends \lithium\core\DynamicObject {
 
 	public static function parents() {
 		return static::_parents();

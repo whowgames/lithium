@@ -14,7 +14,7 @@ namespace lithium\console;
  *
  * @see lithium\console\Dispatcher
  */
-class Request extends \lithium\core\Object {
+class Request extends \lithium\core\DynamicObject {
 
 	/**
 	 * The raw data passed from the command line

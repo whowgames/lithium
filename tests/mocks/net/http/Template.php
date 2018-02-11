@@ -8,7 +8,7 @@
 
 namespace lithium\tests\mocks\net\http;
 
-class Template extends \lithium\core\Object {
+class Template extends \lithium\core\DynamicObject {
 
 	public function __construct(array $config = array()) {
 		$config['response']->headers('Custom', 'Value');

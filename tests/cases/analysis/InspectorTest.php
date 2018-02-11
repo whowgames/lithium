@@ -47,7 +47,7 @@ class InspectorTest extends \lithium\test\Unit {
 		$result = Inspector::methods($this, null);
 		$this->assertInstanceOf('ReflectionMethod', $result[0]);
 
-		$result = Inspector::info('lithium\core\Object::_init()');
+		$result = Inspector::info('lithium\core\DynamicObject::_init()');
 		$expected = '_init';
 		$this->assertEqual($expected, $result['name']);
 

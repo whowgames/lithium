@@ -15,10 +15,10 @@ use Closure;
 
 /**
  * Provides a base class for all static classes in the Lithium framework. Similar to its
- * counterpart, the `Object` class, `StaticObject` defines some utility methods for working with
+ * counterpart, the `DynamicObject` class, `StaticObject` defines some utility methods for working with
  * the filters system, and methods useful for testing purposes.
  *
- * @see lithium\core\Object
+ * @see lithium\core\DynamicObject
  */
 class StaticObject {
 

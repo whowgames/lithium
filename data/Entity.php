@@ -23,7 +23,7 @@ use lithium\analysis\Inspector;
  *
  * @see lithium\template\helper\Form
  */
-class Entity extends \lithium\core\Object {
+class Entity extends \lithium\core\DynamicObject {
 
 	/**
 	 * Fully-namespaced class name of model that this record is bound to. Instance methods declared

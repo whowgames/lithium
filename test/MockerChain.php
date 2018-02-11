@@ -38,7 +38,7 @@ namespace lithium\test;
  * 		->success());
  * }}}
  */
-class MockerChain extends \lithium\core\Object {
+class MockerChain extends \lithium\core\DynamicObject {
 
 	/**
 	 * Data to be used in the class.

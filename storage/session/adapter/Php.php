@@ -22,7 +22,7 @@ use Closure;
  * per the Lithium filtering system.
  *
  */
-class Php extends \lithium\core\Object {
+class Php extends \lithium\core\DynamicObject {
 
 	/**
 	 * Default ini settings for this session adapter.

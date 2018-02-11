@@ -33,7 +33,7 @@ use Closure;
  *
  * @see lithium\storage\Cache
  */
-class Cache extends \lithium\core\Object {
+class Cache extends \lithium\core\DynamicObject {
 
 	/**
 	 * Classes used by `Cache`.

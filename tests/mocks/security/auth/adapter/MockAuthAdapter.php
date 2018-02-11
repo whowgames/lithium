@@ -8,7 +8,7 @@
 
 namespace lithium\tests\mocks\security\auth\adapter;
 
-class MockAuthAdapter extends \lithium\core\Object {
+class MockAuthAdapter extends \lithium\core\DynamicObject {
 
 	public function check($credentials, array $options = array()) {
 		switch (true) {

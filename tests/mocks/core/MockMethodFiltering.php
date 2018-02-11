@@ -8,7 +8,7 @@
 
 namespace lithium\tests\mocks\core;
 
-class MockMethodFiltering extends \lithium\core\Object {
+class MockMethodFiltering extends \lithium\core\DynamicObject {
 
 	public function method($data) {
 		$data[] = 'Starting outer method call';

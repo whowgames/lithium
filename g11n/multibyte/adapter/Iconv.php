@@ -17,7 +17,7 @@ namespace lithium\g11n\multibyte\adapter;
  *
  * @link http://php.net/manual/en/book.iconv.php
  */
-class Iconv extends \lithium\core\Object {
+class Iconv extends \lithium\core\DynamicObject {
 
 	/**
 	 * Determines if this adapter is enabled by checking if the `iconv` extension is loaded.

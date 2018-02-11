@@ -39,7 +39,7 @@ use Closure;
  *
  * @see lithium\storage\Cache::key()
  */
-class Apc extends \lithium\core\Object {
+class Apc extends \lithium\core\DynamicObject {
 
 	/**
 	 * Class constructor.

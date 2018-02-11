@@ -39,7 +39,7 @@ use lithium\util\StringDeprecated;
  *
  * @link http://en.wikipedia.org/wiki/HMAC Wikipedia: Hash-based Message Authentication Code
  */
-class Hmac extends \lithium\core\Object {
+class Hmac extends \lithium\core\DynamicObject {
 
 	/**
 	 * The HMAC secret.

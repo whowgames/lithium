@@ -8,7 +8,7 @@
 
 namespace lithium\tests\mocks\util;
 
-class MockCollectionObject extends \lithium\core\Object {
+class MockCollectionObject extends \lithium\core\DynamicObject {
 
 	public $data = array(1 => 2);
 

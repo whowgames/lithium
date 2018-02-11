@@ -38,7 +38,7 @@ use lithium\core\Libraries;
  * @see lithium\action\Request
  * @see lithium\action\Request::env
  */
-class Http extends \lithium\core\Object {
+class Http extends \lithium\core\DynamicObject {
 
 	/**
 	 * Dynamic class dependencies.

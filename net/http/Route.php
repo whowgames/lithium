@@ -48,7 +48,7 @@ namespace lithium\net\http;
  * @see lithium\net\http\Route::compile()
  * @see lithium\net\http\Router
  */
-class Route extends \lithium\core\Object {
+class Route extends \lithium\core\DynamicObject {
 
 	/**
 	 * The URL template string that the route matches.

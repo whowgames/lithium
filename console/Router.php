@@ -13,7 +13,7 @@ namespace lithium\console;
  * command-line invocation, to parse the correct command, and sub-command(s) and parameters, which
  * are used by `lithium\console\Dispatcher` to load and execute the proper `Command` class.
  */
-class Router extends \lithium\core\Object {
+class Router extends \lithium\core\DynamicObject {
 
 	/**
 	 * Parse incoming request from console. Short and long (GNU-style) options

@@ -138,7 +138,7 @@ use lithium\core\ClassNotFoundException;
  * @see lithium\data\Model::find()
  * @see lithium\util\String::hash()
  */
-class Form extends \lithium\core\Object {
+class Form extends \lithium\core\DynamicObject {
 
 	/**
 	 * The name of the model class to query against. This can either be a model name (i.e.

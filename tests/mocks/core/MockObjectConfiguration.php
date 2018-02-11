@@ -8,7 +8,7 @@
 
 namespace lithium\tests\mocks\core;
 
-class MockObjectConfiguration extends \lithium\core\Object {
+class MockObjectConfiguration extends \lithium\core\DynamicObject {
 
 	protected $_testScalar = 'default';
 

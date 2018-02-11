@@ -75,7 +75,7 @@ namespace lithium\util;
  * @link http://us.php.net/manual/en/class.iterator.php PHP Manual: Iterator Interface
  * @link http://us.php.net/manual/en/class.countable.php PHP Manual: Countable Interface
  */
-class Collection extends \lithium\core\Object implements \ArrayAccess, \Iterator, \Countable {
+class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \Iterator, \Countable {
 
 	/**
 	 * A central registry of global format handlers for `Collection` objects and subclasses.
@@ -500,7 +500,7 @@ class Collection extends \lithium\core\Object implements \ArrayAccess, \Iterator
 	 *
 	 * @return The current item after moving or `false` on failure.
 	 */
-	public function next() {
+	public function next($self = null, $params = null, $chain = null) {
 		next($this->_data);
 		return current($this->_data);
 	}

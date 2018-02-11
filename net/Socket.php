@@ -13,7 +13,7 @@ namespace lithium\net;
  *
  * Currently, Curl, Stream and Context adapters are available.
  */
-abstract class Socket extends \lithium\core\Object {
+abstract class Socket extends \lithium\core\DynamicObject {
 
 	/**
 	 * The resource for the current connection.

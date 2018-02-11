@@ -17,7 +17,7 @@ use ReflectionProperty;
  * @see http://tools.ietf.org/html/rfc3986#section-1.1.1
  * @see http://en.wikipedia.org/wiki/URI_scheme#Generic_syntax
  */
-class Message extends \lithium\core\Object {
+class Message extends \lithium\core\DynamicObject {
 
 	/**
 	 * The URI scheme.

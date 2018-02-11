@@ -23,7 +23,7 @@ use lithium\console\command\Help;
  * }}}
  *
  */
-class Command extends \lithium\core\Object {
+class Command extends \lithium\core\DynamicObject {
 
 	/**
 	 * If -h or --help param exists a help screen will be returned.

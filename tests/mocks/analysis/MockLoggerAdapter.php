@@ -8,7 +8,7 @@
 
 namespace lithium\tests\mocks\analysis;
 
-class MockLoggerAdapter extends \lithium\core\Object {
+class MockLoggerAdapter extends \lithium\core\DynamicObject {
 
 	public function write($name, $value) {
 		return function($self, $params, $chain) {

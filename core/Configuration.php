@@ -15,7 +15,7 @@ use lithium\core\Environment;
  *
  * @see lithium\core\Environment
  */
-class Configuration extends \lithium\core\Object {
+class Configuration extends \lithium\core\DynamicObject {
 
 	/**
 	 * Can provide configurations based on the environment,

@@ -19,7 +19,7 @@ namespace lithium\g11n\multibyte\adapter;
  *
  * @link http://php.net/manual/en/book.intl.php
  */
-class Intl extends \lithium\core\Object {
+class Intl extends \lithium\core\DynamicObject {
 
 	/**
 	 * Determines if this adapter is enabled by checking if the `intl` extension is loaded.

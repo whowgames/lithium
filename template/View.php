@@ -74,7 +74,7 @@ use lithium\template\TemplateException;
  * @see lithium\template\view\adapter
  * @see lithium\net\http\Media
  */
-class View extends \lithium\core\Object {
+class View extends \lithium\core\DynamicObject {
 
 	/**
 	 * Output filters for view rendering.

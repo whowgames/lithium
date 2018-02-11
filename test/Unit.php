@@ -35,7 +35,7 @@ use Closure;
  * If an assertion is expected to produce an exception, the `expectException` method should be
  * called before it.
  */
-class Unit extends \lithium\core\Object {
+class Unit extends \lithium\core\DynamicObject {
 
 	/**
 	 * The Reference to a test reporter class.

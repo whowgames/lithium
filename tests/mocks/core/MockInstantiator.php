@@ -8,7 +8,7 @@
 
 namespace lithium\tests\mocks\core;
 
-class MockInstantiator extends \lithium\core\Object {
+class MockInstantiator extends \lithium\core\DynamicObject {
 
 	protected $_classes = array('request' => 'lithium\tests\mocks\core\MockRequest');
 

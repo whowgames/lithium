@@ -24,7 +24,7 @@ use Closure;
  * should not be used for for anything that must persist longer than the current
  * request cycle.
  */
-class Memory extends \lithium\core\Object {
+class Memory extends \lithium\core\DynamicObject {
 
 	/**
 	 * Array used to store cached data by this adapter

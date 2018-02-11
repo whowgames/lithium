@@ -2,7 +2,7 @@
 
 namespace lithium\tests\mocks\test;
 
-class MockStdClass extends \lithium\core\Object {
+class MockStdClass extends \lithium\core\DynamicObject {
 
 	protected $_data = array();
 

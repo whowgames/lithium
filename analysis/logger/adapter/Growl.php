@@ -18,7 +18,7 @@ use Closure;
  * for Mac OS X. Writing to this logger will display small, customizable status messages on the
  * screen.
  */
-class Growl extends \lithium\core\Object {
+class Growl extends \lithium\core\DynamicObject {
 
 	/**
 	 * Array that maps `Logger` message priority names to Growl-compatible priority levels.

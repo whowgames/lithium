@@ -8,7 +8,7 @@
 
 namespace lithium\tests\mocks\g11n\multibyte\adapter;
 
-class MockAdapter extends \lithium\core\Object {
+class MockAdapter extends \lithium\core\DynamicObject {
 
 	public $testStrlenArgs = array();
 

@@ -17,7 +17,7 @@ use Closure;
  *
  * In Lithium itself, when creating a method that can be filtered, a method is implemented as a
  * [ closure](http://us2.php.net/manual/en/functions.anonymous.php) and is passed to either
- * `Object::_filter()` or `StaticObject::_filter()`. Each object internally maintains its own list
+ * `DynamicObject::_filter()` or `StaticObject::_filter()`. Each object internally maintains its own list
  * of filters, which are applied in these methods and passed to `Filters::run()`.
  *
  * When implementing a custom filter system outside of Lithium, you can create your own list of
@@ -63,9 +63,9 @@ use Closure;
  * `run()`.
  *
  * @see lithium\util\collection\Filters::run()
- * @see lithium\core\Object::_filter()
+ * @see lithium\core\DynamicObject::_filter()
  * @see lithium\core\StaticObject::_filter()
- * @see lithium\core\Object::applyFilter()
+ * @see lithium\core\DynamicObject::applyFilter()
  * @see lithium\core\StaticObject::applyFilter()
  */
 class Filters extends \lithium\util\Collection {
@@ -187,15 +187,15 @@ class Filters extends \lithium\util\Collection {
 	/**
 	 * Provides short-hand convenience syntax for filter chaining.
 	 *
-	 * @see lithium\core\Object::applyFilter()
-	 * @see lithium\core\Object::_filter()
+	 * @see lithium\core\DynamicObject::applyFilter()
+	 * @see lithium\core\DynamicObject::_filter()
 	 * @param object $self The object instance that owns the filtered method.
 	 * @param array $params An associative array containing the parameters passed to the filtered
 	 *              method.
 	 * @param array $chain The Filters object instance containing this chain of filters.
 	 * @return mixed Returns the return value of the next filter in the chain.
 	 */
-	public function next($self, $params, $chain) {
+	public function next($self = null, $params = null, $chain = null) {
 		if (empty($self) || empty($chain)) {
 			return parent::next();
 		}

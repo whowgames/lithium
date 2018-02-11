@@ -16,7 +16,7 @@ use Closure;
  *
  * @see lithium\analysis\logger\adapter\Syslog::__construct()
  */
-class Syslog extends \lithium\core\Object {
+class Syslog extends \lithium\core\DynamicObject {
 
 	/**
 	 * Flag indicating whether or not the connection to `syslogd` has been opened yet.

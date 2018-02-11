@@ -12,7 +12,7 @@ namespace lithium\tests\mocks\storage\cache\strategy;
  * Mock strategy.
  * Simulates the 'Serializer' strategy.
  */
-class MockSerializer extends \lithium\core\Object {
+class MockSerializer extends \lithium\core\DynamicObject {
 
 	/**
 	 * Write strategy method.

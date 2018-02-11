@@ -8,7 +8,7 @@
 
 namespace lithium\tests\mocks\core;
 
-class MockExposed extends \lithium\core\Object {
+class MockExposed extends \lithium\core\DynamicObject {
 
 	protected $_internal = 'secret';
 
