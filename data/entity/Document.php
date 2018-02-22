@@ -58,7 +58,7 @@ use UnexpectedValueException;
  * {{{$employees = $acme->employees;
  * // returns a Document object with the data in 'employees'}}}
  */
-class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess {
+class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, \Countable {
 
 	/**
 	 * If this `Document` instance has a parent document (see `$_parent`), this value indicates
@@ -473,7 +473,12 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess {
 			throw new UnexpectedValueException("Field `{$field}` cannot be incremented.");
 		}
 		return $this->_updated[$field] += $value;
-	}
+    }
+
+    public function count()
+    {
+        return count($this->_data);
+    }
 }
 
 ?>

@@ -170,11 +170,13 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	 * @return boolean Return `true` on success or `false` if it has not been cached yet.
 	 */
 	protected function _fetchFromCache() {
-		if ($this->_iterator < count($this->_cache)) {
-			$this->_key = $this->_iterator;
-			$this->_current = $this->_cache[$this->_iterator++];
-			return true;
-		}
+        if (is_object($this->_cache)) {
+            if ($this->_iterator < count($this->_cache)) {
+                $this->_key = $this->_iterator;
+                $this->_current = $this->_cache[$this->_iterator++];
+                return true;
+            }
+        }
 		return false;
 	}
 
