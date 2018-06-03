@@ -190,7 +190,7 @@ class Controller extends \lithium\core\DynamicObject {
 				throw new DispatchException('Attempted to invoke a private method.');
 			}
 			if (!method_exists($self, $action)) {
-				throw new DispatchException("Action `{$action}` not found.");
+				throw new DispatchException("Action `{$action}` not found. (Referer: '" . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'n/a') . "', URI: '" . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '') . "')");
 			}
 			$render['template'] = $render['template'] ?: $action;
 
