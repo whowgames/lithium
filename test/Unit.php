@@ -11,7 +11,7 @@ namespace lithium\test;
 use Exception;
 use ReflectionClass;
 use InvalidArgumentException;
-use lithium\util\String;
+use lithium\util\StringDeprecated;
 use lithium\core\Libraries;
 use lithium\util\Validator;
 use lithium\analysis\Debugger;
@@ -216,7 +216,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @param boolean $expression
 	 * @param string|boolean $message The message to output. If the message is not a string,
 	 *        then it will be converted to '{:message}'. Use '{:message}' in the string and it
-	 *        will use the `$data` to format the message with `String::insert()`.
+	 *        will use the `$data` to format the message with `StringDeprecated::insert()`.
 	 * @param array $data
 	 */
 	public function assert($expression, $message = false, $data = array()) {
@@ -226,7 +226,7 @@ class Unit extends \lithium\core\DynamicObject {
 		if (strpos($message, "{:message}") !== false) {
 			$params = $data;
 			$params['message'] = $this->_message($params);
-			$message = String::insert($message, $params);
+			$message = StringDeprecated::insert($message, $params);
 		}
 		$trace = Debugger::trace(array(
 			'start' => 1, 'depth' => 4, 'format' => 'array', 'closures' => !$expression

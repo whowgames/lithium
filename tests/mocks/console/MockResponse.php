@@ -8,7 +8,7 @@
 
 namespace lithium\tests\mocks\console;
 
-use lithium\util\String;
+use lithium\util\StringDeprecated;
 
 class MockResponse extends \lithium\console\Response {
 
@@ -23,11 +23,11 @@ class MockResponse extends \lithium\console\Response {
 	}
 
 	public function output($output) {
-		return $this->output .= String::insert($output, $this->styles(false));
+		return $this->output .= StringDeprecated::insert($output, $this->styles(false));
 	}
 
 	public function error($error) {
-		return $this->error .= String::insert($error, $this->styles(false));
+		return $this->error .= StringDeprecated::insert($error, $this->styles(false));
 	}
 
 	public function __destruct() {
