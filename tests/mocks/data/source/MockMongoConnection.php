@@ -35,25 +35,25 @@ class MockMongoConnection {
 
 	public function insert(array &$data, array $options = array()) {
 		$data['_id'] = new MongoId();
-		return $this->_record(__FUNCTION__, compact('data', 'options'));
+		return $this->_record(__FUNCTION__, \compact('data', 'options'));
 	}
 
 	protected function _record($type, array $data = array()) {
 		$collection = $this->_collection;
-		$this->queries[] = compact('type', 'collection') + $data;
-		return array_pop($this->results);
+		$this->queries[] = \compact('type', 'collection') + $data;
+		return \array_pop($this->results);
 	}
 
 	public function update($conditions, $update, $options) {
-		return $this->_record(__FUNCTION__, compact('conditions', 'update', 'options'));
+		return $this->_record(__FUNCTION__, \compact('conditions', 'update', 'options'));
 	}
 
 	public function remove($conditions, $options) {
-		return $this->_record(__FUNCTION__, compact('conditions', 'options'));
+		return $this->_record(__FUNCTION__, \compact('conditions', 'options'));
 	}
 
 	public function find($conditions, $fields) {
-		return $this->_record(__FUNCTION__, compact('conditions', 'fields'));
+		return $this->_record(__FUNCTION__, \compact('conditions', 'fields'));
 	}
 
 	public function listCollections() {

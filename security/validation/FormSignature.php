@@ -57,7 +57,7 @@ class FormSignature {
 			if (!isset(static::${$key})) {
 				continue;
 			}
-			if (is_array(static::${$key})) {
+			if (\is_array(static::${$key})) {
 				static::${$key} = $val + static::${$key};
 			} else {
 				static::${$key} = $val;
@@ -69,16 +69,16 @@ class FormSignature {
 		$classes = static::$_classes;
 		$data += array('fields' => array(), 'locked' => array(), 'excluded' => array());
 
-		$fields = array_keys(Set::flatten($data['fields']));
-		$excluded = array_keys($data['excluded']);
+		$fields = \array_keys(Set::flatten($data['fields']));
+		$excluded = \array_keys($data['excluded']);
 		$locked = $data['locked'];
 
-		sort($fields, SORT_STRING);
-		sort($excluded, SORT_STRING);
-		ksort($locked, SORT_STRING);
+		\sort($fields, SORT_STRING);
+		\sort($excluded, SORT_STRING);
+		\ksort($locked, SORT_STRING);
 
 		foreach (array('fields', 'excluded', 'locked') as $list) {
-			${$list} = urlencode(serialize(${$list}));
+			${$list} = \urlencode(\serialize(${$list}));
 		}
 		$hash = $classes['password']::hash($fields, static::$_salt);
 		$hash = $classes['password']::hash("{$locked}::{$excluded}::{$hash}", static::$_salt);
@@ -87,7 +87,7 @@ class FormSignature {
 	}
 
 	public static function check($data) {
-		if (is_object($data) && isset($data->data)) {
+		if (\is_object($data) && isset($data->data)) {
 			$data = $data->data;
 		}
 		if (!isset($data['security']['signature'])) {
@@ -96,17 +96,17 @@ class FormSignature {
 		$signature = $data['security']['signature'];
 		unset($data['security']);
 		$data = Set::flatten($data);
-		$fields = array_keys($data);
+		$fields = \array_keys($data);
 
-		list($locked, $excluded, $hash) = explode('::', $signature, 3);
-		$locked = unserialize(urldecode($locked));
-		$excluded = unserialize(urldecode($excluded));
-		$fields = array_diff($fields, $excluded);
+		list($locked, $excluded, $hash) = \explode('::', $signature, 3);
+		$locked = \unserialize(\urldecode($locked));
+		$excluded = \unserialize(\urldecode($excluded));
+		$fields = \array_diff($fields, $excluded);
 
-		if (array_intersect_assoc($data, $locked) != $locked) {
+		if (\array_intersect_assoc($data, $locked) != $locked) {
 			return false;
 		}
-		return $signature === static::key(compact('fields', 'locked', 'excluded'));
+		return $signature === static::key(\compact('fields', 'locked', 'excluded'));
 	}
 }
 

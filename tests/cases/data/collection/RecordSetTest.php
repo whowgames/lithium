@@ -59,7 +59,7 @@ class RecordSetTest extends \lithium\test\Unit {
 
 		$model = $this->_model;
 
-		$this->_recordSet = new MockRecordSet(compact('result', 'model') + array(
+		$this->_recordSet = new MockRecordSet(\compact('result', 'model') + array(
 			'exists' => true
 		));
 
@@ -68,7 +68,7 @@ class RecordSetTest extends \lithium\test\Unit {
 		foreach ($this->_records as $i => $record) {
 			$this->_objectRecords[$i] = new MockPostObject($record);
 		}
-		$this->_objectRecordSet = new MockRecordSet(compact('result', 'model') + array(
+		$this->_objectRecordSet = new MockRecordSet(\compact('result', 'model') + array(
 			'exists' => true
 		));
 	}
@@ -142,7 +142,7 @@ class RecordSetTest extends \lithium\test\Unit {
 
 		$model = $this->_model;
 
-		$recordSet = new MockRecordSet(compact('result', 'model'));
+		$recordSet = new MockRecordSet(\compact('result', 'model'));
 
 		$this->assertEqual($records, $recordSet->data());
 		$this->assertEqual($records[1]['data'], $recordSet[1]->data);
@@ -592,7 +592,7 @@ class RecordSetTest extends \lithium\test\Unit {
 		$this->assertEqual(4, $cpt);
 		$result->rewind();
 
-		$recordSet = new MockRecordSet(compact('result', 'model'));
+		$recordSet = new MockRecordSet(\compact('result', 'model'));
 		$expected = array(
 			1 => array('id' => 1, 'data' => 'data1'),
 			2 => array('id' => 2, 'data' => 'data2'),
@@ -653,7 +653,7 @@ class RecordSetTest extends \lithium\test\Unit {
 
 		$model = $this->_model;
 
-		$recordSet = new MockRecordSet(compact('result', 'model') + array('exists' => true));
+		$recordSet = new MockRecordSet(\compact('result', 'model') + array('exists' => true));
 
 		$cpt = 0;
 		foreach ($recordSet as $i => $word) {
@@ -681,7 +681,7 @@ class RecordSetTest extends \lithium\test\Unit {
 
 		$model = $this->_model;
 
-		$recordSet = new MockRecordSet(compact('result', 'model') + array('exists' => true));
+		$recordSet = new MockRecordSet(\compact('result', 'model') + array('exists' => true));
 
 		foreach ($recordSet as $i => $word) {
 			$array = $word->to('array');

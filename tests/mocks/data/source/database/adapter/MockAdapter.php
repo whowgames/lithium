@@ -63,7 +63,7 @@ class MockAdapter extends \lithium\data\source\Database {
 	}
 
 	public function describe($entity, $fields = array(), array $meta = array()) {
-		return $this->_instance('schema', compact('fields', 'meta'));
+		return $this->_instance('schema', \compact('fields', 'meta'));
 	}
 
 	public function create($record, array $options = array()) {
@@ -84,7 +84,7 @@ class MockAdapter extends \lithium\data\source\Database {
 
 	public function result($type, $resource, $context) {
 		$return = null;
-		if (array_key_exists($this->_pointer, $this->_records)) {
+		if (\array_key_exists($this->_pointer, $this->_records)) {
 			$return = $this->_records[$this->_pointer++];
 		}
 		return $return;
@@ -99,7 +99,7 @@ class MockAdapter extends \lithium\data\source\Database {
 	}
 
 	public function value($value, array $schema = array()) {
-		if (is_array($value)) {
+		if (\is_array($value)) {
 			return parent::value($value, $schema);
 		}
 		return $value;

@@ -181,7 +181,7 @@ class PostgreSqlTest extends \lithium\tests\integration\data\Base {
 		));
 		$this->assertCount(1, $result);
 		$expected = array('id', 'name', 'active', 'created', 'modified');
-		$this->assertEqual($expected, array_keys($result[0]));
+		$this->assertEqual($expected, \array_keys($result[0]));
 
 		$this->assertInternalType('numeric', $result[0]['id']);
 		unset($result[0]['id']);
@@ -223,20 +223,20 @@ class PostgreSqlTest extends \lithium\tests\integration\data\Base {
 			'data' => array(
 				'name' => 'Foo',
 				'active' => true,
-				'created' => date('Y-m-d H:i:s')
+				'created' => \date('Y-m-d H:i:s')
 			)
 		));
 		$this->assertTrue($this->_db->create($insert));
 
 		$insert->data(array(
 			'name' => 'Bar',
-			'created' => date('Y-m-d H:i:s', strtotime('-5 minutes'))
+			'created' => \date('Y-m-d H:i:s', \strtotime('-5 minutes'))
 		));
 		$this->assertTrue($this->_db->create($insert));
 
 		$insert->data(array(
 			'name' => 'Baz',
-			'created' => date('Y-m-d H:i:s', strtotime('-10 minutes'))
+			'created' => \date('Y-m-d H:i:s', \strtotime('-10 minutes'))
 		));
 		$this->assertTrue($this->_db->create($insert));
 
@@ -359,9 +359,9 @@ class PostgreSqlTest extends \lithium\tests\integration\data\Base {
 		$this->assertPattern('$\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d+$', $result['created']);
 		$this->assertPattern('$\d{4}-\d\d-\d\d \d\d:\d\d:\d\d\.\d+$', $result['modified']);
 
-		$time = time();
-		$this->assertTrue($time - strtotime($result['created']) < 24 * 3600);
-		$this->assertTrue($time - strtotime($result['modified']) < 24 * 3600);
+		$time = \time();
+		$this->assertTrue($time - \strtotime($result['created']) < 24 * 3600);
+		$this->assertTrue($time - \strtotime($result['modified']) < 24 * 3600);
 	}
 }
 

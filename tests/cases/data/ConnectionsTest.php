@@ -154,13 +154,13 @@ class ConnectionsTest extends \lithium\test\Unit {
 
 	protected function _canConnect($host, $port) {
 		$success = false;
-		set_error_handler(function() {});
+		\set_error_handler(function() {});
 
-		if ($conn = fsockopen($host, $port)) {
-			fclose($conn);
+		if ($conn = \fsockopen($host, $port)) {
+			\fclose($conn);
 			$success = true;
 		}
-		restore_error_handler();
+		\restore_error_handler();
 		return $success;
 	}
 }

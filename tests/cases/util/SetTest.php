@@ -680,26 +680,26 @@ class SetTest extends \lithium\test\Unit {
 		);
 
 		$result = Set::extract($habtm, '/Comment/User[name=/\w+/]/..');
-		$this->assertEqual(count($result), 4);
+		$this->assertEqual(\count($result), 4);
 		$this->assertEqual($result[0]['Comment']['User']['name'], 'bob');
 		$this->assertEqual($result[1]['Comment']['User']['name'], 'tod');
 		$this->assertEqual($result[2]['Comment']['User']['name'], 'dan');
 		$this->assertEqual($result[3]['Comment']['User']['name'], 'jim');
 
 		$result = Set::extract($habtm, '/Comment/User[name=/[a-z]+/]/..');
-		$this->assertEqual(count($result), 4);
+		$this->assertEqual(\count($result), 4);
 		$this->assertEqual($result[0]['Comment']['User']['name'], 'bob');
 		$this->assertEqual($result[1]['Comment']['User']['name'], 'tod');
 		$this->assertEqual($result[2]['Comment']['User']['name'], 'dan');
 		$this->assertEqual($result[3]['Comment']['User']['name'], 'jim');
 
 		$result = Set::extract($habtm, '/Comment/User[name=/bob|dan/]/..');
-		$this->assertEqual(count($result), 2);
+		$this->assertEqual(\count($result), 2);
 		$this->assertEqual($result[0]['Comment']['User']['name'], 'bob');
 		$this->assertEqual($result[1]['Comment']['User']['name'], 'dan');
 
 		$result = Set::extract($habtm, '/Comment/User[name=/bob|tod/]/..');
-		$this->assertEqual(count($result), 2);
+		$this->assertEqual(\count($result), 2);
 		$this->assertEqual($result[0]['Comment']['User']['name'], 'bob');
 		$this->assertEqual($result[1]['Comment']['User']['name'], 'tod');
 	}
@@ -825,7 +825,7 @@ class SetTest extends \lithium\test\Unit {
 
 	public function testIsNumericArrayCheck() {
 		$data = array('one');
-		$this->assertTrue(Set::isNumeric(array_keys($data)));
+		$this->assertTrue(Set::isNumeric(\array_keys($data)));
 
 		$data = array(1 => 'one');
 		$this->assertFalse(Set::isNumeric($data));
@@ -843,16 +843,16 @@ class SetTest extends \lithium\test\Unit {
 		$this->assertTrue(Set::isNumeric($data));
 
 		$data = array('one', 'two', 'three', 'four', 'five');
-		$this->assertTrue(Set::isNumeric(array_keys($data)));
+		$this->assertTrue(Set::isNumeric(\array_keys($data)));
 
 		$data = array(1 => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five');
-		$this->assertTrue(Set::isNumeric(array_keys($data)));
+		$this->assertTrue(Set::isNumeric(\array_keys($data)));
 
 		$data = array('1' => 'one', 2 => 'two', 3 => 'three', 4 => 'four', 5 => 'five');
-		$this->assertTrue(Set::isNumeric(array_keys($data)));
+		$this->assertTrue(Set::isNumeric(\array_keys($data)));
 
 		$data = array('one', 2 => 'two', 3 => 'three', 4 => 'four', 'a' => 'five');
-		$this->assertFalse(Set::isNumeric(array_keys($data)));
+		$this->assertFalse(Set::isNumeric(\array_keys($data)));
 
 		$data = array();
 		$this->assertNull(Set::isNumeric($data));

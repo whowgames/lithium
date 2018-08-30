@@ -41,9 +41,9 @@ class CouchDbTest extends \lithium\test\Unit {
 		$model::config(array('meta' => array('connection' => 'mockconn')));
 		$model::resetSchema();
 
-		$entity = new Document(compact('model'));
+		$entity = new Document(\compact('model'));
 		$type = 'create';
-		$this->_query = new Query(compact('model', 'entity', 'type'));
+		$this->_query = new Query(\compact('model', 'entity', 'type'));
 	}
 
 	public function tearDown() {

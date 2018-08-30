@@ -52,10 +52,10 @@ class MemcacheTest extends \lithium\test\Unit {
 		$key = 'key';
 		$data = 'value';
 		$expiry = '+5 seconds';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 
 		$closure = $this->memcache->write($key, $data, $expiry);
-		$this->assertEqual($data, $closure($this->memcache, compact('key', 'data', 'expiry')));
+		$this->assertEqual($data, $closure($this->memcache, \compact('key', 'data', 'expiry')));
 		$this->assertEqual($data, $this->_conn->get($key));
 
 		$result = $this->_conn->delete($key);
@@ -64,12 +64,12 @@ class MemcacheTest extends \lithium\test\Unit {
 		$key = 'another_key';
 		$data = 'more_data';
 		$expiry = '+1 minute';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 
 		$closure = $this->memcache->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->memcache, $params);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -89,7 +89,7 @@ class MemcacheTest extends \lithium\test\Unit {
 		$closure = $memcache->write($key, $data);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data');
+		$params = \compact('key', 'data');
 		$result = $closure($memcache, $params);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -104,7 +104,7 @@ class MemcacheTest extends \lithium\test\Unit {
 
 	public function testWriteMulti() {
 		$expiry = '+1 minute';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 		$key = array(
 			'key1' => 'data1',
 			'key2' => 'data2',
@@ -115,11 +115,11 @@ class MemcacheTest extends \lithium\test\Unit {
 		$closure = $this->memcache->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->memcache, $params);
 		$this->assertTrue($result);
 
-		$result = $this->_conn->getMulti(array_keys($key));
+		$result = $this->_conn->getMulti(\array_keys($key));
 		$expected = $key;
 		$this->assertEqual($expected, $result);
 
@@ -132,7 +132,7 @@ class MemcacheTest extends \lithium\test\Unit {
 	public function testSimpleRead() {
 		$key = 'read_key';
 		$data = 'read data';
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 
 		$result = $this->_conn->set($key, $data, $time);
 		$this->assertTrue($result);
@@ -140,7 +140,7 @@ class MemcacheTest extends \lithium\test\Unit {
 		$closure = $this->memcache->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->memcache, $params);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -150,7 +150,7 @@ class MemcacheTest extends \lithium\test\Unit {
 
 		$key = 'another_read_key';
 		$data = 'read data';
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 
 		$result = $this->_conn->set($key, $data, $time);
 		$this->assertTrue($result);
@@ -158,7 +158,7 @@ class MemcacheTest extends \lithium\test\Unit {
 		$closure = $this->memcache->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->memcache, $params);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -169,7 +169,7 @@ class MemcacheTest extends \lithium\test\Unit {
 
 	public function testReadMulti() {
 		$expiry = '+1 minute';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 		$key = array(
 			'key1' => 'data1',
 			'key2' => 'data2',
@@ -179,10 +179,10 @@ class MemcacheTest extends \lithium\test\Unit {
 		$result = $this->_conn->setMulti($key, $time);
 		$this->assertTrue($result);
 
-		$closure = $this->memcache->read(array_keys($key));
+		$closure = $this->memcache->read(\array_keys($key));
 		$this->assertInternalType('callable', $closure);
 
-		$params = array('key' => array_keys($key));
+		$params = array('key' => \array_keys($key));
 		$result = $closure($this->memcache, $params);
 		$expected = array(
 			'key1' => 'data1',
@@ -202,7 +202,7 @@ class MemcacheTest extends \lithium\test\Unit {
 		$closure = $this->memcache->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->memcache, $params);
 		$this->assertNull($result);
 	}
@@ -210,35 +210,35 @@ class MemcacheTest extends \lithium\test\Unit {
 	public function testDelete() {
 		$key = 'delete_key';
 		$data = 'data to delete';
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 		$this->_conn->set($key, $data, $time);
 
 		$reader = $this->memcache->read($key);
-		$this->assertEqual($data, $reader($this->memcache, compact('key')));
+		$this->assertEqual($data, $reader($this->memcache, \compact('key')));
 
 		$delete = $this->memcache->delete($key);
 		$this->assertInternalType('callable', $delete);
-		$this->assertTrue($delete($this->memcache, compact('key')));
-		$this->assertNull($reader($this->memcache, compact('key')));
+		$this->assertTrue($delete($this->memcache, \compact('key')));
+		$this->assertNull($reader($this->memcache, \compact('key')));
 	}
 
 	public function testDeleteNonExistentKey() {
 		$key = 'delete_key';
 		$data = 'data to delete';
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 
 		$closure = $this->memcache->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->memcache, $params);
 		$this->assertFalse($result);
 	}
 
 	public function testDeprecatedConnectionSettings() {
 		$servers = array(array('127.0.0.1', 11211, 1));
-		$test = new Memcache(compact('servers'));
-		$servers[0] = array_combine(array('host', 'port', 'weight'), $servers[0]);
+		$test = new Memcache(\compact('servers'));
+		$servers[0] = \array_combine(array('host', 'port', 'weight'), $servers[0]);
 		$this->assertEqual($servers, $test->connection->getServerList());
 	}
 
@@ -270,20 +270,20 @@ class MemcacheTest extends \lithium\test\Unit {
 		$key = 'write_read_key';
 		$data = 'write/read value';
 		$expiry = '+5 seconds';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 
 		$writer = $this->memcache->write($key, $data, $expiry);
-		$this->assertEqual($data, $writer($this->memcache, compact('key', 'data', 'expiry')));
+		$this->assertEqual($data, $writer($this->memcache, \compact('key', 'data', 'expiry')));
 		$this->assertEqual($data, $this->_conn->get($key));
 
 		$closure = $this->memcache->read($key);
 		$this->assertInternalType('callable', $closure);
-		$this->assertEqual($data, $closure($this->memcache, compact('key')));
+		$this->assertEqual($data, $closure($this->memcache, \compact('key')));
 
 		$closure = $this->memcache->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->memcache, $params);
 		$this->assertTrue($result);
 
@@ -291,7 +291,7 @@ class MemcacheTest extends \lithium\test\Unit {
 	}
 
 	public function testClear() {
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 
 		$result = $this->_conn->set('key', 'value', $time);
 		$this->assertTrue($result);
@@ -307,7 +307,7 @@ class MemcacheTest extends \lithium\test\Unit {
 	}
 
 	public function testDecrement() {
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 		$key = 'decrement';
 		$value = 10;
 
@@ -317,7 +317,7 @@ class MemcacheTest extends \lithium\test\Unit {
 		$closure = $this->memcache->decrement($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->memcache, $params);
 		$this->assertEqual($value - 1, $result);
 
@@ -329,7 +329,7 @@ class MemcacheTest extends \lithium\test\Unit {
 	}
 
 	public function testDecrementNonIntegerValue() {
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 		$key = 'non_integer';
 		$value = 'no';
 
@@ -339,7 +339,7 @@ class MemcacheTest extends \lithium\test\Unit {
 		$closure = $this->memcache->decrement($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->memcache, $params);
 
 		$result = $this->_conn->get($key);
@@ -350,7 +350,7 @@ class MemcacheTest extends \lithium\test\Unit {
 	}
 
 	public function testIncrement() {
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 		$key = 'increment';
 		$value = 10;
 
@@ -359,7 +359,7 @@ class MemcacheTest extends \lithium\test\Unit {
 		$closure = $this->memcache->increment($key);
 		$this->assertInternalType('callable', $closure);
 
-		$result = $closure($this->memcache, compact('key'));
+		$result = $closure($this->memcache, \compact('key'));
 		$this->assertEqual($value + 1, $result);
 		$this->assertEqual($value + 1, $this->_conn->get($key));
 
@@ -368,7 +368,7 @@ class MemcacheTest extends \lithium\test\Unit {
 	}
 
 	public function testIncrementNonIntegerValue() {
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 		$key = 'non_integer_increment';
 		$value = 'yes';
 
@@ -378,7 +378,7 @@ class MemcacheTest extends \lithium\test\Unit {
 		$closure = $this->memcache->increment($key);
 		$this->assertInternalType('callable', $closure);
 
-		$result = $closure($this->memcache, compact('key'));
+		$result = $closure($this->memcache, \compact('key'));
 
 		$result = $this->_conn->get($key);
 		$this->assertEqual(0, $result);

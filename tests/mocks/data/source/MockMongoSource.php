@@ -22,17 +22,17 @@ class MockMongoSource extends \lithium\core\DynamicObject {
 	}
 
 	public function insert(&$data, $options) {
-		$this->queries[] = compact('data', 'options');
-		$result = current($this->resultSets);
-		next($this->resultSets);
+		$this->queries[] = \compact('data', 'options');
+		$result = \current($this->resultSets);
+		\next($this->resultSets);
 		$data['_id'] = new MongoId();
 		return $result;
 	}
 
 	public function find($conditions, $fields) {
-		$this->queries[] = compact('conditions', 'fields');
-		$result = new MockResult(array('data' => current($this->resultSets)));
-		next($this->resultSets);
+		$this->queries[] = \compact('conditions', 'fields');
+		$result = new MockResult(array('data' => \current($this->resultSets)));
+		\next($this->resultSets);
 		return $result;
 	}
 }

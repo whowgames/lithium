@@ -22,19 +22,19 @@ class RequestTest extends \lithium\test\Unit {
 			'input' => Libraries::get(true, 'resources') . '/tmp/tests/input.txt'
 		);
 
-		$this->_backup['cwd'] = getcwd();
+		$this->_backup['cwd'] = \getcwd();
 		$this->_backup['_SERVER'] = $_SERVER;
 		$_SERVER['argv'] = array();
 	}
 
 	public function tearDown() {
 		foreach ($this->streams as $path) {
-			if (file_exists($path)) {
-				unlink($path);
+			if (\file_exists($path)) {
+				\unlink($path);
 			}
 		}
 		$_SERVER = $this->_backup['_SERVER'];
-		chdir($this->_backup['cwd']);
+		\chdir($this->_backup['cwd']);
 	}
 
 	public function testConstructWithoutConfig() {
@@ -47,19 +47,19 @@ class RequestTest extends \lithium\test\Unit {
 		$result = $request->env();
 		$this->assertNotEmpty($result);
 
-		$expected = getcwd();
+		$expected = \getcwd();
 		$result = $result['working'];
 		$this->assertEqual($expected, $result);
 	}
 
 	public function testEnvWorking() {
 		$base = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_readable($base), "Path `{$base}` is not readable.");
+		$this->skipIf(!\is_readable($base), "Path `{$base}` is not readable.");
 
-		chdir(Libraries::get(true, 'resources') . '/tmp/tests');
+		\chdir(Libraries::get(true, 'resources') . '/tmp/tests');
 		$request = new Request();
 
-		$expected = realpath(Libraries::get(true, 'resources') . '/tmp/tests');
+		$expected = \realpath(Libraries::get(true, 'resources') . '/tmp/tests');
 		$result = $request->env('working');
 		$this->assertEqual($expected, $result);
 	}
@@ -118,9 +118,9 @@ class RequestTest extends \lithium\test\Unit {
 
 	public function testConstructWithEnv() {
 		$base = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_readable($base), "Path `{$base}` is not readable.");
+		$this->skipIf(!\is_readable($base), "Path `{$base}` is not readable.");
 
-		chdir(Libraries::get(true, 'resources') . '/tmp');
+		\chdir(Libraries::get(true, 'resources') . '/tmp');
 		$request = new Request(array('env' => array('working' => '/some/other/path')));
 
 		$expected = '/some/other/path';
@@ -130,15 +130,15 @@ class RequestTest extends \lithium\test\Unit {
 
 	public function testInput() {
 		$base = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($base), "{$base} is not writable.");
+		$this->skipIf(!\is_writable($base), "{$base} is not writable.");
 
-		$stream = fopen($this->streams['input'], 'w+');
+		$stream = \fopen($this->streams['input'], 'w+');
 		$request = new Request(array('input' => $stream));
 		$this->assertInternalType('resource', $request->input);
 		$this->assertEqual($stream, $request->input);
 
-		$this->assertEqual(2, fwrite($request->input, 'ok'));
-		rewind($request->input);
+		$this->assertEqual(2, \fwrite($request->input, 'ok'));
+		\rewind($request->input);
 
 		$this->assertEqual('ok', $request->input());
 	}

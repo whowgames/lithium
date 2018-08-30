@@ -65,16 +65,16 @@ class Test extends \lithium\console\command\Create {
 		$use = $this->_use($request);
 		$path = Libraries::path($use);
 
-		if (!file_exists($path)) {
+		if (!\file_exists($path)) {
 			return "";
 		}
 		$methods = (array) Inspector::methods($use, 'extents');
 		$testMethods = array();
 
-		foreach (array_keys($methods) as $method) {
-			$testMethods[] = "\tpublic function test" . ucwords($method) . "() {}";
+		foreach (\array_keys($methods) as $method) {
+			$testMethods[] = "\tpublic function test" . \ucwords($method) . "() {}";
 		}
-		return join("\n", $testMethods);
+		return \join("\n", $testMethods);
 	}
 
 	/**

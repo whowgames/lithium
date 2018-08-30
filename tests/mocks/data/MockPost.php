@@ -15,7 +15,7 @@ class MockPost extends \lithium\data\Model {
 	protected $_meta = array('connection' => false, 'key' => 'id');
 
 	public static function instances() {
-		return array_keys(static::$_instances);
+		return \array_keys(static::$_instances);
 	}
 
 	public function foobar() {

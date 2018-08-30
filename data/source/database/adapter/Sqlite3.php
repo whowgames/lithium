@@ -114,7 +114,7 @@ class Sqlite3 extends \lithium\data\source\Database {
 	 */
 	public static function enabled($feature = null) {
 		if (!$feature) {
-			return extension_loaded('pdo_sqlite');
+			return \extension_loaded('pdo_sqlite');
 		}
 		$features = array(
 			'arrays' => false,
@@ -138,7 +138,7 @@ class Sqlite3 extends \lithium\data\source\Database {
 		}
 
 		if (empty($this->_config['dsn'])) {
-			$this->_config['dsn'] = sprintf("sqlite:%s", $this->_config['database']);
+			$this->_config['dsn'] = \sprintf("sqlite:%s", $this->_config['database']);
 		}
 
 		return parent::connect();
@@ -167,13 +167,13 @@ class Sqlite3 extends \lithium\data\source\Database {
 	public function sources($model = null) {
 		$config = $this->_config;
 
-		return $this->_filter(__METHOD__, compact('model'), function($self, $params) use ($config) {
+		return $this->_filter(__METHOD__, \compact('model'), function($self, $params) use ($config) {
 			$sql = "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;";
 			$result = $self->invokeMethod('_execute', array($sql));
 			$sources = array();
 
 			while ($data = $result->next()) {
-				$sources[] = reset($data);
+				$sources[] = \reset($data);
 			}
 			return $sources;
 		});
@@ -200,13 +200,13 @@ class Sqlite3 extends \lithium\data\source\Database {
 	 * @filter This method can be filtered.
 	 */
 	public function describe($entity, $fields = array(), array $meta = array()) {
-		$params = compact('entity', 'meta', 'fields');
+		$params = \compact('entity', 'meta', 'fields');
 		$regex = $this->_regex;
 		return $this->_filter(__METHOD__, $params, function($self, $params) use ($regex) {
-			extract($params);
+			\extract($params);
 
 			if ($fields) {
-				return $self->invokeMethod('_instance', array('schema', compact('fields')));
+				return $self->invokeMethod('_instance', array('schema', \compact('fields')));
 			}
 			$name = $self->invokeMethod('_entityName', array($entity, array('quoted' => true)));
 			$columns = $self->read("PRAGMA table_info({$name})", array('return' => 'array'));
@@ -215,7 +215,7 @@ class Sqlite3 extends \lithium\data\source\Database {
 				$schema = $self->invokeMethod('_column', array($column['type']));
 				$default = $column['dflt_value'];
 
-				if (preg_match("/^'(.*)'/", $default, $match)) {
+				if (\preg_match("/^'(.*)'/", $default, $match)) {
 					$default = $match[1];
 				} elseif ($schema['type'] === 'boolean') {
 					$default = !!$default;
@@ -227,7 +227,7 @@ class Sqlite3 extends \lithium\data\source\Database {
 					'default' => $default
 				);
 			}
-			return $self->invokeMethod('_instance', array('schema', compact('fields')));
+			return $self->invokeMethod('_instance', array('schema', \compact('fields')));
 		});
 	}
 
@@ -256,7 +256,7 @@ class Sqlite3 extends \lithium\data\source\Database {
 		if (!$encoding) {
 			$query = $this->connection->query('PRAGMA encoding');
 			$encoding = $query->fetchColumn();
-			return ($key = array_search($encoding, $encodingMap)) ? $key : $encoding;
+			return ($key = \array_search($encoding, $encodingMap)) ? $key : $encoding;
 		}
 		$encoding = isset($encodingMap[$encoding]) ? $encodingMap[$encoding] : $encoding;
 
@@ -290,7 +290,7 @@ class Sqlite3 extends \lithium\data\source\Database {
 	 */
 	protected function _execute($sql, array $options = array()) {
 		$conn = $this->connection;
-		$params = compact('sql', 'options');
+		$params = \compact('sql', 'options');
 		return $this->_filter(__METHOD__, $params, function($self, $params) use ($conn) {
 			$sql = $params['sql'];
 			$options = $params['options'];
@@ -299,7 +299,7 @@ class Sqlite3 extends \lithium\data\source\Database {
 			} catch(PDOException $e) {
 				$self->invokeMethod('_error', array($sql));
 			};
-			return $self->invokeMethod('_instance', array('result', compact('resource')));
+			return $self->invokeMethod('_instance', array('result', \compact('resource')));
 		});
 	}
 
@@ -310,42 +310,42 @@ class Sqlite3 extends \lithium\data\source\Database {
 	 * @return string Abstract column type (i.e. "string")
 	 */
 	protected function _column($real) {
-		if (is_array($real)) {
+		if (\is_array($real)) {
 			return $real['type'] . (isset($real['length']) ? "({$real['length']})" : '');
 		}
 
-		if (!preg_match("/{$this->_regex['column']}/", $real, $column)) {
+		if (!\preg_match("/{$this->_regex['column']}/", $real, $column)) {
 			return $real;
 		}
 
-		$column = array_intersect_key($column, array('type' => null, 'length' => null));
+		$column = \array_intersect_key($column, array('type' => null, 'length' => null));
 		if (isset($column['length']) && $column['length']) {
-			$length = explode(',', $column['length']) + array(null, null);
-			$column['length'] = $length[0] ? intval($length[0]) : null;
-			$length[1] ? $column['precision'] = intval($length[1]) : null;
+			$length = \explode(',', $column['length']) + array(null, null);
+			$column['length'] = $length[0] ? \intval($length[0]) : null;
+			$length[1] ? $column['precision'] = \intval($length[1]) : null;
 		}
 
 		switch (true) {
-			case in_array($column['type'], array('date', 'time', 'datetime', 'timestamp')):
+			case \in_array($column['type'], array('date', 'time', 'datetime', 'timestamp')):
 				return $column;
 			case ($column['type'] === 'tinyint' && $column['length'] == '1'):
 			case ($column['type'] === 'boolean'):
 				return array('type' => 'boolean');
 			break;
-			case (strpos($column['type'], 'int') !== false):
+			case (\strpos($column['type'], 'int') !== false):
 				$column['type'] = 'integer';
 			break;
-			case (strpos($column['type'], 'char') !== false):
+			case (\strpos($column['type'], 'char') !== false):
 				$column['type'] = 'string';
 				$column['length'] = 255;
 			break;
-			case (strpos($column['type'], 'text') !== false):
+			case (\strpos($column['type'], 'text') !== false):
 				$column['type'] = 'text';
 			break;
-			case (strpos($column['type'], 'blob') !== false || $column['type'] === 'binary'):
+			case (\strpos($column['type'], 'blob') !== false || $column['type'] === 'binary'):
 				$column['type'] = 'binary';
 			break;
-			case preg_match('/real|float|double|decimal/', $column['type']):
+			case \preg_match('/real|float|double|decimal/', $column['type']):
 				$column['type'] = 'float';
 			break;
 			default:
@@ -362,14 +362,14 @@ class Sqlite3 extends \lithium\data\source\Database {
 	 * @return string SQL column string
 	 */
 	protected function _buildColumn($field) {
-		extract($field);
+		\extract($field);
 		if ($type === 'float' && $precision) {
 			$use = 'numeric';
 		}
 
 		$out = $this->name($name) . ' ' . $use;
 
-		$allowPrecision = preg_match('/^(integer|real|numeric)$/',$use);
+		$allowPrecision = \preg_match('/^(integer|real|numeric)$/',$use);
 		$precision = ($precision && $allowPrecision) ? ",{$precision}" : '';
 
 		if ($length && ($allowPrecision || $use === 'text')) {
@@ -379,7 +379,7 @@ class Sqlite3 extends \lithium\data\source\Database {
 		$out .= $this->_buildMetas('column', $field, array('collate'));
 
 		if ($type !== 'id') {
-			$out .= is_bool($null) ? ($null ? ' NULL' : ' NOT NULL') : '' ;
+			$out .= \is_bool($null) ? ($null ? ' NULL' : ' NOT NULL') : '' ;
 			$out .= $default ? ' DEFAULT ' . $this->value($default, $field) : '';
 		}
 

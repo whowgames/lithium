@@ -138,13 +138,13 @@ class StaticObjectTest extends \lithium\test\Unit {
 
 	public function testInstanceWithClassesKey() {
 		$expected = 'lithium\tests\mocks\core\MockRequest';
-		$result = get_class(MockStaticInstantiator::instance('request'));
+		$result = \get_class(MockStaticInstantiator::instance('request'));
 		$this->assertEqual($expected, $result);
 	}
 
 	public function testInstanceWithNamespacedClass() {
 		$expected = 'lithium\tests\mocks\core\MockRequest';
-		$result = get_class(MockStaticInstantiator::instance(
+		$result = \get_class(MockStaticInstantiator::instance(
 			'lithium\tests\mocks\core\MockRequest'
 		));
 		$this->assertEqual($expected, $result);
@@ -153,7 +153,7 @@ class StaticObjectTest extends \lithium\test\Unit {
 	public function testInstanceWithObject() {
 		$request = new MockRequest();
 		$expected = 'lithium\tests\mocks\core\MockRequest';
-		$result = get_class(MockStaticInstantiator::instance($request));
+		$result = \get_class(MockStaticInstantiator::instance($request));
 		$this->assertEqual($expected, $result);
 	}
 

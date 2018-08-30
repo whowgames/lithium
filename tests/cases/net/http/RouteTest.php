@@ -235,10 +235,10 @@ class RouteTest extends \lithium\test\Unit {
 		$route = new Route(array(
 			'template' => '/{:controller}/{:action}/{:args}',
 			'modifiers' => array('args' => function($value) {
-				return explode('/', $value);
+				return \explode('/', $value);
 			}),
 			'formatters' => array('args' => function($value) {
-				return is_array($value) ? join('/', $value) : $value;
+				return \is_array($value) ? \join('/', $value) : $value;
 			})
 		));
 
@@ -691,7 +691,7 @@ class RouteTest extends \lithium\test\Unit {
 		$route = new Route(array(
 			'template' => '/{:controller}/{:action}/{:args}',
 			'modifiers' => array('args' => function($value) {
-				return explode('/', $value);
+				return \explode('/', $value);
 			})
 		));
 		$request = new Request();
@@ -774,8 +774,8 @@ class RouteTest extends \lithium\test\Unit {
 		));
 
 		$unicode = 'clément';
-		$slug = rawurlencode($unicode);
-		$params = array('controller' => 'users', 'action' => 'view') + compact('slug');
+		$slug = \rawurlencode($unicode);
+		$params = array('controller' => 'users', 'action' => 'view') + \compact('slug');
 
 		$result = $route->match($params);
 		$this->assertEqual("/{$slug}", $result);
@@ -783,12 +783,12 @@ class RouteTest extends \lithium\test\Unit {
 		$request = new Request(array('url' => "/{$slug}"));
 		$result = $route->parse($request, array('url' => $request->url));
 
-		$expected = array('controller' => 'users', 'action' => 'view') + compact('slug');
+		$expected = array('controller' => 'users', 'action' => 'view') + \compact('slug');
 		$this->assertEqual($expected, $result->params);
 
 		$request = new Request(array('url' => "/{$slug}"));
 		$result = $route->parse($request, array('url' => $request->url));
-		$expected = array('controller' => 'users', 'action' => 'view') + compact('slug');
+		$expected = array('controller' => 'users', 'action' => 'view') + \compact('slug');
 		$this->assertEqual($expected, $result->params);
 	}
 
@@ -816,7 +816,7 @@ class RouteTest extends \lithium\test\Unit {
 	public function testSingleRouteWithDefaultValues() {
 		$defaults = array('controller' => 'Admin', 'action' => 'index');
 
-		$route = new Route(compact('defaults') + array(
+		$route = new Route(\compact('defaults') + array(
 			'template' => '/{:controller}/{:action}',
 			'pattern' => '@^(?:/(?P[^\\/]+)?)?(?:/(?P[^\\/]+)?)?$@u',
 			'params' => array('controller' => 'Admin', 'action' => 'index'),

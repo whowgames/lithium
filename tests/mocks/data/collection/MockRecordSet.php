@@ -19,7 +19,7 @@ class MockRecordSet extends \lithium\data\collection\RecordSet {
 	 *
 	 */
 	public function reset() {
-		if (is_object($this->_result) && method_exists($this->_result, 'rewind')) {
+		if (\is_object($this->_result) && \method_exists($this->_result, 'rewind')) {
 			$this->_closed = false;
 			$this->_init = false;
 			$this->_started = false;

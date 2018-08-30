@@ -177,7 +177,7 @@ class Report extends \lithium\core\DynamicObject {
 			'errors' => array(),
 			'skips' => array()
 		);
-		$stats = array_reduce($results, function($stats, $result) use ($defaults) {
+		$stats = \array_reduce($results, function($stats, $result) use ($defaults) {
 			$stats = (array) $stats + $defaults;
 			$result = empty($result[0]) ? array($result) : $result;
 			foreach ($result as $response) {
@@ -186,29 +186,29 @@ class Report extends \lithium\core\DynamicObject {
 				}
 				$result = $response['result'];
 
-				if (in_array($result, array('fail', 'exception'))) {
-					$response = array_merge(
+				if (\in_array($result, array('fail', 'exception'))) {
+					$response = \array_merge(
 						array('class' => 'unknown', 'method' => 'unknown'), $response
 					);
 					$stats['errors'][] = $response;
 				}
 				unset($response['file'], $response['result']);
 
-				if (in_array($result, array('pass', 'fail'))) {
+				if (\in_array($result, array('pass', 'fail'))) {
 					$stats['asserts']++;
 				}
-				if (in_array($result, array('pass', 'fail', 'exception', 'skip'))) {
+				if (\in_array($result, array('pass', 'fail', 'exception', 'skip'))) {
 					$stats[Inflector::pluralize($result)][] = $response;
 				}
 			}
 			return $stats;
 		});
 		$stats = (array) $stats + $defaults;
-		$count = array_map(
-			function($value) { return is_array($value) ? count($value) : $value; }, $stats
+		$count = \array_map(
+			function($value) { return \is_array($value) ? \count($value) : $value; }, $stats
 		);
 		$success = $count['passes'] === $count['asserts'] && $count['errors'] === 0;
-		return compact('stats', 'count', 'success');
+		return \compact('stats', 'count', 'success');
 	}
 
 	/**
@@ -228,13 +228,13 @@ class Report extends \lithium\core\DynamicObject {
 		$template = Libraries::locate('test.templates', $template, array(
 			'filter' => false, 'type' => 'file', 'suffix' => ".{$config['format']}.php"
 		));
-		$params = compact('template', 'data', 'config');
+		$params = \compact('template', 'data', 'config');
 
 		return $this->_filter(__METHOD__, $params, function($self, $params, $chain) {
-			extract($params['data']);
-			ob_start();
+			\extract($params['data']);
+			\ob_start();
 			include $params['template'];
-			return ob_get_clean();
+			return \ob_get_clean();
 		});
 	}
 
@@ -249,7 +249,7 @@ class Report extends \lithium\core\DynamicObject {
 			if (!$class = Libraries::locate('test.filter', $filter)) {
 				throw new ClassNotFoundException("`{$class}` is not a valid test filter.");
 			}
-			$options['name'] = strtolower(join('', array_slice(explode("\\", $class), -1)));
+			$options['name'] = \strtolower(\join('', \array_slice(\explode("\\", $class), -1)));
 			$results[$class] = $options + array('apply' => array(), 'analyze' => array());
 		}
 		return $this->_filters = $results;

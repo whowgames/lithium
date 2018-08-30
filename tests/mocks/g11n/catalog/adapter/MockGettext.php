@@ -18,7 +18,7 @@ class MockGettext extends \lithium\g11n\catalog\adapter\Gettext {
 		$files = parent::_files($category, $locale, $scope);
 
 		foreach ($files as $key => $file) {
-			$extension = pathinfo($file, PATHINFO_EXTENSION);
+			$extension = \pathinfo($file, PATHINFO_EXTENSION);
 
 			if ((!$this->mo && $extension === 'mo') || (!$this->po && $extension === 'po')) {
 				unset($files[$key]);

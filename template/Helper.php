@@ -110,10 +110,10 @@ abstract class Helper extends \lithium\core\DynamicObject {
 		if ($options['escape'] === false) {
 			return $value;
 		}
-		if (is_array($value)) {
-			return array_map(array($this, __FUNCTION__), $value);
+		if (\is_array($value)) {
+			return \array_map(array($this, __FUNCTION__), $value);
 		}
-		return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+		return \htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 	}
 
 	/**
@@ -126,7 +126,7 @@ abstract class Helper extends \lithium\core\DynamicObject {
 	 */
 	protected function _options(array $defaults, array $scope) {
 		$scope += $defaults;
-		$options = array_diff_key($scope, $defaults);
+		$options = \array_diff_key($scope, $defaults);
 		return array($scope, $options);
 	}
 
@@ -182,7 +182,7 @@ abstract class Helper extends \lithium\core\DynamicObject {
 		$options += $defaults;
 		$result = array();
 
-		if (!is_array($params)) {
+		if (!\is_array($params)) {
 			return !$params ? '' : $options['prepend'] . $params;
 		}
 		foreach ($params as $key => $value) {
@@ -190,7 +190,7 @@ abstract class Helper extends \lithium\core\DynamicObject {
 				$result[] = $next;
 			}
 		}
-		return $result ? $options['prepend'] . implode(' ', $result) . $options['append'] : '';
+		return $result ? $options['prepend'] . \implode(' ', $result) . $options['append'] : '';
 	}
 
 	/**
@@ -208,7 +208,7 @@ abstract class Helper extends \lithium\core\DynamicObject {
 		$defaults = array('escape' => true, 'format' => '%s="%s"');
 		$options += $defaults;
 
-		if (in_array($key, $this->_minimized)) {
+		if (\in_array($key, $this->_minimized)) {
 			$isMini = ($value === 1 || $value === true || $value === $key);
 			if (!($value = $isMini ? $key : $value)) {
 				return null;
@@ -217,9 +217,9 @@ abstract class Helper extends \lithium\core\DynamicObject {
 		$value = (string) $value;
 
 		if ($options['escape']) {
-			return sprintf($options['format'], $this->escape($key), $this->escape($value));
+			return \sprintf($options['format'], $this->escape($key), $this->escape($value));
 		}
-		return sprintf($options['format'], $key, $value);
+		return \sprintf($options['format'], $key, $value);
 	}
 }
 

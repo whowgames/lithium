@@ -7,7 +7,7 @@
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
-if (isset($argv[1]) && 'APC' === strtoupper($argv[1]) && PHP_VERSION_ID < 50500) {
+if (isset($argv[1]) && 'APC' === \strtoupper($argv[1]) && PHP_VERSION_ID < 50500) {
 	PhpExtensions::install('apc');
 } else {
 	PhpExtensions::install('xcache');
@@ -86,28 +86,28 @@ class PhpExtensions {
 		if (isset($extension['require']['php'])) {
 			$version = $extension['require']['php'];
 
-			if (!version_compare(PHP_VERSION, $version[1], $version[0])) {
+			if (!\version_compare(PHP_VERSION, $version[1], $version[0])) {
 				$message = " => not installed, requires a PHP version %s %s (%s installed)\n";
-				printf($message, $version[0], $version[1], PHP_VERSION);
+				\printf($message, $version[0], $version[1], PHP_VERSION);
 				return;
 			}
 		}
 
-		static::_system(sprintf('wget %s > /dev/null 2>&1', $extension['url']));
-		$file = basename($extension['url']);
+		static::_system(\sprintf('wget %s > /dev/null 2>&1', $extension['url']));
+		$file = \basename($extension['url']);
 
-		static::_system(sprintf('tar -xzf %s > /dev/null 2>&1', $file));
-		$folder = basename($file, '.tgz');
-		$folder = basename($folder, '.tar.gz');
+		static::_system(\sprintf('tar -xzf %s > /dev/null 2>&1', $file));
+		$folder = \basename($file, '.tgz');
+		$folder = \basename($folder, '.tar.gz');
 
 		$message  = 'sh -c "cd %s && phpize && ./configure %s ';
 		$message .= '&& make && sudo make install" > /dev/null 2>&1';
-		static::_system(sprintf($message, $folder, implode(' ', $extension['configure'])));
+		static::_system(\sprintf($message, $folder, \implode(' ', $extension['configure'])));
 
 		foreach ($extension['ini'] as $ini) {
-			static::_system(sprintf("echo %s >> %s", $ini, php_ini_loaded_file()));
+			static::_system(\sprintf("echo %s >> %s", $ini, \php_ini_loaded_file()));
 		}
-		printf("=> installed (%s)\n", $folder);
+		\printf("=> installed (%s)\n", $folder);
 	}
 
 	/**
@@ -118,10 +118,10 @@ class PhpExtensions {
 	 */
 	protected static function _system($command) {
 		$return = 0;
-		system($command, $return);
+		\system($command, $return);
 
 		if (0 !== $return) {
-			printf("=> Command '%s' failed !", $command);
+			\printf("=> Command '%s' failed !", $command);
 			exit($return);
 		}
 	}

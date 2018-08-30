@@ -26,13 +26,13 @@ class MockSocket extends \lithium\net\Socket {
 	}
 
 	public function read() {
-		return join("\r\n", array(
+		return \join("\r\n", array(
 			'HTTP/1.1 200 OK',
 			'Header: Value',
 			'Connection: close',
 			'Content-Type: text/html;charset=UTF-8',
 			'',
-			json_encode($this->_data)
+			\json_encode($this->_data)
 		));
 	}
 
@@ -40,7 +40,7 @@ class MockSocket extends \lithium\net\Socket {
 		$url = $data->to('url');
 		$data = array('ok' => true, 'id' => '12345', 'rev' => '1-2', 'body' => 'something');
 
-		if (strpos($url, '_all_docs')) {
+		if (\strpos($url, '_all_docs')) {
 			$data = array('total_rows' => 3, 'offset' => 0, 'rows' => array(
 				array('doc' => array(
 					'_id' => 'a1', '_rev' => '1-1',
@@ -58,7 +58,7 @@ class MockSocket extends \lithium\net\Socket {
 					'body' => 'body 3'
 				))
 			));
-		} elseif (strpos($url, 'lithium-test/_design/latest/_view/all')) {
+		} elseif (\strpos($url, 'lithium-test/_design/latest/_view/all')) {
 			$data = array('total_rows' => 3, 'offset' => 0, 'rows' => array(
 				array('value' => array(
 					'_id' => 'a1', '_rev' => '1-1',
@@ -76,11 +76,11 @@ class MockSocket extends \lithium\net\Socket {
 					'body' => 'body 3'
 				))
 			));
-		} elseif (strpos($url, 'lithium-test/12345?rev=1-1')) {
+		} elseif (\strpos($url, 'lithium-test/12345?rev=1-1')) {
 			$data = array(
 				'ok' => true, '_id' => '12345', '_rev' => '1-1'
 			);
-		} elseif (strpos($url, 'lithium-test/12345')) {
+		} elseif (\strpos($url, 'lithium-test/12345')) {
 			$data = array(
 				'_id' => '12345', '_rev' => '1-2', 'author' => 'author 1', 'body' => 'body 1'
 			);

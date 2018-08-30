@@ -20,13 +20,13 @@ class FileTest extends \lithium\test\Unit {
 
 		$template1 = '<' . '?php echo $foo; ?' . '>';
 		$template2 = '<' . '?php echo $this["foo"]; ?' . '>';
-		file_put_contents("{$this->_path}/template1.html.php", $template1);
-		file_put_contents("{$this->_path}/template2.html.php", $template2);
+		\file_put_contents("{$this->_path}/template1.html.php", $template1);
+		\file_put_contents("{$this->_path}/template2.html.php", $template2);
 	}
 
 	public function tearDown() {
-		unlink("{$this->_path}/template1.html.php");
-		unlink("{$this->_path}/template2.html.php");
+		\unlink("{$this->_path}/template1.html.php");
+		\unlink("{$this->_path}/template2.html.php");
 	}
 
 	public function testRenderingWithExtraction() {
@@ -67,7 +67,7 @@ class FileTest extends \lithium\test\Unit {
 	 */
 	public function testTemplateLocating() {
 		$path = Libraries::get(true, 'path') . '/views/pages/home.html.php';
-		$this->skipIf(!file_exists($path), 'No default app template.');
+		$this->skipIf(!\file_exists($path), 'No default app template.');
 
 		$file = new File(array('paths' => array(
 			'template' => '{:library}/views/{:controller}/{:template}.{:type}.php'

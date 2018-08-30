@@ -105,7 +105,7 @@ class ResponseTest extends \lithium\test\Unit {
 	}
 
 	public function testParseMessage() {
-		$message = join("\r\n", array(
+		$message = \join("\r\n", array(
 			'HTTP/1.1 404 Not Found',
 			'Header: Value',
 			'Connection: close',
@@ -114,7 +114,7 @@ class ResponseTest extends \lithium\test\Unit {
 			'Test!'
 		));
 
-		$response = new Response(compact('message'));
+		$response = new Response(\compact('message'));
 		$this->assertEqual($message, (string) $response);
 		$this->assertEqual('text', $response->type());
 		$this->assertEqual('ISO-8859-1', $response->encoding);
@@ -123,13 +123,13 @@ class ResponseTest extends \lithium\test\Unit {
 		$this->assertEqual('HTTP/1.1 404 Not Found', $response->status());
 
 		$body = 'Not a Message';
-		$expected = join("\r\n", array('HTTP/1.1 200 OK', '', '', 'Not a Message'));
-		$response = new Response(compact('body'));
+		$expected = \join("\r\n", array('HTTP/1.1 200 OK', '', '', 'Not a Message'));
+		$response = new Response(\compact('body'));
 		$this->assertEqual($expected, (string) $response);
 	}
 
 	public function testParseMessageWithRepeatingHeaderKeys() {
-		$message = join("\r\n", array(
+		$message = \join("\r\n", array(
 			'HTTP/1.1 200 OK',
 			'Connection: close',
 			'Content-Type: text/plain;charset=UTF8',
@@ -140,13 +140,13 @@ class ResponseTest extends \lithium\test\Unit {
 		));
 		$header = array('value1', 'value2');
 
-		$response = new Response(compact('message'));
+		$response = new Response(\compact('message'));
 		$this->assertEqual($header, $response->headers('Header'));
 		$this->assertEqual($message, (string) $response);
 	}
 
 	public function testParseMessageWithCookies() {
-		$message = join("\r\n", array(
+		$message = \join("\r\n", array(
 			'HTTP/1.1 200 OK',
 			'Connection: close',
 			'Content-Type: text/plain;charset=UTF8',
@@ -164,14 +164,14 @@ class ResponseTest extends \lithium\test\Unit {
 			)
 		);
 
-		$response = new Response(compact('message'));
+		$response = new Response(\compact('message'));
 		$this->assertEqual($cookies, $response->cookies());
 		$this->assertEqual($message, (string) $response);
 	}
 
 	public function testParseMessageWithContentTypeHeaderSetsType() {
 		$response = new Response(array(
-			'message' => join("\r\n", array(
+			'message' => \join("\r\n", array(
 				'HTTP/1.1 200 OK',
 				'Content-Type: text/x-test-a',
 				'',
@@ -216,13 +216,13 @@ class ResponseTest extends \lithium\test\Unit {
 
 	public function testEmptyResponse() {
 		$response = new Response(array('message' => "\n"));
-		$result = trim((string) $response);
+		$result = \trim((string) $response);
 		$expected = 'HTTP/1.1 200 OK';
 		$this->assertEqual($expected, $result);
 	}
 
 	public function testToString() {
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'HTTP/1.1 200 OK',
 			'Header: Value',
 			'Connection: close',
@@ -248,7 +248,7 @@ class ResponseTest extends \lithium\test\Unit {
 	}
 
 	public function testToStringWithCookies() {
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'HTTP/1.1 200 OK',
 			'Connection: close',
 			'Content-Type: text/html;charset=UTF-8',
@@ -333,7 +333,7 @@ class ResponseTest extends \lithium\test\Unit {
 	}
 
 	public function testTransferEncodingChunkedDecode()  {
-		$headers = join("\r\n", array(
+		$headers = \join("\r\n", array(
 			'HTTP/1.1 200 OK',
 			'Server: CouchDB/0.10.0 (Erlang OTP/R13B)',
 			'Etag: "DWGTHR79JLSOGACPLVIZBJUBP"',
@@ -346,7 +346,7 @@ class ResponseTest extends \lithium\test\Unit {
 			''
 		));
 
-		$message = $headers . join("\r\n", array(
+		$message = $headers . \join("\r\n", array(
 			'b7',
 			'{"total_rows":1,"offset":0,"rows":[',
 			'{"id":"88989cafcd81b09f81078eb523832e8e","key":"gwoo","value":' .
@@ -360,9 +360,9 @@ class ResponseTest extends \lithium\test\Unit {
 			'',
 			''
 		));
-		$response = new Response(compact('message'));
+		$response = new Response(\compact('message'));
 
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'{"total_rows":1,"offset":0,"rows":[',
 			'{"id":"88989cafcd81b09f81078eb523832e8e","key":"gwoo","value":' .
 			'{"author":"gwoo","language":"php","preview":"test",' .
@@ -373,11 +373,11 @@ class ResponseTest extends \lithium\test\Unit {
 
 		$message = $headers . "\r\nbody";
 
-		$response = new Response(compact('message'));
+		$response = new Response(\compact('message'));
 		$result = $response->body();
 		$this->assertEqual('body', $result);
 
-		$message = join("\r\n", array(
+		$message = \join("\r\n", array(
 			'HTTP/1.1 200 OK',
 			'Header: Value',
 			'Connection: close',
@@ -387,18 +387,18 @@ class ResponseTest extends \lithium\test\Unit {
 			'Test!'
 		));
 		$expected = 'Test!';
-		$response = new Response(compact('message'));
+		$response = new Response(\compact('message'));
 		$result = $response->body();
 		$this->assertEqual($expected, $result);
 
 		$expected = '1+1 is 2, 10%40 is 20.';
-		$message = $headers . join("\r\n", array(
+		$message = $headers . \join("\r\n", array(
 			'22',
 			$expected,
 			'',
 		));
 
-		$response = new Response(compact('message'));
+		$response = new Response(\compact('message'));
 		$result = $response->body();
 		$this->assertEqual($expected, $result);
 	}
@@ -445,7 +445,7 @@ class ResponseTest extends \lithium\test\Unit {
 			'Transfer-Encoding: chunked',
 			'Vary: Accept-Encoding'
 		);
-		return join("\r\n", $headers) . "\r\n\r\n" . $body;
+		return \join("\r\n", $headers) . "\r\n\r\n" . $body;
 	}
 
 	public function testWithoutChunksAndComment() {
@@ -453,8 +453,8 @@ class ResponseTest extends \lithium\test\Unit {
 		$body .= "<body>\n        <h1>Simple site</h1>\n        <p>\n            But awesome\n";
 		$body .= "        </p>\n    </body>\n</html>\n";
 		$message =  $this->_createMessage($body);
-		$response = new Response(compact('message'));
-		$this->assertEqual(trim($body), $response->body());
+		$response = new Response(\compact('message'));
+		$this->assertEqual(\trim($body), $response->body());
 	}
 
 	public function testWithoutChunksAndCommentInBody() {
@@ -463,8 +463,8 @@ class ResponseTest extends \lithium\test\Unit {
 		$body .= "\n        <h1>Simple site</h1>\n        <p>\n            But awesome";
 		$body .= "\n        </p>\n    </body>\n</html>\n";
 		$message =  $this->_createMessage($body);
-		$response = new Response(compact('message'));
-		$this->assertEqual(trim($body), $response->body());
+		$response = new Response(\compact('message'));
+		$this->assertEqual(\trim($body), $response->body());
 	}
 
 	public function testWithoutChunksAndRandomCommentInHtmlRoot() {
@@ -473,8 +473,8 @@ class ResponseTest extends \lithium\test\Unit {
 		$body .= "\n        <h1>Simple site</h1>\n        <p>\n            But awesome";
 		$body .= "\n        </p>\n    </body>\n</html>\n";
 		$message = $this->_createMessage($body);
-		$response = new Response(compact('message'));
-		$this->assertEqual(trim($body), $response->body());
+		$response = new Response(\compact('message'));
+		$this->assertEqual(\trim($body), $response->body());
 	}
 
 	public function testWithoutChunksAndCommentInHtmlRoot() {
@@ -483,23 +483,23 @@ class ResponseTest extends \lithium\test\Unit {
 		$body .= "\n    <body>\n        <h1>Simple site</h1>\n        <p>\n            But awesome";
 		$body .= "\n        </p>\n    </body>\n</html>\n";
 		$message =  $this->_createMessage($body);
-		$response = new Response(compact('message'));
-		$this->assertEqual(trim($body), $response->body());
+		$response = new Response(\compact('message'));
+		$this->assertEqual(\trim($body), $response->body());
 	}
 
 	public function testMessageWithNoHeaders() {
 		$body = "\n<html>...</html>\n";
 		$message = "\r\n\r\n{$body}";
-		$response = new Response(compact('message'));
+		$response = new Response(\compact('message'));
 		$this->assertEmpty($response->headers());
-		$this->assertEqual(trim($body), $response->body());
+		$this->assertEqual(\trim($body), $response->body());
 	}
 
 	public function testDigestParsing() {
 		$auth = 'Digest realm="app",';
 		$auth .= 'qop="auth",nonce="4ee1617b8756e",opaque="dd7bcee161192cb8fba765eb595eba87"';
 		$headers = array("WWW-Authenticate" => $auth);
-		$response = new Response(compact('headers'));
+		$response = new Response(\compact('headers'));
 		$expected = array("WWW-Authenticate" => $auth);
 		$result = $response->headers;
 		$this->assertEqual($expected, $result);
@@ -508,7 +508,7 @@ class ResponseTest extends \lithium\test\Unit {
 			'realm' => 'app', 'qop' => 'auth', 'nonce' => '4ee1617b8756e',
 			'opaque' => 'dd7bcee161192cb8fba765eb595eba87'
 		);
-		$result = array_filter($response->digest());
+		$result = \array_filter($response->digest());
 		$this->assertEqual($expected, $result);
 	}
 
@@ -587,7 +587,7 @@ class ResponseTest extends \lithium\test\Unit {
 	public function testMalformedStatus() {
 		$expected = "HTTP/1.1 304 Not Modified";
 
-		$message = join("\r\n", array(
+		$message = \join("\r\n", array(
 			'HTTP/1.1 304',
 			'Header: Value',
 			'Connection: close',
@@ -596,13 +596,13 @@ class ResponseTest extends \lithium\test\Unit {
 			'Test!'
 		));
 
-		$response = new Response(compact('message'));
+		$response = new Response(\compact('message'));
 		$result = $response->status();
 		$this->assertEqual($expected, $result);
 
 		$expected = "HTTP/1.1 500 Internal Server Error";
 
-		$message = join("\r\n", array(
+		$message = \join("\r\n", array(
 			'HTTP/1.1 500',
 			'Header: Value',
 			'Connection: close',
@@ -611,7 +611,7 @@ class ResponseTest extends \lithium\test\Unit {
 			'Test!'
 		));
 
-		$response = new Response(compact('message'));
+		$response = new Response(\compact('message'));
 		$result = $response->status();
 		$this->assertEqual($expected, $result);
 	}

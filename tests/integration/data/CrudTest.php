@@ -23,7 +23,7 @@ class CrudTest extends \lithium\tests\integration\data\Base {
 	 */
 	public function skip() {
 		parent::connect($this->_connection);
-		if (!class_exists('li3_fixtures\test\Fixtures')) {
+		if (!\class_exists('li3_fixtures\test\Fixtures')) {
 			$this->skipIf(true, "These tests need `'li3_fixtures'` to be runned.");
 		}
 	}
@@ -125,7 +125,7 @@ class CrudTest extends \lithium\tests\integration\data\Base {
 		foreach (array('Cities', 'Flowers', 'Poneys') as $match) {
 			$this->assertTrue($all->first($filter)->exists());
 		}
-		$this->assertEqual(array(true, true, true), array_values($all->delete()));
+		$this->assertEqual(array(true, true, true), \array_values($all->delete()));
 		$this->assertEqual(0, Galleries::count());
 	}
 

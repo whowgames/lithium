@@ -114,7 +114,7 @@ class Logger extends \lithium\core\Adaptable {
 		}
 
 		foreach ($methods as $name => $method) {
-			$params = compact('priority', 'message', 'options');
+			$params = \compact('priority', 'message', 'options');
 			$config = static::_config($name);
 			$result &= static::_filter(__FUNCTION__, $params, $method, $config['filters']);
 		}
@@ -179,10 +179,10 @@ class Logger extends \lithium\core\Adaptable {
 		$configs = array();
 		$key = 'priority';
 
-		foreach (array_keys(static::$_configurations) as $name) {
+		foreach (\array_keys(static::$_configurations) as $name) {
 			$config = static::config($name);
 			$nameMatch = ($config[$key] === true || $config[$key] === $priority);
-			$arrayMatch = (is_array($config[$key]) && in_array($priority, $config[$key]));
+			$arrayMatch = (\is_array($config[$key]) && \in_array($priority, $config[$key]));
 
 			if ($nameMatch || $arrayMatch) {
 				$method = static::adapter($name)->write($priority, $message, $options);

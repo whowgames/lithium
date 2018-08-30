@@ -12,7 +12,7 @@ class MockMethodFiltering extends \lithium\core\DynamicObject {
 
 	public function method($data) {
 		$data[] = 'Starting outer method call';
-		$result = $this->_filter(__METHOD__, compact('data'), function($self, $params, $chain) {
+		$result = $this->_filter(__METHOD__, \compact('data'), function($self, $params, $chain) {
 			$params['data'][] = 'Inside method implementation';
 			return $params['data'];
 		});

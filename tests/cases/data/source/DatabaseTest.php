@@ -166,10 +166,10 @@ class DatabaseTest extends \lithium\test\Unit {
 		$model::config();
 		$modelName = '';
 		$expected = array($modelName => array('id', 'author_id', 'title', 'created'));
-		$result = $this->_db->schema(new Query(compact('model')));
+		$result = $this->_db->schema(new Query(\compact('model')));
 		$this->assertEqual($expected, $result);
 
-		$query = new Query(compact('model') + array('fields' => '*'));
+		$query = new Query(\compact('model') + array('fields' => '*'));
 		$result = $this->_db->schema($query);
 		$this->assertEqual($expected, $result);
 
@@ -233,7 +233,7 @@ class DatabaseTest extends \lithium\test\Unit {
 
 	public function testSchemaFromManualFieldList() {
 		$fields = array('id', 'name', 'created');
-		$result = $this->_db->schema(new Query(compact('fields')));
+		$result = $this->_db->schema(new Query(\compact('fields')));
 		$this->assertEqual(array('' => $fields), $result);
 	}
 
@@ -370,13 +370,13 @@ class DatabaseTest extends \lithium\test\Unit {
 			'model' => $this->_model,
 			'data' => array('title' => 'new post', 'body' => 'the body')
 		));
-		$query = new Query(compact('entity') + array(
+		$query = new Query(\compact('entity') + array(
 			'type' => 'create',
 			'model' => $this->_model
 		));
 		$hash = $query->export($this->_db);
-		ksort($hash);
-		$expected = sha1(serialize($hash));
+		\ksort($hash);
+		$expected = \sha1(\serialize($hash));
 
 		$result = $this->_db->create($query);
 		$this->assertTrue($result);
@@ -394,13 +394,13 @@ class DatabaseTest extends \lithium\test\Unit {
 			'model' => $this->_model,
 			'data' => array('data' => array('title' => 'new post', 'body' => 'the body'))
 		));
-		$query = new Query(compact('entity') + array(
+		$query = new Query(\compact('entity') + array(
 			'type' => 'create',
 			'model' => $this->_model
 		));
 		$hash = $query->export($this->_db);
-		ksort($hash);
-		$expected = sha1(serialize($hash));
+		\ksort($hash);
+		$expected = \sha1(\serialize($hash));
 
 		$result = $this->_db->create($query);
 		$this->assertTrue($result);
@@ -418,13 +418,13 @@ class DatabaseTest extends \lithium\test\Unit {
 			'model' => $this->_model,
 			'data' => array('title' => '007', 'body' => 'the body')
 		));
-		$query = new Query(compact('entity') + array(
+		$query = new Query(\compact('entity') + array(
 			'type' => 'create',
 			'model' => $this->_model
 		));
 		$hash = $query->export($this->_db);
-		ksort($hash);
-		$expected = sha1(serialize($hash));
+		\ksort($hash);
+		$expected = \sha1(\serialize($hash));
 
 		$result = $this->_db->create($query);
 		$this->assertTrue($result);
@@ -442,7 +442,7 @@ class DatabaseTest extends \lithium\test\Unit {
 			'model' => $this->_model,
 			'data' => array('id' => 1, 'title' => 'new post', 'body' => 'the body')
 		));
-		$query = new Query(compact('entity') + array('type' => 'create'));
+		$query = new Query(\compact('entity') + array('type' => 'create'));
 		$expected = 1;
 
 		$result = $this->_db->create($query);
@@ -509,7 +509,7 @@ class DatabaseTest extends \lithium\test\Unit {
 			'data' => array('id' => 1, 'title' => 'new post', 'body' => 'the body'),
 			'exists' => true
 		));
-		$query = new Query(compact('entity') + array('type' => 'update'));
+		$query = new Query(\compact('entity') + array('type' => 'update'));
 		$result = $this->_db->update($query);
 
 		$this->assertTrue($result);
@@ -524,7 +524,7 @@ class DatabaseTest extends \lithium\test\Unit {
 			'data' => array('id' => 2, 'count' => (object) '{count} + 1'),
 			'exists' => true
 		));
-		$query = new Query(compact('entity') + array('type' => 'update'));
+		$query = new Query(\compact('entity') + array('type' => 'update'));
 		$result = $this->_db->update($query);
 
 		$this->assertTrue($result);
@@ -549,7 +549,7 @@ class DatabaseTest extends \lithium\test\Unit {
 			'data' => array('id' => 1, 'title' => '007', 'body' => 'the body'),
 			'exists' => true
 		));
-		$query = new Query(compact('entity') + array('type' => 'update'));
+		$query = new Query(\compact('entity') + array('type' => 'update'));
 		$result = $this->_db->update($query);
 
 		$this->assertTrue($result);
@@ -566,7 +566,7 @@ class DatabaseTest extends \lithium\test\Unit {
 			'data' => array('id' => 1, 'title' => 'new post', 'body' => 'the body'),
 			'exists' => true
 		));
-		$query = new Query(compact('entity') + array('type' => 'delete'));
+		$query = new Query(\compact('entity') + array('type' => 'delete'));
 		$this->assertTrue($entity->exists());
 		$this->assertTrue($this->_db->delete($query));
 		$this->assertEqual(1, $query->entity()->id);
@@ -703,7 +703,7 @@ class DatabaseTest extends \lithium\test\Unit {
 		$this->assertEqual($sql, $this->_db->renderCommand($query));
 
 		$conditions = "custom conditions string";
-		$query = new Query(compact('conditions') + array(
+		$query = new Query(\compact('conditions') + array(
 			'type' => 'read', 'model' => $this->_model
 		));
 		$sql = "SELECT * FROM {mock_database_posts} AS {MockDatabasePost} WHERE {$conditions};";
@@ -1106,7 +1106,7 @@ class DatabaseTest extends \lithium\test\Unit {
 	public function testRenderArrayJoinConstraintComplex() {
 		$model = 'lithium\tests\mocks\data\model\MockQueryComment';
 
-		$query = new Query(compact('model') + array(
+		$query = new Query(\compact('model') + array(
 			'type' => 'read',
 			'source' => 'comments',
 			'alias' => 'Comments',
@@ -1131,7 +1131,7 @@ class DatabaseTest extends \lithium\test\Unit {
 	public function testRenderArrayJoinConstraintComplexArray() {
 		$model = 'lithium\tests\mocks\data\model\MockQueryComment';
 
-		$query = new Query(compact('model') + array(
+		$query = new Query(\compact('model') + array(
 			'type' => 'read',
 			'source' => 'comments',
 			'alias' => 'Comments',
@@ -1155,7 +1155,7 @@ class DatabaseTest extends \lithium\test\Unit {
 		$result = $this->_db->renderCommand($query);
 		$this->assertEqual($expected, $result);
 
-		$query = new Query(compact('model') + array(
+		$query = new Query(\compact('model') + array(
 			'type' => 'read',
 			'source' => 'comments',
 			'alias' => 'Comments',
@@ -1175,7 +1175,7 @@ class DatabaseTest extends \lithium\test\Unit {
 	public function testRenderArrayJoin() {
 		$model = 'lithium\tests\mocks\data\model\MockQueryComment';
 
-		$query = new Query(compact('model') + array(
+		$query = new Query(\compact('model') + array(
 			'type' => 'read',
 			'source' => 'comments',
 			'alias' => 'Comment',
@@ -1686,7 +1686,7 @@ class DatabaseTest extends \lithium\test\Unit {
 			'exists' => false
 		));
 
-		$query = new Query(compact('entity') + array('type' => 'create'));
+		$query = new Query(\compact('entity') + array('type' => 'create'));
 		$result = $this->_db->create($query);
 
 		$expected = "INSERT INTO {mock_database_posts} ({title}) VALUES ('{:foobar}');";

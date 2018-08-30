@@ -67,12 +67,12 @@ class RedisTest extends \lithium\test\Unit {
 		$key = 'key';
 		$data = 'value';
 		$expiry = '+5 seconds';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 
 		$closure = $this->redis->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->redis, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -81,7 +81,7 @@ class RedisTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, $result);
 
 		$result = $this->_redis->ttl($key);
-		$this->assertEqual($time - time(), $result);
+		$this->assertEqual($time - \time(), $result);
 
 		$result = $this->_redis->delete($key);
 		$this->assertTrue($result);
@@ -89,12 +89,12 @@ class RedisTest extends \lithium\test\Unit {
 		$key = 'another_key';
 		$data = 'more_data';
 		$expiry = '+1 minute';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 
 		$closure = $this->redis->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->redis, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -103,7 +103,7 @@ class RedisTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, $result);
 
 		$result = $this->_redis->ttl($key);
-		$this->assertEqual($time - time(), $result);
+		$this->assertEqual($time - \time(), $result);
 
 		$result = $this->_redis->delete($key);
 		$this->assertTrue($result);
@@ -113,12 +113,12 @@ class RedisTest extends \lithium\test\Unit {
 		$redis = new Redis(array('expiry' => '+5 seconds'));
 		$key = 'default_key';
 		$data = 'value';
-		$time = strtotime('+5 seconds');
+		$time = \strtotime('+5 seconds');
 
 		$closure = $redis->write($key, $data);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data');
+		$params = \compact('key', 'data');
 		$result = $closure($redis, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -127,7 +127,7 @@ class RedisTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, $result);
 
 		$result = $this->_redis->ttl($key);
-		$this->assertEqual($time - time(), $result);
+		$this->assertEqual($time - \time(), $result);
 
 		$result = $this->_redis->delete($key);
 		$this->assertTrue($result);
@@ -137,7 +137,7 @@ class RedisTest extends \lithium\test\Unit {
 		$redis = new Redis(array('expiry' => null));
 		$key = 'default_key';
 		$data = 'value';
-		$redis->write($key, $data)->__invoke(null, compact('key', 'data'), null);
+		$redis->write($key, $data)->__invoke(null, \compact('key', 'data'), null);
 		$this->assertEqual($data, $this->_redis->get($key));
 		$this->assertTrue($this->_redis->delete($key));
 	}
@@ -152,7 +152,7 @@ class RedisTest extends \lithium\test\Unit {
 		$closure = $this->redis->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->redis, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -162,7 +162,7 @@ class RedisTest extends \lithium\test\Unit {
 
 		$key = 'another_read_key';
 		$data = 'read data';
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 
 		$result = $this->_redis->set($key, $data);
 		$this->assertTrue($result);
@@ -173,7 +173,7 @@ class RedisTest extends \lithium\test\Unit {
 		$closure = $this->redis->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->redis, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -187,12 +187,12 @@ class RedisTest extends \lithium\test\Unit {
 		$result = $this->_redis->mset($data);
 		$this->assertTrue($result);
 
-		$closure = $this->redis->read(array_keys($data));
+		$closure = $this->redis->read(\array_keys($data));
 		$this->assertInternalType('callable', $closure);
 
-		$params = array('key' => array_keys($data));
+		$params = array('key' => \array_keys($data));
 		$result = $closure($this->redis, $params, null);
-		$expected = array_values($data);
+		$expected = \array_values($data);
 		$this->assertEqual($expected, $result);
 
 		foreach ($data as $k => $v) {
@@ -204,7 +204,7 @@ class RedisTest extends \lithium\test\Unit {
 	public function testMultiWrite() {
 		$key = array('key1' => 'value1', 'key2' => 'value2');
 		$expiry = '+5 seconds';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 
 		$closure = $this->redis->write($key, $expiry);
 		$this->assertInternalType('callable', $closure);
@@ -214,8 +214,8 @@ class RedisTest extends \lithium\test\Unit {
 		$expected = array('key1' => true, 'key2' => true);
 		$this->assertEqual($expected, $result);
 
-		$result = $this->_redis->getMultiple(array_keys($key));
-		$expected = array_values($key);
+		$result = $this->_redis->getMultiple(\array_keys($key));
+		$expected = \array_values($key);
 		$this->assertEqual($expected, $result);
 	}
 
@@ -224,7 +224,7 @@ class RedisTest extends \lithium\test\Unit {
 		$closure = $this->redis->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->redis, $params, null);
 		$this->assertFalse($result);
 
@@ -233,7 +233,7 @@ class RedisTest extends \lithium\test\Unit {
 	public function testDelete() {
 		$key = 'delete_key';
 		$data = 'data to delete';
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 
 		$result = $this->_redis->set($key, $data);
 		$this->assertTrue($result);
@@ -241,7 +241,7 @@ class RedisTest extends \lithium\test\Unit {
 		$closure = $this->redis->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->redis, $params, null);
 		$this->assertTrue($result);
 
@@ -253,7 +253,7 @@ class RedisTest extends \lithium\test\Unit {
 		$closure = $this->redis->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->redis, $params, null);
 		$this->assertFalse($result);
 	}
@@ -262,12 +262,12 @@ class RedisTest extends \lithium\test\Unit {
 		$key = 'write_read_key';
 		$data = 'write/read value';
 		$expiry = '+5 seconds';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 
 		$closure = $this->redis->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->redis, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -278,7 +278,7 @@ class RedisTest extends \lithium\test\Unit {
 		$closure = $this->redis->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->redis, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -286,7 +286,7 @@ class RedisTest extends \lithium\test\Unit {
 		$closure = $this->redis->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->redis, $params, null);
 		$this->assertTrue($result);
 
@@ -317,7 +317,7 @@ class RedisTest extends \lithium\test\Unit {
 		$closure = $this->redis->decrement($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->redis, $params, null);
 		$this->assertEqual($value - 1, $result);
 
@@ -338,7 +338,7 @@ class RedisTest extends \lithium\test\Unit {
 		$closure = $this->redis->decrement($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->redis, $params, null);
 		$this->assertFalse($result);
 
@@ -359,7 +359,7 @@ class RedisTest extends \lithium\test\Unit {
 		$closure = $this->redis->increment($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->redis, $params, null);
 		$this->assertEqual($value + 1, $result);
 
@@ -380,7 +380,7 @@ class RedisTest extends \lithium\test\Unit {
 		$closure = $this->redis->increment($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->redis, $params, null);
 		$this->assertFalse($result);
 

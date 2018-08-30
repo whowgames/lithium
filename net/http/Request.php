@@ -112,11 +112,11 @@ class Request extends \lithium\net\http\Message {
 		$this->_formats += array(
 			'url' => function($req, $options) {
 				$options['port'] = $options['port'] ? ":{$options['port']}" : '';
-				$options['path'] = str_replace('//', '/', $options['path']);
+				$options['path'] = \str_replace('//', '/', $options['path']);
 				return StringDeprecated::insert("{:scheme}://{:host}{:port}{:path}{:query}", $options);
 			},
 			'context' => function($req, $options, $defaults) {
-				return array('http' => array_diff_key($options, $defaults) + array(
+				return array('http' => \array_diff_key($options, $defaults) + array(
 					'content' => $req->body(),
 					'method' => $options['method'],
 					'header' => $req->headers($options['headers']),
@@ -129,9 +129,9 @@ class Request extends \lithium\net\http\Message {
 			},
 			'string' => function($req, $options) {
 				$body = $req->body();
-				$path = str_replace('//', '/', $options['path']) . $options['query'];
+				$path = \str_replace('//', '/', $options['path']) . $options['query'];
 				$status = "{$options['method']} {$path} {$req->protocol}";
-				return join("\r\n", array($status, join("\r\n", $req->headers()), "", $body));
+				return \join("\r\n", array($status, \join("\r\n", $req->headers()), "", $body));
 			}
 		);
 	}
@@ -164,7 +164,7 @@ class Request extends \lithium\net\http\Message {
 	 * @return mixed
 	 */
 	public function cookies($key = null, $value = null) {
-		if (is_string($key)) {
+		if (\is_string($key)) {
 			if ($value === null) {
 				return isset($this->cookies[$key]) ? $this->cookies[$key] : null;
 			}
@@ -174,7 +174,7 @@ class Request extends \lithium\net\http\Message {
 			}
 		}
 		if ($key) {
-			$cookies = is_array($key) ? $key : array($key => $value);
+			$cookies = \is_array($key) ? $key : array($key => $value);
 			$this->cookies = $cookies + $this->cookies;
 		}
 		return $this->cookies;
@@ -190,18 +190,18 @@ class Request extends \lithium\net\http\Message {
 	 */
 	protected function _cookies() {
 		$cookies = $this->cookies;
-		$invalid = str_split(",; \+\t\r\n\013\014");
-		$replace = array_map('rawurlencode', $invalid);
+		$invalid = \str_split(",; \+\t\r\n\013\014");
+		$replace = \array_map('rawurlencode', $invalid);
 
 		foreach($cookies as $key => &$value) {
-			if (!is_scalar($value)) {
+			if (!\is_scalar($value)) {
 				$message = "Non-scalar value cannot be rendered for cookie `{$key}`";
 				throw new UnexpectedValueException($message);
 			}
-			$value = strtr($value, array_combine($invalid, $replace));
+			$value = \strtr($value, \array_combine($invalid, $replace));
 			$value = "{$key}={$value}";
 		}
-		return implode('; ', $cookies);
+		return \implode('; ', $cookies);
 	}
 
 	/**
@@ -215,39 +215,39 @@ class Request extends \lithium\net\http\Message {
 		$result = array();
 		$query = array();
 
-		foreach (array_filter(array($this->query, $params)) as $querySet) {
-			if (is_string($querySet)) {
+		foreach (\array_filter(array($this->query, $params)) as $querySet) {
+			if (\is_string($querySet)) {
 				$result[] = $querySet;
 				continue;
 			}
-			$query = array_merge($query, $querySet);
+			$query = \array_merge($query, $querySet);
 		}
-		$query = array_filter($query);
+		$query = \array_filter($query);
 
 		if ($format) {
 			$q = null;
 			foreach ($query as $key => $value) {
-				if (!is_array($value)) {
+				if (!\is_array($value)) {
 					$q .= StringDeprecated::insert($format, array(
-						'key' => urlencode($key),
-						'value' => urlencode($value)
+						'key' => \urlencode($key),
+						'value' => \urlencode($value)
 					));
 					continue;
 				}
 				foreach ($value as $val) {
 					$q .= StringDeprecated::insert($format, array(
-						'key' => urlencode("{$key}[]"),
-						'value' => urlencode($val)
+						'key' => \urlencode("{$key}[]"),
+						'value' => \urlencode($val)
 					));
 				}
 			}
-			$result[] = substr($q, 0, -1);
+			$result[] = \substr($q, 0, -1);
 		} else {
-			$result[] = http_build_query($query);
+			$result[] = \http_build_query($query);
 		}
 
-		$result = array_filter($result);
-		return $result ? "?" . join("&", $result) : null;
+		$result = \array_filter($result);
+		return $result ? "?" . \join("&", $result) : null;
 	}
 
 	/**
@@ -297,10 +297,10 @@ class Request extends \lithium\net\http\Message {
 		);
 		$options += $defaults;
 
-		if (is_string($options['query'])) {
+		if (\is_string($options['query'])) {
 			$options['query'] = "?" . $options['query'];
 		} elseif ($options['query']) {
-			$options['query'] = "?" . http_build_query($options['query']);
+			$options['query'] = "?" . \http_build_query($options['query']);
 		} elseif ($options['query'] === null) {
 			$options['query'] = $this->queryString();
 		}
@@ -308,7 +308,7 @@ class Request extends \lithium\net\http\Message {
 		if ($options['auth']) {
 			$data = array();
 
-			if (is_array($options['auth']) && !empty($options['auth']['nonce'])) {
+			if (\is_array($options['auth']) && !empty($options['auth']['nonce'])) {
 				$data = array('method' => $options['method'], 'uri' => $options['path']);
 				$data += $options['auth'];
 			}
@@ -321,8 +321,8 @@ class Request extends \lithium\net\http\Message {
 		}
 		$body = $this->body($options['body']);
 
-		if ($body || !in_array($options['method'], array('GET', 'HEAD', 'DELETE'))) {
-			$this->headers('Content-Length', strlen($body));
+		if ($body || !\in_array($options['method'], array('GET', 'HEAD', 'DELETE'))) {
+			$this->headers('Content-Length', \strlen($body));
 		}
 
 		$conv = isset($this->_formats[$format]) ? $this->_formats[$format] : null;

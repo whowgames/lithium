@@ -20,7 +20,7 @@ class HttpTest extends \lithium\test\Unit {
 		$result = $http->check($request);
 		$this->assertEmpty($result);
 
-		$basic = basename(Libraries::get(true, 'path'));
+		$basic = \basename(Libraries::get(true, 'path'));
 		$expected = array('WWW-Authenticate: Basic realm="' . $basic . '"');
 		$result = $http->headers;
 		$this->assertEqual($expected, $result);

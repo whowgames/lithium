@@ -64,13 +64,13 @@ class ResultTest extends \lithium\tests\integration\data\Base {
 		$this->assertNull($result->resource());
 
 		$resource = new PDOStatement;
-		$result = new Result(compact('resource'));
+		$result = new Result(\compact('resource'));
 		$this->assertInstanceOf('PDOStatement', $result->resource());
 	}
 
 	public function testNext() {
 		$resource = $this->_db->connection->query("SELECT id, name FROM galleries;");
-		$result = new Result(compact('resource'));
+		$result = new Result(\compact('resource'));
 
 		$this->assertEqual($this->_mockData[1], $result->next());
 		$this->assertEqual($this->_mockData[2], $result->next());
@@ -79,7 +79,7 @@ class ResultTest extends \lithium\tests\integration\data\Base {
 
 	public function testPrev() {
 		$resource = $this->_db->connection->query("SELECT id, name FROM galleries;");
-		$result = new Result(compact('resource'));
+		$result = new Result(\compact('resource'));
 
 		$this->assertNull($result->prev());
 		$this->assertEqual($this->_mockData[1], $result->next());
@@ -95,13 +95,13 @@ class ResultTest extends \lithium\tests\integration\data\Base {
 		$this->assertFalse($result->valid());
 
 		$resource = $this->_db->connection->query("SELECT id, name FROM galleries;");
-		$result = new Result(compact('resource'));
+		$result = new Result(\compact('resource'));
 		$this->assertTrue($result->valid());
 	}
 
 	public function testRewind() {
 		$resource = $this->_db->connection->query("SELECT id, name FROM galleries;");
-		$result = new Result(compact('resource'));
+		$result = new Result(\compact('resource'));
 
 		$this->assertEqual($this->_mockData[1], $result->next());
 		$this->assertEqual($this->_mockData[2], $result->next());
@@ -111,7 +111,7 @@ class ResultTest extends \lithium\tests\integration\data\Base {
 
 	public function testCurrent() {
 		$resource = $this->_db->connection->query("SELECT id, name FROM galleries;");
-		$result = new Result(compact('resource'));
+		$result = new Result(\compact('resource'));
 
 		$this->assertEqual($this->_mockData[1], $result->next());
 		$this->assertEqual($this->_mockData[1], $result->current());
@@ -123,7 +123,7 @@ class ResultTest extends \lithium\tests\integration\data\Base {
 
 	public function testKey() {
 		$resource = $this->_db->connection->query("SELECT id, name FROM galleries;");
-		$result = new Result(compact('resource'));
+		$result = new Result(\compact('resource'));
 
 		$this->assertIdentical(0, $result->key());
 		$result->next();

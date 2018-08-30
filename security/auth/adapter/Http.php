@@ -58,7 +58,7 @@ class Http extends \lithium\core\DynamicObject {
 	 *        - `users`: the users to permit. key => value pair of username => password
 	 */
 	public function __construct(array $config = array()) {
-		$realm = basename(Libraries::get(true, 'path'));
+		$realm = \basename(Libraries::get(true, 'path'));
 		$defaults = array(
 			'method' => 'digest', 'realm' => $realm, 'users' => array()
 		);
@@ -123,7 +123,7 @@ class Http extends \lithium\core\DynamicObject {
 			$this->_writeHeader("WWW-Authenticate: Basic realm=\"{$this->_config['realm']}\"");
 			return;
 		}
-		return compact('username', 'password');
+		return \compact('username', 'password');
 	}
 
 	/**
@@ -147,14 +147,14 @@ class Http extends \lithium\core\DynamicObject {
 		$encoded = $auth::encode($username, $password, $data);
 
 		if ($encoded['response'] !== $data['response']) {
-			$nonce = uniqid();
-			$opaque = md5($data['realm']);
+			$nonce = \uniqid();
+			$opaque = \md5($data['realm']);
 			$message = "WWW-Authenticate: Digest realm=\"{$data['realm']}\",qop=\"auth\",";
 			$message .= "nonce=\"{$nonce}\",opaque=\"{$opaque}\"";
 			$this->_writeHeader($message);
 			return false;
 		}
-		return compact('username', 'password');
+		return \compact('username', 'password');
 	}
 
 	/**
@@ -164,7 +164,7 @@ class Http extends \lithium\core\DynamicObject {
 	 * @return void
 	 */
 	protected function _writeHeader($string) {
-		header($string, true);
+		\header($string, true);
 	}
 }
 

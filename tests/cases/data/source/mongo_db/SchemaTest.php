@@ -34,7 +34,7 @@ class SchemaTest extends \lithium\test\Unit {
 			'database' => $this->_db
 		));
 
-		$this->assertEqual(array('users'), array_keys($result->data()));
+		$this->assertEqual(array('users'), \array_keys($result->data()));
 		$this->assertCount(1, $result->users);
 		$this->assertInstanceOf('MongoId', $result->users[0]);
 	}

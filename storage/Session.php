@@ -61,7 +61,7 @@ class Session extends \lithium\core\Adaptable {
 	 *         configuration exists, no session id has been set or no session has been started.
 	 */
 	public static function key($name = null, $sessionId = null) {
-		return is_object($adapter = static::adapter($name)) ? $adapter->key($sessionId) : null;
+		return \is_object($adapter = static::adapter($name)) ? $adapter->key($sessionId) : null;
 	}
 
 	/**
@@ -73,7 +73,7 @@ class Session extends \lithium\core\Adaptable {
 	 *         session.
 	 */
 	public static function isStarted($name = null) {
-		return is_object($adapter = static::adapter($name)) ? $adapter->isStarted() : false;
+		return \is_object($adapter = static::adapter($name)) ? $adapter->isStarted() : false;
 	}
 
 	/**
@@ -95,7 +95,7 @@ class Session extends \lithium\core\Adaptable {
 		$settings = static::_config($name);
 
 		if (!$method) {
-			foreach (array_keys(static::$_configurations) as $name) {
+			foreach (\array_keys(static::$_configurations) as $name) {
 				if ($method = static::adapter($name)->read($key, $options)) {
 					break;
 				}
@@ -105,7 +105,7 @@ class Session extends \lithium\core\Adaptable {
 			}
 		}
 		$filters = $settings['filters'] ?: array();
-		$result = static::_filter(__FUNCTION__, compact('key', 'options'), $method, $filters);
+		$result = static::_filter(__FUNCTION__, \compact('key', 'options'), $method, $filters);
 
 		if ($options['strategies']) {
 			$options += array('key' => $key, 'mode' => 'LIFO', 'class' => __CLASS__);
@@ -131,7 +131,7 @@ class Session extends \lithium\core\Adaptable {
 		$defaults = array('name' => null, 'strategies' => true);
 		$options += $defaults;
 
-		if (is_resource($value) || !static::$_configurations) {
+		if (\is_resource($value) || !static::$_configurations) {
 			return false;
 		}
 		$methods = array();
@@ -139,7 +139,7 @@ class Session extends \lithium\core\Adaptable {
 		if ($name = $options['name']) {
 			$methods = array($name => static::adapter($name)->write($key, $value, $options));
 		} else {
-			foreach (array_keys(static::$_configurations) as $name) {
+			foreach (\array_keys(static::$_configurations) as $name) {
 				if ($method = static::adapter($name)->write($key, $value, $options)) {
 					$methods[$name] = $method;
 				}
@@ -156,7 +156,7 @@ class Session extends \lithium\core\Adaptable {
 				$options += array('key' => $key, 'class' => __CLASS__);
 				$value = static::applyStrategies(__FUNCTION__, $name, $original, $options);
 			}
-			$params = compact('key', 'value', 'options');
+			$params = \compact('key', 'value', 'options');
 			$result = static::_filter(__FUNCTION__, $params, $method, $filters) || $result;
 		}
 		return $result;
@@ -200,7 +200,7 @@ class Session extends \lithium\core\Adaptable {
 				$options += array('key' => $key, 'class' => __CLASS__);
 				$key = static::applyStrategies(__FUNCTION__, $name, $original, $options);
 			}
-			$params = compact('key', 'options');
+			$params = \compact('key', 'options');
 			$filters = $settings['filters'];
 			$result = static::_filter(__FUNCTION__, $params, $method, $filters) || $result;
 		}
@@ -232,7 +232,7 @@ class Session extends \lithium\core\Adaptable {
 				}
 			}
 		}
-		$params = compact('options');
+		$params = \compact('options');
 		$result = false;
 
 		foreach ($methods as $name => $method) {
@@ -270,7 +270,7 @@ class Session extends \lithium\core\Adaptable {
 				}
 			}
 		}
-		$params = compact('key', 'options');
+		$params = \compact('key', 'options');
 		$result = false;
 
 		foreach ($methods as $name => $method) {
@@ -294,10 +294,10 @@ class Session extends \lithium\core\Adaptable {
 	 */
 	public static function adapter($name = null) {
 		if (!$name) {
-			if (!$names = array_keys(static::$_configurations)) {
+			if (!$names = \array_keys(static::$_configurations)) {
 				return;
 			}
-			$name = end($names);
+			$name = \end($names);
 		}
 		return parent::adapter($name);
 	}

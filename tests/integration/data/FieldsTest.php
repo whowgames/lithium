@@ -18,7 +18,7 @@ class FieldsTest extends \lithium\tests\integration\data\Base {
 	 */
 	public function skip() {
 		parent::connect($this->_connection);
-		if (!class_exists('li3_fixtures\test\Fixtures')) {
+		if (!\class_exists('li3_fixtures\test\Fixtures')) {
 			$this->skipIf(true, "These tests need `'li3_fixtures'` to be runned.");
 		}
 		$this->skipIf($this->with(array('CouchDb')));
@@ -57,7 +57,7 @@ class FieldsTest extends \lithium\tests\integration\data\Base {
 		$new = Galleries::create(array('name' => 'People'));
 		$key = Galleries::meta('key');
 		$new->save();
-		$id = is_object($new->{$key}) ? (string) $new->{$key} : $new->{$key};
+		$id = \is_object($new->{$key}) ? (string) $new->{$key} : $new->{$key};
 
 		$entity = Galleries::first($id);
 
@@ -69,7 +69,7 @@ class FieldsTest extends \lithium\tests\integration\data\Base {
 			'active' => true
 		);
 		$result = $entity->data();
-		$this->assertEqual($expected, array_filter($result));
+		$this->assertEqual($expected, \array_filter($result));
 
 		$entity = Galleries::first(array(
 			'conditions' => array($key => $id),

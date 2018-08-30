@@ -56,21 +56,21 @@ class Compiler extends \lithium\core\StaticObject {
 		$defaults = array('path' => $cachePath, 'fallback' => false);
 		$options += $defaults;
 
-		$stats = stat($file);
-		$dir = dirname($file);
-		$oname = basename(dirname($dir)) . '_' . basename($dir) . '_' . basename($file, '.php');
+		$stats = \stat($file);
+		$dir = \dirname($file);
+		$oname = \basename(\dirname($dir)) . '_' . \basename($dir) . '_' . \basename($file, '.php');
 		$template = "template_{$oname}_{$stats['ino']}_{$stats['mtime']}_{$stats['size']}.php";
 		$template = "{$options['path']}/{$template}";
 
-		if (file_exists($template)) {
+		if (\file_exists($template)) {
 			return $template;
 		}
-		$compiled = static::compile(file_get_contents($file));
+		$compiled = static::compile(\file_get_contents($file));
 
-		if (is_writable($cachePath) && file_put_contents($template, $compiled) !== false) {
-			foreach (glob("{$options['path']}/template_{$oname}_*.php") as $expired) {
+		if (\is_writable($cachePath) && \file_put_contents($template, $compiled) !== false) {
+			foreach (\glob("{$options['path']}/template_{$oname}_*.php") as $expired) {
 				if ($expired !== $template) {
-					unlink($expired);
+					\unlink($expired);
 				}
 			}
 			return $template;
@@ -91,7 +91,7 @@ class Compiler extends \lithium\core\StaticObject {
 	 */
 	public static function compile($string) {
 		$patterns = static::$_processors;
-		return preg_replace(array_keys($patterns), array_values($patterns), $string);
+		return \preg_replace(\array_keys($patterns), \array_values($patterns), $string);
 	}
 }
 

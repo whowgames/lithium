@@ -45,8 +45,8 @@ class Base extends \lithium\test\Integration {
 		if ($message === false) {
 			$type = $this->_dbConfig['adapter'];
 			$type = $type ?: $this->_dbConfig['type'];
-			$class = basename(str_replace('\\', '/', get_called_class()));
-			$callers = debug_backtrace();
+			$class = \basename(\str_replace('\\', '/', \get_called_class()));
+			$callers = \debug_backtrace();
 			$caller = $callers[1]['function'];
 			$method = $caller !== 'skip' ? "{$class}::" . $caller : $class;
 			$message = "`{$method}` Not supported by the `'{$type}'` adapter";

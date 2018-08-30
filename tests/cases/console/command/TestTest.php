@@ -26,23 +26,23 @@ class TestTest extends \lithium\test\Unit {
 		$this->classes = array(
 			'response' => 'lithium\tests\mocks\console\MockResponse'
 		);
-		$this->_backup['cwd'] = getcwd();
+		$this->_backup['cwd'] = \getcwd();
 		$this->_backup['_SERVER'] = $_SERVER;
 		$_SERVER['argv'] = array();
 
-		chdir(Libraries::get('lithium', 'path'));
+		\chdir(Libraries::get('lithium', 'path'));
 
-		$this->request = new Request(array('input' => fopen('php://temp', 'w+')));
+		$this->request = new Request(array('input' => \fopen('php://temp', 'w+')));
 		$this->request->params = array('library' => 'build_test');
 	}
 
 	public function tearDown() {
 		$_SERVER = $this->_backup['_SERVER'];
-		chdir($this->_backup['cwd']);
+		\chdir($this->_backup['cwd']);
 	}
 
 	public function skip() {
-		$isWin = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
+		$isWin = \strtoupper(\substr(PHP_OS, 0, 3)) === 'WIN';
 		$this->skipIf($isWin, 'The test command needs to be refactored to work on windows.');
 	}
 
@@ -102,7 +102,7 @@ class TestTest extends \lithium\test\Unit {
 		$command->run($path);
 
 		$expected = "1 pass\n0 fails and 0 exceptions\n";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 	}
@@ -116,7 +116,7 @@ class TestTest extends \lithium\test\Unit {
 		$command->run($path);
 
 		$expected = "1 pass\n0 fails and 0 exceptions\n";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 
@@ -124,21 +124,21 @@ class TestTest extends \lithium\test\Unit {
 			'request' => $this->request, 'classes' => $this->classes
 		));
 
-		$current = basename(getcwd());
+		$current = \basename(\getcwd());
 		$path = "../{$current}/tests/mocks/test/cases/MockTest.php";
 		$command->run($path);
 
 		$expected = "1 pass\n0 fails and 0 exceptions\n";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 
-		$current = basename(getcwd());
+		$current = \basename(\getcwd());
 		$path = "{$current}/tests/mocks/test/cases/MockTest.php";
 		$command->run($path);
 
 		$expected = "1 pass\n0 fails and 0 exceptions\n";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 	}
@@ -152,7 +152,7 @@ class TestTest extends \lithium\test\Unit {
 		$command->run($path);
 
 		$expected = "4 exceptions";
-		$expected = preg_quote($expected, '/');
+		$expected = \preg_quote($expected, '/');
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 	}
@@ -187,7 +187,7 @@ class TestTest extends \lithium\test\Unit {
 		$command->run($path);
 
 		$result = $command->response->output;
-		$result = json_decode($result, true);
+		$result = \json_decode($result, true);
 
 		$this->assertArrayHasKey('count', $result);
 		$this->assertArrayHasKey('stats', $result);
@@ -196,7 +196,7 @@ class TestTest extends \lithium\test\Unit {
 	public function testPathWithCustomDirectoryName() {
 		$testApp = Libraries::get(true, 'resources') . '/tmp/tests/custom_dir';
 		$testDir = $testApp . '/tests/cases/models';
-		mkdir($testDir, 0777, true);
+		\mkdir($testDir, 0777, true);
 		Libraries::add('test_app', array('path' => $testApp));
 		$request = new Request(array('env' => array('working' => $testApp)));
 		$command = new Test(array(

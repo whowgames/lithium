@@ -80,7 +80,7 @@ class Cache extends \lithium\core\Adaptable {
 	 * @return string The generated cache key.
 	 */
 	public static function key($key, $data = array()) {
-		return is_object($key) ? $key($data) : $key;
+		return \is_object($key) ? $key($data) : $key;
 	}
 
 	/**
@@ -103,12 +103,12 @@ class Cache extends \lithium\core\Adaptable {
 		}
 		$conditions = $options['conditions'];
 
-		if (is_callable($conditions) && !$conditions()) {
+		if (\is_callable($conditions) && !$conditions()) {
 			return false;
 		}
 		$key = static::key($key, $data);
 
-		if (is_array($key)) {
+		if (\is_array($key)) {
 			$expiry = $data;
 			$data = null;
 		}
@@ -119,7 +119,7 @@ class Cache extends \lithium\core\Adaptable {
 		}
 
 		$method = static::adapter($name)->write($key, $data, $expiry);
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		return static::_filter(__FUNCTION__, $params, $method, $settings[$name]['filters']);
 	}
 
@@ -141,19 +141,19 @@ class Cache extends \lithium\core\Adaptable {
 		}
 		$conditions = $options['conditions'];
 
-		if (is_callable($conditions) && !$conditions()) {
+		if (\is_callable($conditions) && !$conditions()) {
 			return false;
 		}
 		$key = static::key($key);
 		$method = static::adapter($name)->read($key);
-		$params = compact('key');
+		$params = \compact('key');
 		$filters = $settings[$name]['filters'];
 		$result = static::_filter(__FUNCTION__, $params, $method, $filters);
 
 		if ($result === null && ($write = $options['write'])) {
-			$write = is_callable($write) ? $write() : $write;
-			list($expiry, $value) = each($write);
-			$value = is_callable($value) ? $value() : $value;
+			$write = \is_callable($write) ? $write() : $write;
+			list($expiry, $value) = \each($write);
+			$value = \is_callable($value) ? $value() : $value;
 
 			if (static::write($name, $key, $value, $expiry)) {
 				$result = $value;
@@ -161,7 +161,7 @@ class Cache extends \lithium\core\Adaptable {
 		}
 
 		if ($options['strategies']) {
-			$options = compact('key') + array('mode' => 'LIFO', 'class' => __CLASS__);
+			$options = \compact('key') + array('mode' => 'LIFO', 'class' => __CLASS__);
 			$result = static::applyStrategies(__FUNCTION__, $name, $result, $options);
 		}
 		return $result;
@@ -185,7 +185,7 @@ class Cache extends \lithium\core\Adaptable {
 		}
 		$conditions = $options['conditions'];
 
-		if (is_callable($conditions) && !$conditions()) {
+		if (\is_callable($conditions) && !$conditions()) {
 			return false;
 		}
 
@@ -197,7 +197,7 @@ class Cache extends \lithium\core\Adaptable {
 			$options += array('key' => $key, 'class' => __CLASS__);
 			$key = static::applyStrategies(__FUNCTION__, $name, $key, $options);
 		}
-		return static::_filter(__FUNCTION__, compact('key'), $method, $filters);
+		return static::_filter(__FUNCTION__, \compact('key'), $method, $filters);
 	}
 
 	/**
@@ -220,13 +220,13 @@ class Cache extends \lithium\core\Adaptable {
 		}
 		$conditions = $options['conditions'];
 
-		if (is_callable($conditions) && !$conditions()) {
+		if (\is_callable($conditions) && !$conditions()) {
 			return false;
 		}
 
 		$key = static::key($key);
 		$method = static::adapter($name)->increment($key, $offset);
-		$params = compact('key', 'offset');
+		$params = \compact('key', 'offset');
 		$filters = $settings[$name]['filters'];
 
 		return static::_filter(__FUNCTION__, $params, $method, $filters);
@@ -252,13 +252,13 @@ class Cache extends \lithium\core\Adaptable {
 		}
 		$conditions = $options['conditions'];
 
-		if (is_callable($conditions) && !$conditions()) {
+		if (\is_callable($conditions) && !$conditions()) {
 			return false;
 		}
 
 		$key = static::key($key);
 		$method = static::adapter($name)->decrement($key, $offset);
-		$params = compact('key', 'offset');
+		$params = \compact('key', 'offset');
 		$filters = $settings[$name]['filters'];
 
 		return static::_filter(__FUNCTION__, $params, $method, $filters);

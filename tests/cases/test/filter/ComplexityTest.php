@@ -107,7 +107,7 @@ class ComplexityTest extends \lithium\test\Unit {
 	 * @see lithium\test\filter\Complexity::apply()
 	 */
 	public function testApply() {
-		extract($this->_paths);
+		\extract($this->_paths);
 
 		$collection = new CollectionMock();
 		$group = new GroupMock();
@@ -136,7 +136,7 @@ class ComplexityTest extends \lithium\test\Unit {
 				'inspector' => 'lithium\analysis\inspector\Mock',
 			),
 		));
-		$results = array_pop($this->report->results['filters'][$complexity]);
+		$results = \array_pop($this->report->results['filters'][$complexity]);
 		$expected = array($testClass => array(
 			'foo' => 4,
 			'bar' => 4,
@@ -151,7 +151,7 @@ class ComplexityTest extends \lithium\test\Unit {
 	 * @see lithium\test\filter\Complexity::analyze()
 	 */
 	public function testAnalyze() {
-		extract($this->_paths);
+		\extract($this->_paths);
 
 		$group = new GroupMock();
 		$group->add($testClassTest);
@@ -174,7 +174,7 @@ class ComplexityTest extends \lithium\test\Unit {
 			),
 		);
 		$this->assertEqual($expected['max'], $results['max']);
-		$result = round($results['class'][$testClass], 1);
+		$result = \round($results['class'][$testClass], 1);
 		$this->assertIdentical($expected['class'][$testClass], $result);
 	}
 
@@ -184,7 +184,7 @@ class ComplexityTest extends \lithium\test\Unit {
 	 * @see lithium\test\filter\Complexity::collect()
 	 */
 	public function testCollect() {
-		extract($this->_paths);
+		\extract($this->_paths);
 
 		$group = new GroupMock();
 		$group->add($testClassTest);

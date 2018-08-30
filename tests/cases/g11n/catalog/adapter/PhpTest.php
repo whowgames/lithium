@@ -20,7 +20,7 @@ class PhpTest extends \lithium\test\Unit {
 
 	public function skip() {
 		$this->_path = $path = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($path), "Path `{$path}` is not writable.");
+		$this->skipIf(!\is_writable($path), "Path `{$path}` is not writable.");
 	}
 
 	public function setUp() {
@@ -50,7 +50,7 @@ class PhpTest extends \lithium\test\Unit {
 	}
 
 	public function testRead() {
-		mkdir("{$this->_path}/fr/message", 0755, true);
+		\mkdir("{$this->_path}/fr/message", 0755, true);
 
 		$data = <<<EOD
 <?php
@@ -60,7 +60,7 @@ return array(
 );
 ?>
 EOD;
-		file_put_contents("{$this->_path}/fr/message/default.php", $data);
+		\file_put_contents("{$this->_path}/fr/message/default.php", $data);
 
 		$result = $this->adapter->read('message', 'fr', null);
 		$expected = array(
@@ -93,7 +93,7 @@ return array(
 );
 ?>
 EOD;
-		file_put_contents("{$this->_path}/message_default.php", $data);
+		\file_put_contents("{$this->_path}/message_default.php", $data);
 
 		$result = $this->adapter->read('messageTemplate', 'root', null);
 		$expected = array(
@@ -118,7 +118,7 @@ EOD;
 	}
 
 	public function testReadWithScope() {
-		mkdir("{$this->_path}/fr/message", 0755, true);
+		\mkdir("{$this->_path}/fr/message", 0755, true);
 
 		$data = <<<EOD
 <?php
@@ -127,7 +127,7 @@ return array(
 );
 ?>
 EOD;
-		file_put_contents("{$this->_path}/fr/message/li3_docs.php", $data);
+		\file_put_contents("{$this->_path}/fr/message/li3_docs.php", $data);
 
 		$result = $this->adapter->read('message', 'fr', null);
 		$this->assertEmpty($result);
@@ -147,7 +147,7 @@ EOD;
 	}
 
 	public function testReadValidation() {
-		mkdir("{$this->_path}/fr/validation", 0755, true);
+		\mkdir("{$this->_path}/fr/validation", 0755, true);
 
 		$data = <<<EOD
 <?php
@@ -156,7 +156,7 @@ return array(
 );
 ?>
 EOD;
-		file_put_contents("{$this->_path}/fr/validation/default.php", $data);
+		\file_put_contents("{$this->_path}/fr/validation/default.php", $data);
 
 		$result = $this->adapter->read('validation', 'fr', null);
 		$expected = array(
@@ -174,7 +174,7 @@ EOD;
 	}
 
 	public function testReadWithAnonymousFunction() {
-		mkdir("{$this->_path}/fr/message", 0755, true);
+		\mkdir("{$this->_path}/fr/message", 0755, true);
 
 		$data = <<<EOD
 <?php
@@ -184,7 +184,7 @@ return array(
 );
 ?>
 EOD;
-		file_put_contents("{$this->_path}/fr/message/default.php", $data);
+		\file_put_contents("{$this->_path}/fr/message/default.php", $data);
 
 		$result = $this->adapter->read('message', 'fr', null);
 		$expected = array(

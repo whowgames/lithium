@@ -123,7 +123,7 @@ class RequestTest extends \lithium\test\Unit {
 	}
 
 	public function testToString() {
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET / HTTP/1.1',
 			'Host: localhost',
 			'Connection: Close',
@@ -139,7 +139,7 @@ class RequestTest extends \lithium\test\Unit {
 
 	public function testPostToString() {
 		$this->request->method = 'POST';
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'POST / HTTP/1.1',
 			'Host: localhost',
 			'Connection: Close',
@@ -158,7 +158,7 @@ class RequestTest extends \lithium\test\Unit {
 		$request = new Request(array(
 			'cookies' => array('foo' => 'bar', 'bin' => 'baz')
 		));
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET / HTTP/1.1',
 			'Host: localhost',
 			'Connection: Close',
@@ -198,12 +198,12 @@ class RequestTest extends \lithium\test\Unit {
 			'username' => 'root',
 			'password' => 'something'
 		));
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET / HTTP/1.1',
 			'Host: localhost',
 			'Connection: Close',
 			'User-Agent: Mozilla/5.0',
-			'Authorization: Basic ' . base64_encode('root:something'),
+			'Authorization: Basic ' . \base64_encode('root:something'),
 			'', ''
 		));
 		$result = (string) $request;
@@ -235,7 +235,7 @@ class RequestTest extends \lithium\test\Unit {
 	}
 
 	public function testToStringWithBody() {
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET / HTTP/1.1',
 			'Host: localhost',
 			'Connection: Close',
@@ -368,14 +368,14 @@ class RequestTest extends \lithium\test\Unit {
 			'username' => 'gwoo',
 			'password' => 'li3'
 		));
-		$cnonce = md5(time());
-		$user = md5("gwoo:app:li3");
+		$cnonce = \md5(\time());
+		$user = \md5("gwoo:app:li3");
 		$nonce = "4bca0fbca7bd0:00000001:{$cnonce}:auth";
-		$req = md5("GET:/http_auth");
-		$hash = md5("{$user}:{$nonce}:{$req}");
+		$req = \md5("GET:/http_auth");
+		$hash = \md5("{$user}:{$nonce}:{$req}");
 
 		$request->to('url');
-		preg_match('/response="(.*?)"/', $request->headers('Authorization'), $matches);
+		\preg_match('/response="(.*?)"/', $request->headers('Authorization'), $matches);
 		list($match, $response) = $matches;
 
 		$expected = $hash;
@@ -385,7 +385,7 @@ class RequestTest extends \lithium\test\Unit {
 
 	public function testParseUrlToConfig() {
 		$url = "http://localhost/path/one.php?param=1&param=2";
-		$config = parse_url($url);
+		$config = \parse_url($url);
 		$request = new Request($config);
 
 		$expected = $url;
@@ -393,7 +393,7 @@ class RequestTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, $result);
 
 		$url = "http://localhost:80/path/one.php?param=1&param=2";
-		$config = parse_url($url);
+		$config = \parse_url($url);
 		$request = new Request($config);
 
 		$expected = $url;
@@ -403,7 +403,7 @@ class RequestTest extends \lithium\test\Unit {
 
 	public function testQueryParamsConstructed() {
 		$url = "http://localhost/path/one.php?param=1&param=2";
-		$config = parse_url($url);
+		$config = \parse_url($url);
 		$request = new Request($config);
 
 		$expected = "?param=1&param=2";
@@ -423,7 +423,7 @@ class RequestTest extends \lithium\test\Unit {
 		$expected = 'Content-Type: text/x-test';
 		$result = $request->headers();
 		$message = "Expected value `{$expected}` not found in result.";
-		$this->assertTrue(in_array($expected, $result), $message);
+		$this->assertTrue(\in_array($expected, $result), $message);
 
 		$expected = '#Content-Type: text/x-test#';
 		$result = $request->to('string');
@@ -439,7 +439,7 @@ class RequestTest extends \lithium\test\Unit {
 		$expected = 'Content-Type: text/x-test';
 		$result = $request->headers();
 		$message = "Expected value `{$expected}` not found in result.";
-		$this->assertTrue(in_array($expected, $result), $message);
+		$this->assertTrue(\in_array($expected, $result), $message);
 
 		$expected = '#Content-Type: text/x-test#';
 		$result = $request->to('string');

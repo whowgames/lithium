@@ -91,7 +91,7 @@ class Test extends \lithium\console\Command {
 					$command->out(null, 1);
 				}
 				$colorize = function($result) {
-					switch (trim($result)) {
+					switch (\trim($result)) {
 						case '.':
 							return $result;
 						case 'pass':
@@ -112,9 +112,9 @@ class Test extends \lithium\console\Command {
 
 				if ($command->verbose) {
 					$reporter = function($result) use ($command, $colorize) {
-						$command->out(sprintf(
+						$command->out(\sprintf(
 							'[%s] on line %4s in %s::%s()',
-							$colorize(sprintf('%9s', $result['result'])),
+							$colorize(\sprintf('%9s', $result['result'])),
 							isset($result['line']) ? $result['line'] : '??',
 							isset($result['class']) ? $result['class'] : '??',
 							isset($result['method']) ? $result['method'] : '??'
@@ -129,8 +129,8 @@ class Test extends \lithium\console\Command {
 
 						if ($result['result'] === 'pass') {
 							$symbol = '.';
-						} elseif (in_array($result['result'], $shorten)) {
-							$symbol = strtoupper($result['result'][0]);
+						} elseif (\in_array($result['result'], $shorten)) {
+							$symbol = \strtoupper($result['result'][0]);
 						} else {
 							$symbol = '?';
 						}
@@ -142,7 +142,7 @@ class Test extends \lithium\console\Command {
 						}
 					};
 				}
-				$report = $runner(compact('reporter'));
+				$report = $runner(\compact('reporter'));
 
 				if (!$command->plain) {
 					$stats = $report->stats();
@@ -157,7 +157,7 @@ class Test extends \lithium\console\Command {
 
 					foreach ($report->filters() as $filter => $options) {
 						$data = $report->results['filters'][$filter];
-						$command->out($report->render($options['name'], compact('data')));
+						$command->out($report->render($options['name'], \compact('data')));
 					}
 				}
 				return $report;
@@ -172,7 +172,7 @@ class Test extends \lithium\console\Command {
 						$filters[$options['name']] = $report->results['filters'][$filter];
 					}
 				}
-				$command->out($report->render('stats', $report->stats() + compact('filters')));
+				$command->out($report->render('stats', $report->stats() + \compact('filters')));
 				return $report;
 			}
 		);
@@ -217,7 +217,7 @@ class Test extends \lithium\console\Command {
 		if (!$path = $this->_path($path)) {
 			return false;
 		}
-		if (!preg_match('/(tests|Test\.php)/', $path)) {
+		if (!\preg_match('/(tests|Test\.php)/', $path)) {
 			if (!$path = Unit::get($path)) {
 				$this->error('Cannot map path to test path.');
 				return static::EXIT_NO_TEST;
@@ -225,14 +225,14 @@ class Test extends \lithium\console\Command {
 		}
 		$handlers = $this->_handlers;
 
-		if (!isset($handlers[$this->format]) || !is_callable($handlers[$this->format])) {
-			$this->error(sprintf('No handler for format `%s`... ', $this->format));
+		if (!isset($handlers[$this->format]) || !\is_callable($handlers[$this->format])) {
+			$this->error(\sprintf('No handler for format `%s`... ', $this->format));
 			return false;
 		}
-		$filters = $this->filters ? array_map('trim', explode(',', $this->filters)) : array();
-		$params = compact('filters') + array('format' => $this->format);
+		$filters = $this->filters ? \array_map('trim', \explode(',', $this->filters)) : array();
+		$params = \compact('filters') + array('format' => $this->format);
 		$runner = function($options = array()) use ($path, $params) {
-			error_reporting(E_ALL | E_STRICT | E_DEPRECATED);
+			\error_reporting(E_ALL | E_STRICT | E_DEPRECATED);
 			return Dispatcher::run($path, $params + $options);
 		};
 		$report = $handlers[$this->format]($runner, $path);
@@ -250,10 +250,10 @@ class Test extends \lithium\console\Command {
 		$result = null;
 		$match = '';
 		foreach (Libraries::get() as $name => $library) {
-			if (strpos($path, $library['path']) !== 0) {
+			if (\strpos($path, $library['path']) !== 0) {
 				continue;
 			}
-			if (strlen($library['path']) > strlen($match)) {
+			if (\strlen($library['path']) > \strlen($match)) {
 				$result = $name;
 				$match = $library['path'];
 			}
@@ -281,7 +281,7 @@ class Test extends \lithium\console\Command {
 	 * @return string Returns a fully-namespaced class path, or `false`, if an error occurs.
 	 */
 	protected function _path($path) {
-		$path = rtrim(str_replace('\\', '/', $path), '/');
+		$path = \rtrim(\str_replace('\\', '/', $path), '/');
 
 		if (!$path) {
 			$this->error('Please provide a path to tests.');
@@ -291,21 +291,21 @@ class Test extends \lithium\console\Command {
 			$library = $this->_library($path);
 		}
 		if ($path[0] !== '/') {
-			$libraries = array_reduce(Libraries::get(), function($v, $w) {
-				$v[] = basename($w['path']);
+			$libraries = \array_reduce(Libraries::get(), function($v, $w) {
+				$v[] = \basename($w['path']);
 				return $v;
 			});
 
 			$library = $this->_library($this->request->env('working') . '/' . $path);
-			$parts = explode('/', str_replace("../", "", $path));
-			$plugin = array_shift($parts);
+			$parts = \explode('/', \str_replace("../", "", $path));
+			$plugin = \array_shift($parts);
 
 			if ($plugin === 'libraries') {
-				$plugin = array_shift($parts);
+				$plugin = \array_shift($parts);
 			}
-			if (in_array($plugin, $libraries)) {
+			if (\in_array($plugin, $libraries)) {
 				$library = $plugin;
-				$path = join('/', $parts);
+				$path = \join('/', $parts);
 			}
 		}
 		if (empty($library)) {
@@ -316,14 +316,14 @@ class Test extends \lithium\console\Command {
 			$this->error("Library `{$library}` does not exist.");
 			return false;
 		}
-		$path = str_replace($config['path'], null, $path);
+		$path = \str_replace($config['path'], null, $path);
 		$realpath = $config['path'] . '/' . $path;
 
-		if (!realpath($realpath)) {
+		if (!\realpath($realpath)) {
 			$this->error("Path `{$realpath}` not found.");
 			return false;
 		}
-		$class = str_replace(".php", "", str_replace('/', '\\', ltrim($path, '/')));
+		$class = \str_replace(".php", "", \str_replace('/', '\\', \ltrim($path, '/')));
 		return $config['prefix'] . $class;
 	}
 }

@@ -224,7 +224,7 @@ abstract class Database extends \lithium\data\Source {
 								$message .= "`'with'` using the `'joined'` strategy.";
 								throw new QueryException($message);
 							}
-							extract($with[$relPath]);
+							\extract($with[$relPath]);
 						}
 						$to = $context->alias($alias, $relPath);
 
@@ -247,14 +247,14 @@ abstract class Database extends \lithium\data\Source {
 					}
 				};
 
-				$tree = Set::expand(array_fill_keys(array_keys($with), false));
+				$tree = Set::expand(\array_fill_keys(\array_keys($with), false));
 				$alias = $context->alias();
 				$deps = array($alias => array());
 				$strategy($strategy, $model, $tree, '', $alias, $deps);
 
 				$models = $context->models();
 				foreach ($context->fields() as $field) {
-					if (!is_string($field)) {
+					if (!\is_string($field)) {
 						continue;
 					}
 					list($alias, $field) = $self->invokeMethod('_splitFieldname', array($field));
@@ -293,14 +293,14 @@ abstract class Database extends \lithium\data\Source {
 		try {
 			$this->connection = new PDO($dsn, $config['login'], $config['password'], $options);
 		} catch (PDOException $e) {
-			preg_match('/SQLSTATE\[(.+?)\]/', $e->getMessage(), $code);
+			\preg_match('/SQLSTATE\[(.+?)\]/', $e->getMessage(), $code);
 			$code = $code[1] ?: 0;
 			switch (true) {
-				case $code === 'HY000' || substr($code, 0, 2) === '08':
+				case $code === 'HY000' || \substr($code, 0, 2) === '08':
 					$msg = "Unable to connect to host `{$config['host']}`.";
 					throw new NetworkException($msg, null, $e);
 				break;
-				case in_array($code, array('28000', '42000')):
+				case \in_array($code, array('28000', '42000')):
 					$msg = "Host connected, but could not access database `{$config['database']}`.";
 					throw new ConfigException($msg, null, $e);
 				break;
@@ -336,14 +336,14 @@ abstract class Database extends \lithium\data\Source {
 	 *         database adapter subclass.
 	 */
 	public function name($name) {
-		$open  = reset($this->_quotes);
-		$close = next($this->_quotes);
+		$open  = \reset($this->_quotes);
+		$close = \next($this->_quotes);
 
 		list($first, $second) = $this->_splitFieldname($name);
 		if ($first) {
 			return "{$open}{$first}{$close}.{$open}{$second}{$close}";
 		}
-		return preg_match('/^[a-z0-9_-]+$/i', $name) ? "{$open}{$name}{$close}" : $name;
+		return \preg_match('/^[a-z0-9_-]+$/i', $name) ? "{$open}{$name}{$close}" : $name;
 	}
 
 	/**
@@ -354,9 +354,9 @@ abstract class Database extends \lithium\data\Source {
 	 *         and the field name as second value.
 	 */
 	protected function _splitFieldname($field) {
-		if (is_string($field)) {
-			if (preg_match('/^[a-z0-9_-]+\.([a-z 0-9_-]+|\*)$/i', $field)) {
-				return explode('.', $field, 2);
+		if (\is_string($field)) {
+			if (\preg_match('/^[a-z0-9_-]+\.([a-z 0-9_-]+|\*)$/i', $field)) {
+				return \explode('.', $field, 2);
 			}
 		}
 		return array(null, $field);
@@ -373,9 +373,9 @@ abstract class Database extends \lithium\data\Source {
 	 *       e.g. Foos.bar and Bars.bar will both return bar.
 	 */
 	protected function _fieldName($field) {
-		if (is_string($field)) {
-			if (preg_match('/^[a-z0-9_-]+\.[a-z0-9_-]+$/i', $field)) {
-				list($first, $second) = explode('.', $field, 2);
+		if (\is_string($field)) {
+			if (\preg_match('/^[a-z0-9_-]+\.[a-z0-9_-]+$/i', $field)) {
+				list($first, $second) = \explode('.', $field, 2);
 				return $second;
 			}
 		}
@@ -391,14 +391,14 @@ abstract class Database extends \lithium\data\Source {
 	 * @return mixed value with converted type
 	 */
 	public function value($value, array $schema = array()) {
-		if (is_array($value)) {
+		if (\is_array($value)) {
 			foreach ($value as $key => $val) {
 				$value[$key] = $this->value($val, isset($schema[$key]) ? $schema[$key] : $schema);
 			}
 			return $value;
 		}
 
-		if (is_object($value) && isset($value->scalar)) {
+		if (\is_object($value) && isset($value->scalar)) {
 			return $value->scalar;
 		}
 
@@ -425,7 +425,7 @@ abstract class Database extends \lithium\data\Source {
 		$column += array('formatter' => null, 'format' => null);
 		$schema += array('default' => null, 'null' => false);
 
-		if (is_object($value)) {
+		if (\is_object($value)) {
 			return $value;
 		}
 		if ($formatter = $column['formatter']) {
@@ -450,13 +450,13 @@ abstract class Database extends \lithium\data\Source {
 		$self = $this;
 
 		$datetime = $timestamp = $date = $time = function($format, $value) use ($self) {
-			if ($format && (($time = strtotime($value)) !== false)) {
-				$value = date($format, $time);
+			if ($format && (($time = \strtotime($value)) !== false)) {
+				$value = \date($format, $time);
 			}
 			return $self->connection->quote($value);
 		};
 
-		return compact('datetime', 'timestamp', 'date', 'time') + array(
+		return \compact('datetime', 'timestamp', 'date', 'time') + array(
 			'boolean' => function($value) {
 				return $value ? 1 : 0;
 			}
@@ -475,11 +475,11 @@ abstract class Database extends \lithium\data\Source {
 	 * @filter
 	 */
 	public function create($query, array $options = array()) {
-		return $this->_filter(__METHOD__, compact('query', 'options'), function($self, $params) {
+		return $this->_filter(__METHOD__, \compact('query', 'options'), function($self, $params) {
 			$query = $params['query'];
 			$model = $entity = $object = $id = null;
 
-			if (is_object($query)) {
+			if (\is_object($query)) {
 				$object = $query;
 				$model = $query->model();
 				$params = $query->export($self);
@@ -516,21 +516,21 @@ abstract class Database extends \lithium\data\Source {
 	 */
 	public function read($query, array $options = array()) {
 		$defaults = array(
-			'return' => is_string($query) ? 'array' : 'item',
+			'return' => \is_string($query) ? 'array' : 'item',
 			'schema' => null,
 			'quotes' => $this->_quotes
 		);
 		$options += $defaults;
 
-		return $this->_filter(__METHOD__, compact('query', 'options'), function($self, $params) {
+		return $this->_filter(__METHOD__, \compact('query', 'options'), function($self, $params) {
 			$query = $params['query'];
 			$args = $params['options'];
 			$return = $args['return'];
 			unset($args['return']);
 
-			$model = is_object($query) ? $query->model() : null;
+			$model = \is_object($query) ? $query->model() : null;
 
-			if (is_string($query)) {
+			if (\is_string($query)) {
 				$sql = StringDeprecated::insert($query, $self->value($args));
 			} else {
 				if (!$data = $self->invokeMethod('_queryExport', array($query))) {
@@ -546,7 +546,7 @@ abstract class Database extends \lithium\data\Source {
 				case 'array':
 					$columns = $args['schema'] ?: $self->schema($query, $result);
 
-					if (!is_array(reset($columns))) {
+					if (!\is_array(\reset($columns))) {
 						$columns = array('' => $columns);
 					}
 
@@ -556,8 +556,8 @@ abstract class Database extends \lithium\data\Source {
 						$offset = 0;
 						$records[$i] = array();
 						foreach ($columns as $path => $cols) {
-							$len = count($cols);
-							$values = array_combine($cols, array_slice($data, $offset, $len));
+							$len = \count($cols);
+							$values = \array_combine($cols, \array_slice($data, $offset, $len));
 							if ($path) {
 								$records[$i][$path] = $values;
 							} else {
@@ -569,7 +569,7 @@ abstract class Database extends \lithium\data\Source {
 					}
 					return Set::expand($records);
 				case 'item':
-					return $model::create(array(), compact('query', 'result') + array(
+					return $model::create(array(), \compact('query', 'result') + array(
 						'class' => 'set', 'defaults' => false
 					));
 			}
@@ -625,13 +625,13 @@ abstract class Database extends \lithium\data\Source {
 	 * @filter
 	 */
 	public function update($query, array $options = array()) {
-		return $this->_filter(__METHOD__, compact('query', 'options'), function($self, $params) {
+		return $this->_filter(__METHOD__, \compact('query', 'options'), function($self, $params) {
 			$query = $params['query'];
 			$params = $query->export($self);
 			$sql = $self->renderCommand('update', $params, $query);
 			$result = (boolean) $self->invokeMethod('_execute', array($sql));
 
-			if ($result && is_object($query) && $query->entity()) {
+			if ($result && \is_object($query) && $query->entity()) {
 				$query->entity()->sync();
 			}
 			return $result;
@@ -649,9 +649,9 @@ abstract class Database extends \lithium\data\Source {
 	 * @filter
 	 */
 	public function delete($query, array $options = array()) {
-		return $this->_filter(__METHOD__, compact('query', 'options'), function($self, $params) {
+		return $this->_filter(__METHOD__, \compact('query', 'options'), function($self, $params) {
 			$query = $params['query'];
-			$isObject = is_object($query);
+			$isObject = \is_object($query);
 
 			if ($isObject) {
 				$sql = $self->renderCommand('delete', $query->export($self), $query);
@@ -682,13 +682,13 @@ abstract class Database extends \lithium\data\Source {
 
 		switch ($type) {
 			case 'count':
-				if (strpos($fields = $this->fields($query->fields(), $query), ',') !== false) {
+				if (\strpos($fields = $this->fields($query->fields(), $query), ',') !== false) {
 					$fields = "*";
 				}
 				$query->fields("COUNT({$fields}) as count", true);
 				$query->map(array($query->alias() => array('count')));
 				list($record) = $this->read($query, $options)->data();
-				return isset($record['count']) ? intval($record['count']) : null;
+				return isset($record['count']) ? \intval($record['count']) : null;
 		}
 	}
 
@@ -704,8 +704,8 @@ abstract class Database extends \lithium\data\Source {
 	public function relationship($class, $type, $name, array $config = array()) {
 		$primary = $class::meta('key');
 
-		if (is_array($primary)) {
-			$key = array_combine($primary, $primary);
+		if (\is_array($primary)) {
+			$key = \array_combine($primary, $primary);
 		} elseif ($type === 'hasMany' || $type === 'hasOne') {
 			$secondary = Inflector::underscore(Inflector::singularize($class::meta('name')));
 			$key = array($primary => "{$secondary}_id");
@@ -715,7 +715,7 @@ abstract class Database extends \lithium\data\Source {
 
 		$from = $class;
 		$fieldName = $this->relationFieldName($type, $name);
-		$config += compact('type', 'name', 'key', 'from', 'fieldName');
+		$config += \compact('type', 'name', 'key', 'from', 'fieldName');
 		return $this->_instance('relationship', $config);
 	}
 
@@ -726,7 +726,7 @@ abstract class Database extends \lithium\data\Source {
 	 */
 	public function methods() {
 		$result = parent::methods();
-		$key = array_search('schema', $result);
+		$key = \array_search('schema', $result);
 		unset($result[$key]);
 		return $result;
 	}
@@ -740,7 +740,7 @@ abstract class Database extends \lithium\data\Source {
 	 * @return string
 	 */
 	public function renderCommand($type, $data = null, $context = null) {
-		if (is_object($type)) {
+		if (\is_object($type)) {
 			$context = $type;
 			$data = $context->export($this);
 			$type = $context->type();
@@ -749,13 +749,13 @@ abstract class Database extends \lithium\data\Source {
 			throw new InvalidArgumentException("Invalid query type `{$type}`.");
 		}
 		$template = $this->_strings[$type];
-		$data = array_filter($data);
+		$data = \array_filter($data);
 		$placeholders = array();
 		foreach ($data as $key => $value) {
 			$placeholders[$key] = "{{$key}}";
 		}
 		$template = StringDeprecated::insert($template, $placeholders, array('clean' => true));
-		return trim(StringDeprecated::insert($template, $data, array('before' => '{')));
+		return \trim(StringDeprecated::insert($template, $data, array('before' => '{')));
 	}
 
 	/**
@@ -767,7 +767,7 @@ abstract class Database extends \lithium\data\Source {
 	 * @param object $context
 	 */
 	public function schema($query, $resource = null, $context = null) {
-		if (is_object($query)) {
+		if (\is_object($query)) {
 			$query->applyStrategy($this);
 			return $this->_schema($query, $this->_fields($query->fields(), $query));
 		}
@@ -797,8 +797,8 @@ abstract class Database extends \lithium\data\Source {
 
 		if (!$model) {
 			foreach ($fields as $field => $value) {
-				if (is_array($value)) {
-					$result[$field] = array_keys($value);
+				if (\is_array($value)) {
+					$result[$field] = \array_keys($value);
 				} else {
 					$result[''][] = $field;
 				}
@@ -814,33 +814,33 @@ abstract class Database extends \lithium\data\Source {
 		}
 
 		$unalias = function ($value) {
-			if (is_object($value) && isset($value->scalar)) {
+			if (\is_object($value) && isset($value->scalar)) {
 				$value = $value->scalar;
 			}
-			$aliasing = preg_split("/\s+as\s+/i", $value);
+			$aliasing = \preg_split("/\s+as\s+/i", $value);
 			return isset($aliasing[1]) ? $aliasing[1] : $value;
 		};
 
 		if (isset($fields[0])) {
-			$raw = array_map($unalias, $fields[0]);
+			$raw = \array_map($unalias, $fields[0]);
 			unset($fields[0]);
 		}
 
 		$fields = isset($fields[$alias]) ? array($alias => $fields[$alias]) + $fields : $fields;
 
 		foreach ($fields as $field => $value) {
-			if (is_array($value)) {
+			if (\is_array($value)) {
 				if (isset($value['*'])) {
 					$relModel = $models[$field];
 					$result[$paths[$field]] = $relModel::schema()->names();
 				} else {
-					$result[$paths[$field]] = array_map($unalias, array_keys($value));
+					$result[$paths[$field]] = \array_map($unalias, \array_keys($value));
 				}
 			}
 		}
 
 		if (isset($raw)) {
-			$result[''] = isset($result['']) ? array_merge($raw, $result['']) : $raw;
+			$result[''] = isset($result['']) ? \array_merge($raw, $result['']) : $raw;
 		}
 		return $result;
 	}
@@ -912,9 +912,9 @@ abstract class Database extends \lithium\data\Source {
 		switch (true) {
 			case empty($conditions):
 				return '';
-			case is_string($conditions):
+			case \is_string($conditions):
 				return $options['prepend'] ? $options['prepend'] . " {$conditions}" : $conditions;
-			case !is_array($conditions):
+			case !\is_array($conditions):
 				return '';
 		}
 		$result = array();
@@ -926,7 +926,7 @@ abstract class Database extends \lithium\data\Source {
 				$result[] = $return;
 			}
 		}
-		$result = join(" AND ", $result);
+		$result = \join(" AND ", $result);
 		return ($options['prepend'] && $result) ? $options['prepend'] . " {$result}" : $result;
 	}
 
@@ -944,13 +944,13 @@ abstract class Database extends \lithium\data\Source {
 		$fieldMeta = $schema ? (array) $schema->fields($second) : array();
 
 		switch (true) {
-			case (is_numeric($key) && is_string($value)):
+			case (\is_numeric($key) && \is_string($value)):
 				return $value;
-			case is_object($value) && isset($value->scalar):
-				if (is_numeric($key)) {
+			case \is_object($value) && isset($value->scalar):
+				if (\is_numeric($key)) {
 					return $this->value($value);
 				}
-			case is_scalar($value) || is_null($value):
+			case \is_scalar($value) || \is_null($value):
 				if ($context && ($context->type() === 'read') && ($alias = $context->alias())) {
 					$key = $this->_aliasing($key, $alias);
 				}
@@ -958,27 +958,27 @@ abstract class Database extends \lithium\data\Source {
 					return $this->name($key) . ' = ' . $this->value($value, $fieldMeta);
 				}
 				return $this->name($key) . ' IS NULL';
-			case is_numeric($key) && is_array($value):
+			case \is_numeric($key) && \is_array($value):
 				$result = array();
 				foreach ($value as $cKey => $cValue) {
 					$result[] = $this->_processConditions($cKey, $cValue, $context, $schema, $glue);
 				}
-				return '(' . implode(' ' . $glue . ' ', $result) . ')';
-			case (is_string($key) && is_object($value)):
-				$value = trim(rtrim($this->renderCommand($value), ';'));
+				return '(' . \implode(' ' . $glue . ' ', $result) . ')';
+			case (\is_string($key) && \is_object($value)):
+				$value = \trim(\rtrim($this->renderCommand($value), ';'));
 				return "{$this->name($key)} IN ({$value})";
-			case is_array($value) && isset($constraintTypes[strtoupper($key)]):
+			case \is_array($value) && isset($constraintTypes[\strtoupper($key)]):
 				$result = array();
-				$glue = strtoupper($key);
+				$glue = \strtoupper($key);
 
 				foreach ($value as $cKey => $cValue) {
 					$result[] = $this->_processConditions($cKey, $cValue, $context, $schema, $glue);
 				}
-				return '(' . implode(' ' . $glue . ' ', $result) . ')';
+				return '(' . \implode(' ' . $glue . ' ', $result) . ')';
 			case $result = $this->_processOperator($key, $value, $fieldMeta, $glue):
 				return $result;
-			case is_array($value):
-				$value = join(', ', $this->value($value, $fieldMeta));
+			case \is_array($value):
+				$value = \join(', ', $this->value($value, $fieldMeta));
 				return "{$this->name($key)} IN ({$value})";
 		}
 	}
@@ -995,18 +995,18 @@ abstract class Database extends \lithium\data\Source {
 	 * @throws A `QueryException` if the operator is not supported.
 	 */
 	protected function _processOperator($key, $value, $fieldMeta, $glue) {
-		if (!is_string($key) || !is_array($value)) {
+		if (!\is_string($key) || !\is_array($value)) {
 			return false;
 		}
-		$operator = strtoupper(key($value));
-		if (!is_numeric($operator)) {
+		$operator = \strtoupper(\key($value));
+		if (!\is_numeric($operator)) {
 			if (!isset($this->_operators[$operator])) {
 				throw new QueryException("Unsupported operator `{$operator}`.");
 			}
 			foreach ($value as $op => $val) {
 				$result[] = $this->_operator($key, array($op => $val), $fieldMeta);
 			}
-			return '(' . implode(' ' . $glue . ' ', $result) . ')';
+			return '(' . \implode(' ' . $glue . ' ', $result) . ')';
 		}
 		return false;
 	}
@@ -1023,7 +1023,7 @@ abstract class Database extends \lithium\data\Source {
 		$schema = $context->schema()->fields();
 		$alias = $context->alias();
 
-		if (!is_array($fields)) {
+		if (!\is_array($fields)) {
 			return $this->_fieldsReturn($type, $context, $fields, $schema);
 		}
 
@@ -1034,7 +1034,7 @@ abstract class Database extends \lithium\data\Source {
 
 		if (isset($fields[0])) {
 			foreach ($fields[0] as $val) {
-				$toMerge[] = (is_object($val) && isset($val->scalar)) ? $val->scalar : $val;
+				$toMerge[] = (\is_object($val) && isset($val->scalar)) ? $val->scalar : $val;
 			}
 			unset($fields[0]);
 		}
@@ -1042,7 +1042,7 @@ abstract class Database extends \lithium\data\Source {
 		$fields = isset($fields[$alias]) ? array($alias => $fields[$alias]) + $fields : $fields;
 
 		foreach ($fields as $field => $value) {
-			if (is_array($value)) {
+			if (\is_array($value)) {
 				if (isset($value['*'])) {
 					$toMerge[] = $this->name($field) . '.*';
 					continue;
@@ -1069,18 +1069,18 @@ abstract class Database extends \lithium\data\Source {
 		$models = $context->models($this);
 		$list = array();
 		foreach ($fields as $key => $field) {
-			if (!is_string($field)) {
+			if (!\is_string($field)) {
 				if (isset($models[$key])) {
-					$field = array_fill_keys($field, true);
-					$list[$key] = isset($list[$key]) ? array_merge($list[$key], $field) : $field;
+					$field = \array_fill_keys($field, true);
+					$list[$key] = isset($list[$key]) ? \array_merge($list[$key], $field) : $field;
 				} else {
-					$list[0][] = is_array($field) ? reset($field) : $field;
+					$list[0][] = \is_array($field) ? \reset($field) : $field;
 				}
 				continue;
 			}
-			if (preg_match('/^([a-z0-9_-]+|\*)$/i', $field)) {
+			if (\preg_match('/^([a-z0-9_-]+|\*)$/i', $field)) {
 				isset($models[$field]) ? $list[$field]['*'] = true : $list[$alias][$field] = true;
-			} elseif (preg_match('/^([a-z0-9_-]+)\.(.*)$/i', $field, $matches)) {
+			} elseif (\preg_match('/^([a-z0-9_-]+)\.(.*)$/i', $field, $matches)) {
 				$list[$matches[1]][$matches[2]] = true;
 			} else {
 				$list[0][] = $field;
@@ -1092,7 +1092,7 @@ abstract class Database extends \lithium\data\Source {
 	protected function _fieldsQuote($alias, $field) {
 		$open = $this->_quotes[0];
 		$close = $this->_quotes[1];
-		$aliasing = preg_split("/\s+as\s+/i", $field);
+		$aliasing = \preg_split("/\s+as\s+/i", $field);
 		if (isset($aliasing[1])) {
 			list($aliasname, $fieldname) = $this->_splitFieldname($aliasing[0]);
 			$alias = $aliasname ? : $alias;
@@ -1107,17 +1107,17 @@ abstract class Database extends \lithium\data\Source {
 	protected function _fieldsReturn($type, $context, $fields, $schema) {
 		if ($type === 'create' || $type === 'update') {
 			$data = $context->data();
-			if (isset($data['data']) && is_array($data['data']) && count($data) === 1) {
+			if (isset($data['data']) && \is_array($data['data']) && \count($data) === 1) {
 				$data = $data['data'];
 			}
 
-			if ($fields && is_array($fields) && is_int(key($fields))) {
-				$data = array_intersect_key($data, array_combine($fields, $fields));
+			if ($fields && \is_array($fields) && \is_int(\key($fields))) {
+				$data = \array_intersect_key($data, \array_combine($fields, $fields));
 			}
 			$method = "_{$type}Fields";
 			return $this->{$method}($data, $schema, $context);
 		}
-		return empty($fields) ? '*' : join(', ', $fields);
+		return empty($fields) ? '*' : \join(', ', $fields);
 	}
 
 	/**
@@ -1151,7 +1151,7 @@ abstract class Database extends \lithium\data\Source {
 			if ($result) {
 				$result .= ' ';
 			}
-			$join = is_array($join) ? $this->_instance('query', $join) : $join;
+			$join = \is_array($join) ? $this->_instance('query', $join) : $join;
 			$options['keys'] = array('mode', 'source', 'alias', 'constraints');
 			$result .= $this->renderCommand('join', $join->export($this, $options));
 		}
@@ -1177,7 +1177,7 @@ abstract class Database extends \lithium\data\Source {
 	public function constraints($constraints, $context, array $options = array()) {
 		$defaults = array('prepend' => 'ON');
 		$options += $defaults;
-		if (is_array($constraints)) {
+		if (\is_array($constraints)) {
 			$constraints = $this->_constraints($constraints);
 		}
 		return $this->_conditions($constraints, $context, $options);
@@ -1191,9 +1191,9 @@ abstract class Database extends \lithium\data\Source {
 	 */
 	protected function _constraints(array $constraints) {
 		foreach ($constraints as &$value) {
-			if (is_string($value)) {
+			if (\is_string($value)) {
 				$value = (object) $this->name($value);
-			} elseif (is_array($value)) {
+			} elseif (\is_array($value)) {
 				$value = $this->_constraints($value);
 			}
 		}
@@ -1235,25 +1235,25 @@ abstract class Database extends \lithium\data\Source {
 		$direction = $direction ? ' ASC' : '';
 		$model = $context->model();
 
-		if (is_string($field)) {
-			if (preg_match('/^(.*?)\s+((?:A|DE)SC)$/i', $field, $match)) {
+		if (\is_string($field)) {
+			if (\preg_match('/^(.*?)\s+((?:A|DE)SC)$/i', $field, $match)) {
 				$field = $match[1];
 				$direction = $match[2];
 			}
 			$field = array($field => $direction);
 		}
 
-		if (!is_array($field) || empty($field)) {
+		if (!\is_array($field) || empty($field)) {
 			return;
 		}
 		$result = array();
 
 		foreach ($field as $column => $dir) {
-			if (is_int($column)) {
+			if (\is_int($column)) {
 				$column = $dir;
 				$dir = $direction;
 			}
-			$dir = in_array($dir, array('ASC', 'asc', 'DESC', 'desc')) ? " {$dir}" : $direction;
+			$dir = \in_array($dir, array('ASC', 'asc', 'DESC', 'desc')) ? " {$dir}" : $direction;
 
 			if ($model && $field = $model::schema($column)) {
 				$column = $this->name($column);
@@ -1264,7 +1264,7 @@ abstract class Database extends \lithium\data\Source {
 			$column = $this->name($column);
 			$result[] = "{$column}{$dir}";
 		}
-		$fields = join(', ', $result);
+		$fields = \join(', ', $result);
 		return "$clause {$fields}";
 	}
 
@@ -1296,9 +1296,9 @@ abstract class Database extends \lithium\data\Source {
 			$fields[] = $this->name($field);
 			$values[] = $this->value($value, isset($schema[$field]) ? $schema[$field] : array());
 		}
-		$fields = join(', ', $fields);
-		$values = join(', ', $values);
-		return compact('fields', 'values');
+		$fields = \join(', ', $fields);
+		$values = \join(', ', $values);
+		return \compact('fields', 'values');
 	}
 
 	protected function _updateFields($data, $schema, $context) {
@@ -1308,7 +1308,7 @@ abstract class Database extends \lithium\data\Source {
 			$schema += array($field => array('default' => null));
 			$fields[] = $this->name($field) . ' = ' . $this->value($value, $schema[$field]);
 		}
-		return join(', ', $fields);
+		return \join(', ', $fields);
 	}
 
 	/**
@@ -1324,13 +1324,13 @@ abstract class Database extends \lithium\data\Source {
 		$defaults = array('boolean' => 'AND');
 		$options += $defaults;
 
-		list($op, $value) = each($value);
-		$op = strtoupper($op);
+		list($op, $value) = \each($value);
+		$op = \strtoupper($op);
 		$config = $this->_operators[$op];
 		$key = $this->name($key);
 		$values = array();
 
-		if (!is_object($value)) {
+		if (!\is_object($value)) {
 			if ($value === null) {
 				$value = array(null);
 			}
@@ -1344,16 +1344,16 @@ abstract class Database extends \lithium\data\Source {
 		switch (true) {
 			case (isset($config['format'])):
 				return $key . ' ' . StringDeprecated::insert($config['format'], $values);
-			case (is_object($value) && isset($config['multiple'])):
+			case (\is_object($value) && isset($config['multiple'])):
 				$op = $config['multiple'];
-				$value = trim(rtrim($this->renderCommand($value), ';'));
+				$value = \trim(\rtrim($this->renderCommand($value), ';'));
 				return "{$key} {$op} ({$value})";
-			case (count($values) > 1 && isset($config['multiple'])):
+			case (\count($values) > 1 && isset($config['multiple'])):
 				$op = $config['multiple'];
-				$values = join(', ', $values);
+				$values = \join(', ', $values);
 				return "{$key} {$op} ({$values})";
-			case (count($values) > 1):
-				return join(" {$options['boolean']} ", array_map(
+			case (\count($values) > 1):
+				return \join(" {$options['boolean']} ", \array_map(
 					function($v) use ($key, $op) { return "{$key} {$op} {$v}"; }, $values
 				));
 		}
@@ -1372,7 +1372,7 @@ abstract class Database extends \lithium\data\Source {
 		$defaults = array('quoted' => false);
 		$options += $defaults;
 
-		if (class_exists($entity, false) && method_exists($entity, 'meta')) {
+		if (\class_exists($entity, false) && \method_exists($entity, 'meta')) {
 			$entity = $entity::meta('source');
 		}
 		return $options['quoted'] ? $this->name($entity) : $entity;
@@ -1388,13 +1388,13 @@ abstract class Database extends \lithium\data\Source {
 	 */
 	protected function _introspectType($value) {
 		switch (true) {
-			case (is_bool($value)):
+			case (\is_bool($value)):
 				return 'boolean';
-			case (is_float($value) || preg_match('/^\d+\.\d+$/', $value)):
+			case (\is_float($value) || \preg_match('/^\d+\.\d+$/', $value)):
 				return 'float';
-			case (is_int($value) || preg_match('/^\d+$/', $value)):
+			case (\is_int($value) || \preg_match('/^\d+$/', $value)):
 				return 'integer';
-			case (is_string($value) && strlen($value) <= $this->_columns['string']['length']):
+			case (\is_string($value) && \strlen($value) <= $this->_columns['string']['length']):
 				return 'string';
 			default:
 				return 'text';
@@ -1413,13 +1413,13 @@ abstract class Database extends \lithium\data\Source {
 	 *         is required and falls outside the rules defined.
 	 */
 	protected function _toBoolean($value) {
-		if (is_bool($value)) {
+		if (\is_bool($value)) {
 			return $value;
 		}
-		if (is_int($value) || is_float($value)) {
+		if (\is_int($value) || \is_float($value)) {
 			return ($value !== 0);
 		}
-		if (is_string($value)) {
+		if (\is_string($value)) {
 			return ($value === 't' || $value === 'T' || $value === 'true');
 		}
 		return (boolean) $value;
@@ -1432,7 +1432,7 @@ abstract class Database extends \lithium\data\Source {
 	 * @filter
 	 */
 	protected function _error($sql){
-		$params = compact('sql');
+		$params = \compact('sql');
 		return $this->_filter(__METHOD__, $params, function($self, $params) {
 			$sql = $params['sql'];
 			list($code, $error) = $self->error();
@@ -1485,13 +1485,13 @@ abstract class Database extends \lithium\data\Source {
 		if ($toAlias === null) {
 			$toAlias = $context->alias(null, $rel->name());
 		}
-		if (!is_object($constraints)) {
+		if (!\is_object($constraints)) {
 			$constraints = $this->on($rel, $fromAlias, $toAlias, $constraints);
 		} else {
 			$constraints = (array) $constraints;
 		}
 
-		$context->joins($toAlias, compact('constraints', 'model') + array(
+		$context->joins($toAlias, \compact('constraints', 'model') + array(
 			'mode' => 'LEFT',
 			'alias' => $toAlias
 		));
@@ -1507,7 +1507,7 @@ abstract class Database extends \lithium\data\Source {
 	 */
 	protected function _aliasing($name, $alias, $map = array()) {
 		list($first, $second) = $this->_splitFieldname($name);
-		if (!$first && preg_match('/^[a-z0-9_-]+$/i', $second)) {
+		if (!$first && \preg_match('/^[a-z0-9_-]+$/i', $second)) {
 			return $alias . "." . $second;
 		} elseif (isset($map[$first])) {
 			return $map[$first] . "." . $second;
@@ -1547,16 +1547,16 @@ abstract class Database extends \lithium\data\Source {
 		$result = array();
 		foreach ($constraints as $key => $value) {
 			$isAliasable = (
-				!is_numeric($key) &&
+				!\is_numeric($key) &&
 				!isset($this->_constraintTypes[$key]) &&
 				!isset($this->_operators[$key])
 			);
 			if ($isAliasable) {
 				$key = $this->_aliasing($key, $aliasFrom, $mapAlias);
 			}
-			if (is_string($value)) {
+			if (\is_string($value)) {
 				$result[$key] = $this->_aliasing($value, $aliasTo, $mapAlias);
-			} elseif (is_array($value)) {
+			} elseif (\is_array($value)) {
 				$result[$key] = $this->_on($value, $aliasFrom, $aliasTo, $mapAlias);
 			} else {
 				$result[$key] = $value;
@@ -1575,11 +1575,11 @@ abstract class Database extends \lithium\data\Source {
 	 */
 	protected function _meta($type, $name, $value) {
 		$meta = isset($this->_metas[$type][$name]) ? $this->_metas[$type][$name] : null;
-		if (!$meta || (isset($meta['options']) && !in_array($value, $meta['options']))) {
+		if (!$meta || (isset($meta['options']) && !\in_array($value, $meta['options']))) {
 			return;
 		}
 		$meta += array('keyword' => '', 'escape' => false, 'join' => ' ');
-		extract($meta);
+		\extract($meta);
 		if ($escape === true) {
 			$value = $this->value($value, array('type' => 'string'));
 		}
@@ -1619,7 +1619,7 @@ abstract class Database extends \lithium\data\Source {
 					$data[$name] = "ON {$value}";
 				break;
 				case 'expr':
-					if (is_array($value)) {
+					if (\is_array($value)) {
 						$result = array();
 						$context = new Query(array('type' => 'none'));
 						foreach ($value as $key => $val) {
@@ -1628,19 +1628,19 @@ abstract class Database extends \lithium\data\Source {
 								$result[] = $return;
 							}
 						}
-						$data[$name] = join(" AND ", $result);
+						$data[$name] = \join(" AND ", $result);
 					} else {
 						$data[$name] = $value;
 					}
 				break;
 				case 'toColumn':
 				case 'column':
-					$data[$name] = join(', ', array_map(array($this, 'name'), (array) $value));
+					$data[$name] = \join(', ', \array_map(array($this, 'name'), (array) $value));
 				break;
 			}
 		}
 
-		return trim(StringDeprecated::insert($template, $data, array('clean' => array('method' => 'text'))));
+		return \trim(StringDeprecated::insert($template, $data, array('clean' => array('method' => 'text'))));
 	}
 
 	/**
@@ -1668,14 +1668,14 @@ abstract class Database extends \lithium\data\Source {
 			}
 			$columns[] = $this->column($field);
 		}
-		$columns = join(",\n", array_filter($columns));
+		$columns = \join(",\n", \array_filter($columns));
 
 		$metas = $schema->meta() + array('table' => array(), 'constraints' => array());
 
 		$constraints = $this->_buildConstraints($metas['constraints'], $schema, ",\n", $primary);
 		$table = $this->_buildMetas('table', $metas['table']);
 
-		$params = compact('source', 'columns', 'constraints', 'table');
+		$params = \compact('source', 'columns', 'constraints', 'table');
 		return $this->_execute($this->renderCommand('schema', $params));
 	}
 
@@ -1691,7 +1691,7 @@ abstract class Database extends \lithium\data\Source {
 	 */
 	protected function _buildMetas($type, array $metas, $names = null, $joiner = ' ') {
 		$result = '';
-		$names = $names ? (array) $names : array_keys($metas);
+		$names = $names ? (array) $names : \array_keys($metas);
 		foreach ($names as $name) {
 			$value = isset($metas[$name]) ? $metas[$name] : null;
 			if ($value && $meta = $this->_meta($type, $name, $value)) {
@@ -1741,7 +1741,7 @@ abstract class Database extends \lithium\data\Source {
 		if ($source) {
 			$source = $this->name($source);
 			$exists = $soft ? 'IF EXISTS ' : '';
-			return $this->_execute($this->renderCommand('drop', compact('exists', 'source')));
+			return $this->_execute($this->renderCommand('drop', \compact('exists', 'source')));
 		}
 		return false;
 	}
@@ -1778,11 +1778,11 @@ abstract class Database extends \lithium\data\Source {
 			'null' => null
 		);
 
-		$isNumeric = preg_match('/^(integer|float|boolean)$/', $field['type']);
+		$isNumeric = \preg_match('/^(integer|float|boolean)$/', $field['type']);
 		if ($isNumeric && $field['default'] === '') {
 			$field['default'] = null;
 		}
-		$field['use'] = strtolower($field['use']);
+		$field['use'] = \strtolower($field['use']);
 		return $this->_buildColumn($field);
 	}
 }

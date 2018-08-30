@@ -48,7 +48,7 @@ class DocumentSetTest extends \lithium\test\Unit {
 			)
 		));
 
-		$array = new DocumentSet(compact('model', 'schema') + array(
+		$array = new DocumentSet(\compact('model', 'schema') + array(
 			'pathKey' => 'foo.bar',
 			'data' => array('5', '6', '7')
 		));
@@ -76,7 +76,7 @@ class DocumentSetTest extends \lithium\test\Unit {
 			)
 		));
 
-		$array = new DocumentSet(compact('model', 'schema') + array(
+		$array = new DocumentSet(\compact('model', 'schema') + array(
 			'data' => array(
 				array(
 					'_id' => '4cb4ab6d7addf98506010002',
@@ -103,7 +103,7 @@ class DocumentSetTest extends \lithium\test\Unit {
 			$this->assertInternalType('string', $document->foo->bar);
 		}
 
-		$array = new DocumentSet(compact('model', 'schema') + array(
+		$array = new DocumentSet(\compact('model', 'schema') + array(
 			'data' => array(
 				array(
 					'_id' => '4cb4ab6d7addf98506010002',
@@ -156,7 +156,7 @@ class DocumentSetTest extends \lithium\test\Unit {
 			'Hello again!',
 			'Delete me'
 		);
-		$doc = new DocumentSet(compact('data'));
+		$doc = new DocumentSet(\compact('data'));
 		$this->assertIdentical($data, $doc->data());
 
 		foreach ($doc as $i => $word) {
@@ -168,7 +168,7 @@ class DocumentSetTest extends \lithium\test\Unit {
 		$expected = array(0 => 'Hello', 6 => 'Hello again!');
 		$this->assertIdentical($expected, $doc->data());
 
-		$doc = new DocumentSet(compact('data'));
+		$doc = new DocumentSet(\compact('data'));
 
 		foreach ($doc as $i => $word) {
 			if ($word === 'Delete me') {
@@ -184,7 +184,7 @@ class DocumentSetTest extends \lithium\test\Unit {
 		$first  = (object) array('name' => 'First');
 		$second = (object) array('name' => 'Second');
 		$third  = (object) array('name' => 'Third');
-		$doc = new DocumentSet(compact('schema') + array(
+		$doc = new DocumentSet(\compact('schema') + array(
 			'data' => array($first, $second, $third)
 		));
 
@@ -196,7 +196,7 @@ class DocumentSetTest extends \lithium\test\Unit {
 
 	public function testOffsetSet() {
 		$data   = array('change me', 'foo', 'bar');
-		$doc    = new DocumentSet(compact('data'));
+		$doc    = new DocumentSet(\compact('data'));
 		$doc[0] = 'new me';
 
 		$expected = array(0 => 'new me', 1 => 'foo', 2 => 'bar');
@@ -242,7 +242,7 @@ class DocumentSetTest extends \lithium\test\Unit {
 	public function testMappingToNewDocumentSet() {
 		$result = new MockResult();
 		$model = $this->_model;
-		$doc = new DocumentSet(compact('model', 'result'));
+		$doc = new DocumentSet(\compact('model', 'result'));
 
 		$mapped = $doc->map(function($data) { return $data; });
 		$this->assertEqual($doc->data(), $mapped->data());
@@ -324,7 +324,7 @@ class DocumentSetTest extends \lithium\test\Unit {
 			'foo.foo' => array('type' => 'integer'),
 			'foo.bar' => array('type' => 'integer')
 		)));
-		$doc = new Document(compact('model', 'schema'));
+		$doc = new Document(\compact('model', 'schema'));
 
 		$expected = array(
 			'foo' => 1,
@@ -339,7 +339,7 @@ class DocumentSetTest extends \lithium\test\Unit {
 			'foo' => array($expected)
 		);
 
-		$doc = new Document(compact('model', 'schema', 'data'));
+		$doc = new Document(\compact('model', 'schema', 'data'));
 		$this->assertEqual($doc, $doc->foo->parent());
 		$this->assertEqual($expected, $doc->foo[0]->data());
 	}
@@ -359,9 +359,9 @@ class DocumentSetTest extends \lithium\test\Unit {
 			)
 		));
 		$handlers = array(
-			'stdClass' => function($value) { return date('d/m/Y H:i', strtotime($value->scalar)); }
+			'stdClass' => function($value) { return \date('d/m/Y H:i', \strtotime($value->scalar)); }
 		);
-		$array = new DocumentSet(compact('model', 'schema', 'handlers') + array(
+		$array = new DocumentSet(\compact('model', 'schema', 'handlers') + array(
 			'data' => array(
 				array(
 					'_id' => '2',

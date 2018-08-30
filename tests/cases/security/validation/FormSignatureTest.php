@@ -23,13 +23,13 @@ class FormSignatureTest extends \lithium\test\Unit {
 			'a%3A0%3A%7B%7D',
 			'$2a$10$NuNTOeXv4OHpPJtbdAmfReFiSmFw5hmc6sSy8qwns6/DWNSSOjR1y'
 		);
-		$signature = join('::', $components);
+		$signature = \join('::', $components);
 
 		$request = new Request(array('data' => array(
 			'email' => 'foo@baz',
 			'pass' => 'whatever',
 			'active' => 'true',
-			'security' => compact('signature')
+			'security' => \compact('signature')
 		)));
 		$this->assertTrue(FormSignature::check($request));
 
@@ -37,7 +37,7 @@ class FormSignatureTest extends \lithium\test\Unit {
 			'email' => 'foo@baz',
 			'pass' => 'whatever',
 			'active' => 'false',
-			'security' => compact('signature')
+			'security' => \compact('signature')
 		)));
 		$this->assertFalse(FormSignature::check($request));
 	}
@@ -52,13 +52,13 @@ class FormSignatureTest extends \lithium\test\Unit {
 			'a%3A0%3A%7B%7D',
 			'$2a$10$NuNTOeXv4OHpPJtbdAmfReFiSmFw5hmc6sSy8qwns6/DWNSSOjR1y'
 		);
-		$signature = join('::', $components);
+		$signature = \join('::', $components);
 
 		$request = new Request(array('data' => array(
 			'email' => 'foo@baz',
 			'pass' => 'whatever',
 			'active' => 'true',
-			'security' => compact('signature') + array('foo' => 'bar')
+			'security' => \compact('signature') + array('foo' => 'bar')
 		)));
 		$this->assertTrue(FormSignature::check($request));
 	}

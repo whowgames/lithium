@@ -123,7 +123,7 @@ class Filters extends \lithium\util\Collection {
 	 * @return void
 	 */
 	public static function apply($class, $method, $filter) {
-		if (class_exists($class, false)) {
+		if (\class_exists($class, false)) {
 			return $class::applyFilter($method, $filter);
 		}
 		static::$_lazyFilters[$class][$method][] = $filter;
@@ -167,12 +167,12 @@ class Filters extends \lithium\util\Collection {
 	public static function run($class, $params, array $options = array()) {
 		$defaults = array('class' => null, 'method' => null, 'data' => array());
 		$options += $defaults;
-		$lazyFilterCheck = (is_string($class) && $options['method']);
+		$lazyFilterCheck = (\is_string($class) && $options['method']);
 
 		if (($lazyFilterCheck) && isset(static::$_lazyFilters[$class][$options['method']])) {
 			$filters = static::$_lazyFilters[$class][$options['method']];
 			unset(static::$_lazyFilters[$class][$options['method']]);
-			$options['data'] = array_merge($filters, $options['data']);
+			$options['data'] = \array_merge($filters, $options['data']);
 
 			foreach ($filters as $filter) {
 				$class::applyFilter($options['method'], $filter);

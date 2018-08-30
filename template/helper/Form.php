@@ -141,7 +141,7 @@ class Form extends \lithium\template\Helper {
 			'select' => array('multiple' => false),
 			'attributes' => array(
 				'id' => function($method, $name, $options) use (&$self) {
-					if (in_array($method, array('create', 'end', 'label', 'error'))) {
+					if (\in_array($method, array('create', 'end', 'label', 'error'))) {
 						return;
 					}
 					if (!$name || ($method === 'hidden' && $name === '_method')) {
@@ -150,24 +150,24 @@ class Form extends \lithium\template\Helper {
 					$info = $self->binding($name);
 					$model = $info->class;
 					$id = Inflector::camelize(Inflector::slug($info->name));
-					return $model ? basename(str_replace('\\', '/', $model)) . $id : $id;
+					return $model ? \basename(\str_replace('\\', '/', $model)) . $id : $id;
 				},
 				'name' => function($method, $name, $options) {
-					if (!strpos($name, '.')) {
+					if (!\strpos($name, '.')) {
 						return $name;
 					}
-					$name = explode('.', $name);
-					$first = array_shift($name);
-					return $first . '[' . join('][', $name) . ']';
+					$name = \explode('.', $name);
+					$first = \array_shift($name);
+					return $first . '[' . \join('][', $name) . ']';
 				}
 			),
 			'binding' => function($object, $name = null) {
-				$result = compact('name') + array(
+				$result = \compact('name') + array(
 					'data' => null, 'errors' => null, 'class' => null
 				);
 
-				if (is_object($object)) {
-					$result = compact('name') + array(
+				if (\is_object($object)) {
+					$result = \compact('name') + array(
 						'data'   => $object->data($name),
 						'errors' => $object->errors($name),
 						'class'  => $object->model()
@@ -233,7 +233,7 @@ class Form extends \lithium\template\Helper {
 	public function config(array $config = array()) {
 		if (!$config) {
 			$keys = array('base' => '', 'text' => '', 'textarea' => '', 'attributes' => '');
-			return array('templates' => $this->_templateMap) + array_intersect_key(
+			return array('templates' => $this->_templateMap) + \array_intersect_key(
 				$this->_config, $keys
 			);
 		}
@@ -278,7 +278,7 @@ class Form extends \lithium\template\Helper {
 	 */
 	public function create($bindings = null, array $options = array()) {
 		$request = $this->_context ? $this->_context->request() : null;
-		$binding = is_array($bindings) ? reset($bindings) : $bindings;
+		$binding = \is_array($bindings) ? \reset($bindings) : $bindings;
 
 		$defaults = array(
 			'url' => $request ? $request->params : array(),
@@ -292,15 +292,15 @@ class Form extends \lithium\template\Helper {
 
 		$_binding =& $this->_binding;
 		$_options =& $this->_bindingOptions;
-		$params = compact('scope', 'options', 'bindings');
-		$extra = array('method' => __METHOD__) + compact('tpl', 'defaults');
+		$params = \compact('scope', 'options', 'bindings');
+		$extra = array('method' => __METHOD__) + \compact('tpl', 'defaults');
 
 		$filter = function($self, $params) use ($extra, &$_binding, &$_options) {
 			$scope = $params['scope'];
 			$options = $params['options'];
 			$_binding = $params['bindings'];
 			$append = null;
-			$scope['method'] = strtolower($scope['method']);
+			$scope['method'] = \strtolower($scope['method']);
 
 			if ($scope['type'] === 'file') {
 				if ($scope['method'] === 'get') {
@@ -310,13 +310,13 @@ class Form extends \lithium\template\Helper {
 			}
 
 			if (!($scope['method'] === 'get' || $scope['method'] === 'post')) {
-				$append = $self->hidden('_method', array('value' => strtoupper($scope['method'])));
+				$append = $self->hidden('_method', array('value' => \strtoupper($scope['method'])));
 				$scope['method'] = 'post';
 			}
 
 			$url = $scope['action'] ? array('action' => $scope['action']) : $scope['url'];
-			$options['method'] = strtolower($scope['method']);
-			$args = array($extra['method'], $extra['tpl'], compact('url', 'options', 'append'));
+			$options['method'] = \strtolower($scope['method']);
+			$args = array($extra['method'], $extra['tpl'], \compact('url', 'options', 'append'));
 			$_options = $scope + $options;
 
 			return $self->invokeMethod('_render', $args);
@@ -333,7 +333,7 @@ class Form extends \lithium\template\Helper {
 	 */
 	public function end() {
 		list(, $options, $template) = $this->_defaults(__FUNCTION__, null, array());
-		$params = compact('options', 'template');
+		$params = \compact('options', 'template');
 		$_context =& $this->_context;
 		$_options =& $this->_bindingOptions;
 
@@ -364,18 +364,18 @@ class Form extends \lithium\template\Helper {
 		$model = null;
 		$key = $name;
 
-		if (is_array($binding)) {
+		if (\is_array($binding)) {
 			switch (true) {
-				case strpos($name, '.'):
-					list($model, $key) = explode('.', $name, 2);
-					$binding = isset($binding[$model]) ? $binding[$model] : reset($binding);
+				case \strpos($name, '.'):
+					list($model, $key) = \explode('.', $name, 2);
+					$binding = isset($binding[$model]) ? $binding[$model] : \reset($binding);
 				break;
 				case isset($binding[$name]):
 					$binding = $binding[$name];
 					$key = null;
 				break;
 				default:
-					$binding = reset($binding);
+					$binding = \reset($binding);
 				break;
 			}
 		}
@@ -400,7 +400,7 @@ class Form extends \lithium\template\Helper {
 		list($name, $options) = $params;
 		list($name, $options, $template) = $this->_defaults($type, $name, $options);
 		$template = $this->_context->strings($template) ? $template : 'input';
-		return $this->_render($type, $template, compact('type', 'name', 'options', 'value'));
+		return $this->_render($type, $template, \compact('type', 'name', 'options', 'value'));
 	}
 
 	/**
@@ -411,7 +411,7 @@ class Form extends \lithium\template\Helper {
 	 * @return bool
 	 */
 	public function respondsTo($method, $internal = false) {
-		return is_callable(array($this, $method), true);
+		return \is_callable(array($this, $method), true);
 	}
 
 	/**
@@ -452,7 +452,7 @@ class Form extends \lithium\template\Helper {
 	 *         label and error message, wrapped in a `<div />` element.
 	 */
 	public function field($name, array $options = array()) {
-		if (is_array($name)) {
+		if (\is_array($name)) {
 			return $this->_fields($name, $options);
 		}
 		list(, $options, $template) = $this->_defaults(__FUNCTION__, $name, $options);
@@ -477,15 +477,15 @@ class Form extends \lithium\template\Helper {
 		}
 		if (($options['label'] === null || $options['label']) && $options['type'] !== 'hidden') {
 			if (!$options['label']) {
-				$options['label'] = Inflector::humanize(preg_replace('/[\[\]\.]/', '_', $name));
+				$options['label'] = Inflector::humanize(\preg_replace('/[\[\]\.]/', '_', $name));
 			}
 			$label = $this->label(isset($options['id']) ? $options['id'] : '', $options['label']);
 		}
 
 		$call = ($type === 'select') ? array($name, $list, $field) : array($name, $field);
-		$input = call_user_func_array(array($this, $type), $call);
+		$input = \call_user_func_array(array($this, $type), $call);
 		$error = ($this->_binding) ? $this->error($name) : null;
-		return $this->_render(__METHOD__, $template, compact('wrap', 'label', 'input', 'error'));
+		return $this->_render(__METHOD__, $template, \compact('wrap', 'label', 'input', 'error'));
 	}
 
 	/**
@@ -501,13 +501,13 @@ class Form extends \lithium\template\Helper {
 		$result = array();
 
 		foreach ($fields as $field => $label) {
-			if (is_numeric($field)) {
+			if (\is_numeric($field)) {
 				$field = $label;
 				unset($label);
 			}
-			$result[] = $this->field($field, compact('label') + $options);
+			$result[] = $this->field($field, \compact('label') + $options);
 		}
-		return join("\n", $result);
+		return \join("\n", $result);
 	}
 
 	/**
@@ -523,7 +523,7 @@ class Form extends \lithium\template\Helper {
 		list($scope, $options) = $this->_options($defaults, $options);
 		list($title, $options, $template) = $this->_defaults(__METHOD__, $title, $options);
 
-		$arguments = compact('type', 'title', 'options', 'value');
+		$arguments = \compact('type', 'title', 'options', 'value');
 		return $this->_render(__METHOD__, 'button', $arguments, $scope);
 	}
 
@@ -537,7 +537,7 @@ class Form extends \lithium\template\Helper {
 	 */
 	public function submit($title = null, array $options = array()) {
 		list($name, $options, $template) = $this->_defaults(__FUNCTION__, null, $options);
-		return $this->_render(__METHOD__, $template, compact('title', 'options'));
+		return $this->_render(__METHOD__, $template, \compact('title', 'options'));
 	}
 
 	/**
@@ -554,7 +554,7 @@ class Form extends \lithium\template\Helper {
 		list($name, $options, $template) = $this->_defaults(__FUNCTION__, $name, $options);
 		list($scope, $options) = $this->_options(array('value' => null), $options);
 		$value = isset($scope['value']) ? $scope['value'] : '';
-		return $this->_render(__METHOD__, $template, compact('name', 'options', 'value'));
+		return $this->_render(__METHOD__, $template, \compact('name', 'options', 'value'));
 	}
 
 	/**
@@ -566,7 +566,7 @@ class Form extends \lithium\template\Helper {
 	 */
 	public function text($name, array $options = array()) {
 		list($name, $options, $template) = $this->_defaults(__FUNCTION__, $name, $options);
-		return $this->_render(__METHOD__, $template, compact('name', 'options'));
+		return $this->_render(__METHOD__, $template, \compact('name', 'options'));
 	}
 
 	/**
@@ -601,7 +601,7 @@ class Form extends \lithium\template\Helper {
 			$template = 'select-multi';
 		}
 		$raw = $this->_selectOptions($list, $scope);
-		return $this->_render(__METHOD__, $template, compact('name', 'options', 'raw'));
+		return $this->_render(__METHOD__, $template, \compact('name', 'options', 'raw'));
 	}
 
 	/**
@@ -621,22 +621,22 @@ class Form extends \lithium\template\Helper {
 		$result = "";
 
 		foreach ($list as $value => $title) {
-			if (is_array($title)) {
+			if (\is_array($title)) {
 				$label = $value;
 				$options = array();
 
 				$raw = $this->_selectOptions($title, $scope);
-				$params = compact('label', 'options', 'raw');
+				$params = \compact('label', 'options', 'raw');
 				$result .= $this->_render('select', 'option-group', $params);
 				continue;
 			}
 			$selected = (
-				(is_array($scope['value']) && in_array($value, $scope['value'])) ||
+				(\is_array($scope['value']) && \in_array($value, $scope['value'])) ||
 				($scope['empty'] && empty($scope['value']) && $value === '') ||
-				(is_scalar($scope['value']) && ((string) $scope['value'] === (string) $value))
+				(\is_scalar($scope['value']) && ((string) $scope['value'] === (string) $value))
 			);
 			$options = $selected ? array('selected' => true) : array();
-			$params = compact('value', 'title', 'options');
+			$params = \compact('value', 'title', 'options');
 			$result .= $this->_render('select', 'select-option',  $params);
 		}
 		return $result;
@@ -670,7 +670,7 @@ class Form extends \lithium\template\Helper {
 			$out = $this->hidden($name, array('value' => '', 'id' => false));
 		}
 		$options['value'] = $scope['value'];
-		return $out . $this->_render(__METHOD__, $template, compact('name', 'options'));
+		return $out . $this->_render(__METHOD__, $template, \compact('name', 'options'));
 	}
 
 	/**
@@ -698,7 +698,7 @@ class Form extends \lithium\template\Helper {
 		}
 
 		$options['value'] = $scope['value'];
-		return $this->_render(__METHOD__, $template, compact('name', 'options'));
+		return $this->_render(__METHOD__, $template, \compact('name', 'options'));
 	}
 
 	/**
@@ -711,7 +711,7 @@ class Form extends \lithium\template\Helper {
 	public function password($name, array $options = array()) {
 		list($name, $options, $template) = $this->_defaults(__FUNCTION__, $name, $options);
 		unset($options['value']);
-		return $this->_render(__METHOD__, $template, compact('name', 'options'));
+		return $this->_render(__METHOD__, $template, \compact('name', 'options'));
 	}
 
 	/**
@@ -723,7 +723,7 @@ class Form extends \lithium\template\Helper {
 	 */
 	public function hidden($name, array $options = array()) {
 		list($name, $options, $template) = $this->_defaults(__FUNCTION__, $name, $options);
-		return $this->_render(__METHOD__, $template, compact('name', 'options'));
+		return $this->_render(__METHOD__, $template, \compact('name', 'options'));
 	}
 
 	/**
@@ -739,19 +739,19 @@ class Form extends \lithium\template\Helper {
 	public function label($id, $title = null, array $options = array()) {
 		$defaults = array('escape' => true);
 
-		if (is_array($title)) {
-			list($title, $options) = each($title);
+		if (\is_array($title)) {
+			list($title, $options) = \each($title);
 		}
-		$title = $title ?: Inflector::humanize(str_replace('.', '_', $id));
+		$title = $title ?: Inflector::humanize(\str_replace('.', '_', $id));
 
 		list($name, $options, $template) = $this->_defaults(__FUNCTION__, $id, $options);
 		list($scope, $options) = $this->_options($defaults, $options);
 
-		if (strpos($id, '.')) {
+		if (\strpos($id, '.')) {
 			$generator = $this->_config['attributes']['id'];
 			$id = $generator(__METHOD__, $id, $options);
 		}
-		return $this->_render(__METHOD__, $template, compact('id', 'title', 'options'), $scope);
+		return $this->_render(__METHOD__, $template, \compact('id', 'title', 'options'), $scope);
 	}
 
 	/**
@@ -770,7 +770,7 @@ class Form extends \lithium\template\Helper {
 		$defaults = array('class' => 'error');
 		list(, $options, $template) = $this->_defaults(__FUNCTION__, $name, $options);
 		$options += $defaults;
-		$params = compact('name', 'key', 'options', 'template');
+		$params = \compact('name', 'key', 'options', 'template');
 
 		return $this->_filter(__METHOD__, $params, function($self, $params) {
 			$options = $params['options'];
@@ -784,23 +784,23 @@ class Form extends \lithium\template\Helper {
 			}
 			$result = '';
 
-			if (!is_array($content)) {
-				$args = array(__METHOD__, $template, compact('content', 'options'));
+			if (!\is_array($content)) {
+				$args = array(__METHOD__, $template, \compact('content', 'options'));
 				return $self->invokeMethod('_render', $args);
 			}
 			$errors = $content;
 
 			if ($params['key'] === null) {
 				foreach ($errors as $content) {
-					$args = array(__METHOD__, $template, compact('content', 'options'));
+					$args = array(__METHOD__, $template, \compact('content', 'options'));
 					$result .= $self->invokeMethod('_render', $args);
 				}
 				return $result;
 			}
 
 			$key = $params['key'];
-			$content = !isset($errors[$key]) || $key === true ? reset($errors) : $errors[$key];
-			$args = array(__METHOD__, $template, compact('content', 'options'));
+			$content = !isset($errors[$key]) || $key === true ? \reset($errors) : $errors[$key];
+			$args = array(__METHOD__, $template, \compact('content', 'options'));
 			return $self->invokeMethod('_render', $args);
 		});
 	}
@@ -815,7 +815,7 @@ class Form extends \lithium\template\Helper {
 	 */
 	protected function _defaults($method, $name, $options) {
 		$config = $this->_config;
-		$params = compact('method', 'name', 'options');
+		$params = \compact('method', 'name', 'options');
 		$tpls = $this->_templateMap;
 
 		return $this->_filter(__METHOD__, $params, function($self, $params) use ($config, $tpls) {

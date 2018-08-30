@@ -31,12 +31,12 @@ class Router extends \lithium\core\DynamicObject {
 		if (!empty($request->argv)) {
 			$args = $request->argv;
 
-			while ($arg = array_shift($args)) {
-				if (preg_match('/^-(?P<key>[a-zA-Z0-9])$/i', $arg, $match)) {
+			while ($arg = \array_shift($args)) {
+				if (\preg_match('/^-(?P<key>[a-zA-Z0-9])$/i', $arg, $match)) {
 					$params[$match['key']] = true;
 					continue;
 				}
-				if (preg_match('/^--(?P<key>[a-z0-9-]+)(?:=(?P<val>.+))?$/i', $arg, $match)) {
+				if (\preg_match('/^--(?P<key>[a-z0-9-]+)(?:=(?P<val>.+))?$/i', $arg, $match)) {
 					$params[$match['key']] = !isset($match['val']) ? true : $match['val'];
 					continue;
 				}
@@ -45,7 +45,7 @@ class Router extends \lithium\core\DynamicObject {
 		}
 		foreach (array('command', 'action') as $param) {
 			if (!empty($params['args'])) {
-				$params[$param] = array_shift($params['args']);
+				$params[$param] = \array_shift($params['args']);
 			}
 		}
 		return $params;

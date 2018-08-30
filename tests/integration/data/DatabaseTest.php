@@ -30,7 +30,7 @@ class DatabaseTest extends \lithium\tests\integration\data\Base {
 	 */
 	public function skip() {
 		parent::connect($this->_connection);
-		if (!class_exists('li3_fixtures\test\Fixtures')) {
+		if (!\class_exists('li3_fixtures\test\Fixtures')) {
 			$this->skipIf(true, "These tests need `'li3_fixtures'` to be runned.");
 		}
 		$this->skipIf(!$this->with(array('MySql', 'PostgreSql', 'Sqlite3')));
@@ -159,7 +159,7 @@ class DatabaseTest extends \lithium\tests\integration\data\Base {
 		$expected = include $this->_export . '/testOneToMany.php';
 
 		$gallery = Galleries::find('first', $opts + array('with' => 'Images'))->data();
-		$this->assertEqual(reset($expected), $gallery);
+		$this->assertEqual(\reset($expected), $gallery);
 	}
 
 	public function testOneToManyUsingSameKeyName() {
@@ -211,7 +211,7 @@ class DatabaseTest extends \lithium\tests\integration\data\Base {
 				'gallery_id' => 1
 			)
 		));
-		$this->assertEqual($fields, array_keys($image->data()));
+		$this->assertEqual($fields, \array_keys($image->data()));
 	}
 
 	public function testOrder() {
@@ -242,8 +242,8 @@ class DatabaseTest extends \lithium\tests\integration\data\Base {
 		$expected = array(3, 2);
 
 		foreach ($galleries as $gallery) {
-			$this->assertEqual(current($expected), $gallery->count);
-			next($expected);
+			$this->assertEqual(\current($expected), $gallery->count);
+			\next($expected);
 		}
 	}
 

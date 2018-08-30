@@ -29,7 +29,7 @@ class Exporter extends \lithium\core\StaticObject {
 		$defaults = array('whitelist' => array());
 		$options += $defaults;
 
-		if (!method_exists(get_called_class(), $method = "_{$type}") || !$export) {
+		if (!\method_exists(\get_called_class(), $method = "_{$type}") || !$export) {
 			return;
 		}
 		return static::$method($export, array('finalize' => true) + $options);
@@ -43,7 +43,7 @@ class Exporter extends \lithium\core\StaticObject {
 				continue;
 			}
 			if (!$to) {
-				$result = array_merge($result, $changes[$from]);
+				$result = \array_merge($result, $changes[$from]);
 			}
 			$result[$to] = $changes[$from];
 		}
@@ -55,13 +55,13 @@ class Exporter extends \lithium\core\StaticObject {
 		$export += array('data' => array(), 'update' => array(), 'key' => '');
 		$data = Set::merge($export['data'], $export['update']);
 
-		if (array_keys($data) == range(0, count($data) - 1)) {
+		if (\array_keys($data) == \range(0, \count($data) - 1)) {
 			$data = $export['update'];
 		}
 		$localOpts = array('finalize' => false) + $options;
 
 		foreach ($data as $key => $val) {
-			if (is_object($val) && method_exists($val, 'export')) {
+			if (\is_object($val) && \method_exists($val, 'export')) {
 				$data[$key] = static::_create($val->export($options), $localOpts);
 			}
 		}
@@ -97,10 +97,10 @@ class Exporter extends \lithium\core\StaticObject {
 		$left = static::_diff($export['data'], $export['update']);
 		$right = static::_diff($export['update'], $export['data']);
 
-		$objects = array_filter($export['update'], function($value) {
-			return (is_object($value) && method_exists($value, 'export'));
+		$objects = \array_filter($export['update'], function($value) {
+			return (\is_object($value) && \method_exists($value, 'export'));
 		});
-		array_map(function($key) use (&$left) { unset($left[$key]); }, array_keys($right));
+		\array_map(function($key) use (&$left) { unset($left[$key]); }, \array_keys($right));
 
 		foreach ($left as $key => $value) {
 			$result = static::_append($result, "{$path}{$key}", $value, 'remove');
@@ -109,7 +109,7 @@ class Exporter extends \lithium\core\StaticObject {
 
 		foreach ($update as $key => $value) {
 			$original = $export['data'];
-			$isArray = is_object($value) && $value instanceof static::$_classes['set'];
+			$isArray = \is_object($value) && $value instanceof static::$_classes['set'];
 
 			$options = array(
 				'indexed' => null,
@@ -135,7 +135,7 @@ class Exporter extends \lithium\core\StaticObject {
 			}
 			$result = static::_append($result, "{$path}{$key}", $value, 'update');
 		}
-		return array_filter($result);
+		return \array_filter($result);
 	}
 
 	/**
@@ -150,7 +150,7 @@ class Exporter extends \lithium\core\StaticObject {
 		$result = array();
 
 		foreach ($left as $key => $value) {
-			if (!array_key_exists($key, $right) || $left[$key] !== $right[$key]) {
+			if (!\array_key_exists($key, $right) || $left[$key] !== $right[$key]) {
 				$result[$key] = $value;
 			}
 		}
@@ -171,7 +171,7 @@ class Exporter extends \lithium\core\StaticObject {
 	protected static function _append($changes, $key, $value, $change) {
 		$options = array('finalize' => false);
 
-		if (!is_object($value) || !method_exists($value, 'export')) {
+		if (!\is_object($value) || !\method_exists($value, 'export')) {
 			$changes[$change][$key] = ($change === 'update') ? $value : true;
 			return $changes;
 		}
@@ -180,7 +180,7 @@ class Exporter extends \lithium\core\StaticObject {
 			return $changes;
 		}
 		if ($change === 'update') {
-			$export = compact('key') + $value->export();
+			$export = \compact('key') + $value->export();
 			return Set::merge($changes, static::_update($export));
 		}
 		if ($children = static::_update($value->export())) {

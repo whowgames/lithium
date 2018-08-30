@@ -114,20 +114,20 @@ class Memcache extends \lithium\core\DynamicObject {
 	 */
 	protected function _formatHostList($host) {
 		$fromString = function($host) {
-			if (strpos($host, ':')) {
-				list($host, $port) = explode(':', $host);
-				return array($host, intval($port));
+			if (\strpos($host, ':')) {
+				list($host, $port) = \explode(':', $host);
+				return array($host, \intval($port));
 			}
 			return array($host, Memcache::CONN_DEFAULT_PORT);
 		};
 
-		if (is_string($host)) {
+		if (\is_string($host)) {
 			return array($fromString($host));
 		}
 		$servers = array();
 
-		while (list($server, $weight) = each($this->_config['host'])) {
-			if (is_string($weight)) {
+		while (list($server, $weight) = \each($this->_config['host'])) {
+			if (\is_string($weight)) {
 				$servers[] = $fromString($weight);
 				continue;
 			}
@@ -157,10 +157,10 @@ class Memcache extends \lithium\core\DynamicObject {
 		$expiry = ($expiry) ?: $this->_config['expiry'];
 
 		return function($self, $params) use (&$connection, $expiry) {
-			$expires = is_int($expiry) ? $expiry : strtotime($expiry);
+			$expires = \is_int($expiry) ? $expiry : \strtotime($expiry);
 			$key = $params['key'];
 
-			if (is_array($key)) {
+			if (\is_array($key)) {
 				return $connection->setMulti($key, $expires);
 			}
 			return $connection->set($key, $params['data'], $expires);
@@ -183,7 +183,7 @@ class Memcache extends \lithium\core\DynamicObject {
 		return function($self, $params) use (&$connection) {
 			$key = $params['key'];
 
-			if (is_array($key)) {
+			if (\is_array($key)) {
 				return $connection->getMulti($key);
 			}
 			if (($result = $connection->get($key)) === false) {
@@ -264,7 +264,7 @@ class Memcache extends \lithium\core\DynamicObject {
 	 *         otherwise.
 	 */
 	public static function enabled() {
-		return extension_loaded('memcached');
+		return \extension_loaded('memcached');
 	}
 }
 

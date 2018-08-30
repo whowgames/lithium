@@ -9,18 +9,18 @@ if ($success && $count['skips']) {
 }
 echo "\n";
 
-printf(
+\printf(
 	"%d / %d %s\n",
 	$count['passes'],
 	$count['asserts'],
 	$count['passes'] == 1 ? 'pass' : 'passes'
 );
-printf(
+\printf(
 	'%d %s',
 	$count['fails'],
 	$count['fails'] == 1 ? 'fail' : 'fails'
 );
-printf(
+\printf(
 	" and %d %s\n",
 	$count['exceptions'],
 	$count['exceptions'] == 1 ? 'exception' : 'exceptions'

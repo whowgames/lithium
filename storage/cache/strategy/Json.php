@@ -23,7 +23,7 @@ class Json extends \lithium\core\DynamicObject {
 	 * @return string The encoded  data.
 	 */
 	public function write($data) {
-		return json_encode($data);
+		return \json_encode($data);
 	}
 
 	/**
@@ -36,7 +36,7 @@ class Json extends \lithium\core\DynamicObject {
 	 * @return mixed Result of unserialization.
 	 */
 	public function read($data) {
-		return json_decode($data, true);
+		return \json_decode($data, true);
 	}
 }
 

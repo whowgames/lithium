@@ -69,9 +69,9 @@ class Cache extends \lithium\core\DynamicObject {
 		$config = $this->_config + $this->_classes;
 
 		return function($self, $params) use ($config) {
-			$params += array('timestamp' => strtotime('now'));
+			$params += array('timestamp' => \strtotime('now'));
 			$key = $config['key'];
-			$key = is_callable($key) ? $key($params) : StringDeprecated::insert($key, $params);
+			$key = \is_callable($key) ? $key($params) : StringDeprecated::insert($key, $params);
 
 			$cache = $config['cache'];
 			return $cache::write($config['config'], $key, $params['message'], $config['expiry']);

@@ -20,11 +20,11 @@ class MockResult extends \lithium\data\source\Result {
 	 * @return boolean Return `true` on success or `false` if it is not valid.
 	 */
 	protected function _fetchFromResource() {
-		if ($this->_iterator < count($this->_records)) {
-			$result = current($this->_records);
+		if ($this->_iterator < \count($this->_records)) {
+			$result = \current($this->_records);
 			$this->_key = $this->_iterator;
 			$this->_current = $this->_cache[$this->_iterator++] = $result;
-			next($this->_records);
+			\next($this->_records);
 			return true;
 		}
 		return false;

@@ -48,12 +48,12 @@ class Security extends \lithium\template\Helper {
 		$options += $defaults;
 		$requestToken = $this->_classes['requestToken'];
 
-		$flags = array_intersect_key($this->_config, array('sessionKey' => '', 'salt' => ''));
+		$flags = \array_intersect_key($this->_config, array('sessionKey' => '', 'salt' => ''));
 		$value = $requestToken::key($flags);
 
 		$name = $options['name'];
 		unset($options['name']);
-		return $this->_context->form->hidden($name, compact('value') + $options);
+		return $this->_context->form->hidden($name, \compact('value') + $options);
 	}
 
 	/**
@@ -95,7 +95,7 @@ class Security extends \lithium\template\Helper {
 		$state =& $this->_state;
 		$classes = $this->_classes;
 		$form = $form ?: $this->_context->form;
-		$id = spl_object_hash($form);
+		$id = \spl_object_hash($form);
 		$hasBound = isset($state[$id]);
 
 		if ($hasBound) {
@@ -103,19 +103,19 @@ class Security extends \lithium\template\Helper {
 		}
 
 		$form->applyFilter('create', function($self, $params, $chain) use ($form, &$state) {
-			$id = spl_object_hash($form);
+			$id = \spl_object_hash($form);
 			$state[$id] = array('fields' => array(), 'locked' => array(), 'excluded' => array());
 			return $chain->next($self, $params, $chain);
 		});
 
 		$form->applyFilter('end', function($self, $params, $chain) use ($form, &$state, $classes) {
-			$id = spl_object_hash($form);
+			$id = \spl_object_hash($form);
 
 			if (!$state[$id]) {
 				return $chain->next($self, $params, $chain);
 			}
 			$value = $classes['formSignature']::key($state[$id]);
-			echo $form->hidden('security.signature', compact('value'));
+			echo $form->hidden('security.signature', \compact('value'));
 
 			$state[$id] = array();
 			return $chain->next($self, $params, $chain);
@@ -129,7 +129,7 @@ class Security extends \lithium\template\Helper {
 				$options['locked'] = true;
 			}
 			$options += $defaults;
-			$params['options'] = array_diff_key($options, $defaults);
+			$params['options'] = \array_diff_key($options, $defaults);
 			$result = $chain->next($self, $params, $chain);
 
 			if (isset($options['exclude']) && $options['exclude']) {
@@ -142,10 +142,10 @@ class Security extends \lithium\template\Helper {
 				!$options['exclude'] => 'fields',
 				$options['locked']   => 'locked'
 			);
-			if (!$name = preg_replace('/(\.\d+)+$/', '', $params['name'])) {
+			if (!$name = \preg_replace('/(\.\d+)+$/', '', $params['name'])) {
 				return $result;
 			}
-			$state[spl_object_hash($form)][$type[true]][$name] = $value;
+			$state[\spl_object_hash($form)][$type[true]][$name] = $value;
 			return $result;
 		});
 	}

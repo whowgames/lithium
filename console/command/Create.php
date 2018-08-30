@@ -122,8 +122,8 @@ class Create extends \lithium\console\Command {
 			array('test', 'controller', $name)
 		);
 		foreach ($commands as $args) {
-			$command = $this->template = $this->request->params['command'] = array_shift($args);
-			$this->request->params['action'] = array_shift($args);
+			$command = $this->template = $this->request->params['command'] = \array_shift($args);
+			$this->request->params['action'] = \array_shift($args);
 			$this->request->params['args'] = $args;
 
 			if (!$this->_execute($command)) {
@@ -156,7 +156,7 @@ class Create extends \lithium\console\Command {
 		if (isset($options['spaces'][$name])) {
 			$name = $options['spaces'][$name];
 		}
-		return str_replace('.', '\\', $options['prefix'] . $options['prepend'] . $name);
+		return \str_replace('.', '\\', $options['prefix'] . $options['prepend'] . $name);
 	}
 
 	/**
@@ -172,10 +172,10 @@ class Create extends \lithium\console\Command {
 		if (empty($contents)) {
 			return array();
 		}
-		preg_match_all('/(?:\{:(?P<params>[^}]+)\})/', $contents, $keys);
+		\preg_match_all('/(?:\{:(?P<params>[^}]+)\})/', $contents, $keys);
 
 		if (!empty($keys['params'])) {
-			return array_values(array_unique($keys['params']));
+			return \array_values(\array_unique($keys['params']));
 		}
 		return array();
 	}
@@ -189,10 +189,10 @@ class Create extends \lithium\console\Command {
 		$file = Libraries::locate('command.create.template', $this->template, array(
 			'filter' => false, 'type' => 'file', 'suffix' => '.txt.php'
 		));
-		if (!$file || is_array($file)) {
+		if (!$file || \is_array($file)) {
 			return false;
 		}
-		return file_get_contents($file);
+		return \file_get_contents($file);
 	}
 
 	/**
@@ -230,25 +230,25 @@ class Create extends \lithium\console\Command {
 		}
 		$contents = $this->_template();
 		$result = StringDeprecated::insert($contents, $params);
-		$namespace = str_replace($this->_library['prefix'], '\\', $params['namespace']);
-		$path = str_replace('\\', '/', "{$namespace}\\{$params['class']}");
-		$path = $this->_library['path'] . stristr($path, '/');
-		$file = str_replace('//', '/', "{$path}.php");
-		$directory = dirname($file);
-		$relative = str_replace($this->_library['path'] . '/', "", $file);
+		$namespace = \str_replace($this->_library['prefix'], '\\', $params['namespace']);
+		$path = \str_replace('\\', '/', "{$namespace}\\{$params['class']}");
+		$path = $this->_library['path'] . \stristr($path, '/');
+		$file = \str_replace('//', '/', "{$path}.php");
+		$directory = \dirname($file);
+		$relative = \str_replace($this->_library['path'] . '/', "", $file);
 
-		if ((!is_dir($directory)) && !mkdir($directory, 0755, true)) {
+		if ((!\is_dir($directory)) && !\mkdir($directory, 0755, true)) {
 			return false;
 		}
-		if (file_exists($file)) {
+		if (\file_exists($file)) {
 			$prompt = "{$relative} already exists. Overwrite?";
 			$choices = array('y', 'n');
-			if ($this->in($prompt, compact('choices')) !== 'y') {
+			if ($this->in($prompt, \compact('choices')) !== 'y') {
 				return "{$params['class']} skipped.";
 			}
 		}
 
-		if (file_put_contents($file, "<?php\n\n{$result}\n\n?>")) {
+		if (\file_put_contents($file, "<?php\n\n{$result}\n\n?>")) {
 			return "{$params['class']} created in {$relative}.";
 		}
 		return false;

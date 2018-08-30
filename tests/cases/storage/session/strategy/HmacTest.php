@@ -27,7 +27,7 @@ class HmacTest extends \lithium\test\Unit {
 
 	public function testConstruct() {
 		$secret = 'foo';
-		$hmac = new Hmac(compact('secret'));
+		$hmac = new Hmac(\compact('secret'));
 		$this->assertInstanceOf('lithium\storage\session\strategy\Hmac', $hmac);
 	}
 
@@ -37,10 +37,10 @@ class HmacTest extends \lithium\test\Unit {
 		$oldData = MockCookieSession::data();
 		$class = $this->mock;
 
-		$result = $this->Hmac->write($value, compact('key', 'class'));
+		$result = $this->Hmac->write($value, \compact('key', 'class'));
 		$this->assertEqual($value, $result);
 
-		$signature = hash_hmac('sha1', serialize(array($key => $value) + $oldData), $this->secret);
+		$signature = \hash_hmac('sha1', \serialize(array($key => $value) + $oldData), $this->secret);
 		$signedData = MockCookieSession::data();
 		$this->assertEqual($signedData, $oldData + array('__signature' => $signature));
 	}
@@ -48,12 +48,12 @@ class HmacTest extends \lithium\test\Unit {
 	public function testReadWithValidSignature() {
 		$class = $this->mock;
 		$currentData = MockCookieSession::data();
-		$signature = hash_hmac('sha1', serialize($currentData), $this->secret);
+		$signature = \hash_hmac('sha1', \serialize($currentData), $this->secret);
 		$result = MockCookieSession::write('__signature', $signature);
 		$this->assertEqual($signature, $result);
 
 		$value = 'data_read';
-		$result = $this->Hmac->read($value, compact('class'));
+		$result = $this->Hmac->read($value, \compact('class'));
 		$this->assertEqual($value, $result);
 	}
 
@@ -61,7 +61,7 @@ class HmacTest extends \lithium\test\Unit {
 		$class = $this->mock;
 		$value = 'data_read';
 		$this->expectException('/HMAC signature not found./');
-		$result = $this->Hmac->read($value, compact('class'));
+		$result = $this->Hmac->read($value, \compact('class'));
 	}
 
 	public function testReadWithInvalidSignature() {
@@ -73,21 +73,21 @@ class HmacTest extends \lithium\test\Unit {
 
 		$value = 'data_read_that_wont_match_signature';
 		$this->expectException('/Possible data tampering: HMAC signature does not match data./');
-		$result = $this->Hmac->read($value, compact('class'));
+		$result = $this->Hmac->read($value, \compact('class'));
 	}
 
 	public function testDelete() {
 		$key = 'one';
 		$class = $this->mock;
 		$oldData = MockCookieSession::data();
-		$currentSignature = hash_hmac('sha1', serialize($oldData), $this->secret);
+		$currentSignature = \hash_hmac('sha1', \serialize($oldData), $this->secret);
 		$result = MockCookieSession::write('__signature', $currentSignature);
 
 		$newData = $oldData;
 		unset($newData[$key]);
 
-		$expectedSignature = hash_hmac('sha1', serialize($newData), $this->secret);
-		$result = $this->Hmac->delete('foo', compact('class', 'key'));
+		$expectedSignature = \hash_hmac('sha1', \serialize($newData), $this->secret);
+		$result = $this->Hmac->delete('foo', \compact('class', 'key'));
 
 		$this->assertEqual('foo', $result);
 		$signature = MockCookieSession::read('__signature');

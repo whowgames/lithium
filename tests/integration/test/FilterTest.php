@@ -18,7 +18,7 @@ class FilterTest extends \lithium\test\Integration {
 	 * filter depends on the extension.
 	 */
 	public function skip() {
-		$this->skipIf(!extension_loaded('xdebug'), 'The `xdebug` extension is not loaded.');
+		$this->skipIf(!\extension_loaded('xdebug'), 'The `xdebug` extension is not loaded.');
 	}
 
 	public function setUp() {
@@ -52,8 +52,8 @@ class FilterTest extends \lithium\test\Integration {
 		$permutations = $this->_powerPerms($all);
 
 		foreach ($permutations as $filters) {
-			$filters = array_flip($filters);
-			$filters = array_map(function($v) {
+			$filters = \array_flip($filters);
+			$filters = \array_map(function($v) {
 				return "";
 			}, $filters);
 
@@ -68,12 +68,12 @@ class FilterTest extends \lithium\test\Integration {
 
 			$report->run();
 
-			if (array_key_exists("Coverage", $filters)) {
+			if (\array_key_exists("Coverage", $filters)) {
 				$expected = 66.67;
 
 				$result = $report->results['filters'];
 
-				$message = "Filter(s): '" . join(array_keys($filters), ", ") . "'";
+				$message = "Filter(s): '" . \join(\array_keys($filters), ", ") . "'";
 				$message .= "returned no Coverage results.";
 				$this->assertTrue(isset($result['lithium\test\filter\Coverage']), $message);
 				$percentage = $result['lithium\test\filter\Coverage'];
@@ -97,18 +97,18 @@ class FilterTest extends \lithium\test\Integration {
 
 		foreach ($powerSet as $set) {
 			$perms = $this->_perms($set);
-			$result = array_merge($result,$perms);
+			$result = \array_merge($result,$perms);
 		}
 		return $result;
 	}
 
 	protected function _powerSet($in, $minLength = 1) {
-		$count = count($in);
-		$members = pow(2, $count);
+		$count = \count($in);
+		$members = \pow(2, $count);
 		$return = array();
 
 		for ($i = 0; $i < $members; $i++) {
-			$b = sprintf("%0{$count}b", $i);
+			$b = \sprintf("%0{$count}b", $i);
 			$out = array();
 
 			for ($j = 0; $j < $count; $j++) {
@@ -116,7 +116,7 @@ class FilterTest extends \lithium\test\Integration {
 					$out[] = $in[$j];
 				}
 			}
-			if (count($out) >= $minLength) {
+			if (\count($out) >= $minLength) {
 				$return[] = $out;
 			}
 		}
@@ -139,23 +139,23 @@ class FilterTest extends \lithium\test\Integration {
 			return $this->_perms($arr);
 		}
 		$result = array();
-		$length = count($arr);
+		$length = \count($arr);
 
 		while ($length--) {
 			$f = $this->_factorial($length);
-			$p = floor($nth / $f);
+			$p = \floor($nth / $f);
 			$result[] = $arr[$p];
 			$this->_arrayDeleteByKey($arr, $p);
 			$nth -= $p * $f;
 		}
-		$result = array_merge($result,$arr);
+		$result = \array_merge($result,$arr);
 		return $result;
 	}
 
 	protected function _perms($arr) {
 		$p = array();
 
-		for ($i = 0; $i < $this->_factorial(count($arr)); $i++) {
+		for ($i = 0; $i < $this->_factorial(\count($arr)); $i++) {
 			$p[] = $this->_perm($arr, $i);
 		}
 		return $p;
@@ -165,7 +165,7 @@ class FilterTest extends \lithium\test\Integration {
 		unset($array[$deleteKey]);
 
 		if (!$useOldKeys) {
-			$array = array_values($array);
+			$array = \array_values($array);
 		}
 		return true;
 	}

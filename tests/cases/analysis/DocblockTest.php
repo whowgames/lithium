@@ -83,7 +83,7 @@ class DocblockTest extends \lithium\test\Unit {
 
 		$tags = $result['tags'];
 		$expected = array('important', 'discuss', 'link', 'see', 'return');
-		$this->assertEqual($expected, array_keys($tags));
+		$this->assertEqual($expected, \array_keys($tags));
 
 		$result = "This is a tag that\n         spans\n         several\n         lines.";
 		$this->assertEqual($result, $tags['discuss'][0]);

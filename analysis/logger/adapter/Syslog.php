@@ -73,14 +73,14 @@ class Syslog extends \lithium\core\DynamicObject {
 		$_priorities = $this->_priorities;
 
 		if (!$this->_isConnected) {
-			closelog();
-			openlog($config['identity'], $config['options'], $config['facility']);
+			\closelog();
+			\openlog($config['identity'], $config['options'], $config['facility']);
 			$this->_isConnected = true;
 		}
 
 		return function($self, $params) use ($_priorities) {
 			$priority = $_priorities[$params['priority']];
-			return syslog($priority, $params['message']);
+			return \syslog($priority, $params['message']);
 		};
 	}
 }

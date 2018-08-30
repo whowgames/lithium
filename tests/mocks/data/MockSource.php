@@ -126,23 +126,23 @@ class MockSource extends \lithium\data\Source {
 	public function describe($entity, $schema = array(), array $meta = array()) {
 		$source = '_' . Inflector::camelize($entity, false);
 		$fields = isset($this->$source) ? $this->$source : array();
-		return $this->_instance('schema', compact('fields'));
+		return $this->_instance('schema', \compact('fields'));
 	}
 
 	public function create($query, array $options = array()) {
-		return compact('query', 'options');
+		return \compact('query', 'options');
 	}
 
 	public function read($query, array $options = array()) {
-		return compact('query', 'options');
+		return \compact('query', 'options');
 	}
 
 	public function update($query, array $options = array()) {
-		return compact('query', 'options');
+		return \compact('query', 'options');
 	}
 
 	public function delete($query, array $options = array()) {
-		return compact('query', 'options');
+		return \compact('query', 'options');
 	}
 
 	public function schema($query, $resource = null, $context = null) {
@@ -158,8 +158,8 @@ class MockSource extends \lithium\data\Source {
 		$key = "{$field}_id";
 		$primary = $class::meta('key');
 
-		if (is_array($primary)) {
-			$key = array_combine($primary, $primary);
+		if (\is_array($primary)) {
+			$key = \array_combine($primary, $primary);
 		} elseif ($type === 'hasMany' || $type === 'hasOne') {
 			if ($type === 'hasMany') {
 				$field = Inflector::pluralize($field);
@@ -170,13 +170,13 @@ class MockSource extends \lithium\data\Source {
 
 		$from = $class;
 		$fieldName = $field;
-		$config += compact('type', 'name', 'key', 'from', 'fieldName');
+		$config += \compact('type', 'name', 'key', 'from', 'fieldName');
 		return $this->_instance('relationship', $config);
 	}
 
 	public function calculation($type, $query, array $options = array()) {
 		$query->calculate($type);
-		return compact('query', 'options');
+		return \compact('query', 'options');
 	}
 
 	public static function enabled($feature = null) {

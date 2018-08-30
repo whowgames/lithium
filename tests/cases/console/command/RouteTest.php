@@ -38,11 +38,11 @@ class RouteTest extends \lithium\test\Unit {
 	public function skip() {
 		$path = Libraries::get(true, 'resources');
 
-		if (is_writable($path) && !is_dir("{$path}/tmp/tests")) {
-			mkdir("{$path}/tmp/tests", 0777, true);
+		if (\is_writable($path) && !\is_dir("{$path}/tmp/tests")) {
+			\mkdir("{$path}/tmp/tests", 0777, true);
 		}
 		$this->_testPath = "{$path}/tmp/tests";
-		$this->skipIf(!is_writable($this->_testPath), "Path `{$this->_testPath}` is not writable.");
+		$this->skipIf(!\is_writable($this->_testPath), "Path `{$this->_testPath}` is not writable.");
 	}
 
 	/**
@@ -64,15 +64,15 @@ class RouteTest extends \lithium\test\Unit {
 			'}',
 			'?>'
 		);
-		file_put_contents($this->_config['routes'], join("\n", $content));
+		\file_put_contents($this->_config['routes'], \join("\n", $content));
 	}
 
 	/**
 	 * Delete the temporary routes.php file.
 	 */
 	public function tearDown() {
-		if (file_exists($this->_config['routes'])) {
-			unlink($this->_config['routes']);
+		if (\file_exists($this->_config['routes'])) {
+			\unlink($this->_config['routes']);
 		}
 		Router::reset();
 	}
@@ -88,7 +88,7 @@ class RouteTest extends \lithium\test\Unit {
 
 		$request = new Request();
 		$request->params['env'] = 'production';
-		$command = new Route(compact('request') + array('routes' => $this->_config['routes']));
+		$command = new Route(\compact('request') + array('routes' => $this->_config['routes']));
 		$this->assertEqual('production', $command->env);
 	}
 
@@ -105,7 +105,7 @@ class RouteTest extends \lithium\test\Unit {
 
 		$request = new Request();
 		$request->params['env'] = 'production';
-		$command = new Route(compact('request') + array('routes' => $this->_config['routes']));
+		$command = new Route(\compact('request') + array('routes' => $this->_config['routes']));
 		$this->assertCount(2, Router::get(null, true));
 	}
 
@@ -145,7 +145,7 @@ class RouteTest extends \lithium\test\Unit {
 		$request->params = array(
 			'env' => 'production'
 		);
-		$command = new Route(compact('request') + array(
+		$command = new Route(\compact('request') + array(
 			'routes' => $this->_config['routes'],
 			'classes' => array('response' => 'lithium\tests\mocks\console\MockResponse')
 		));
@@ -202,7 +202,7 @@ class RouteTest extends \lithium\test\Unit {
 		$request->params = array(
 			'args' => array('/foobar')
 		);
-		$command = new Route(compact('request') + array(
+		$command = new Route(\compact('request') + array(
 			'routes' => $this->_config['routes'],
 			'classes' => array('response' => 'lithium\tests\mocks\console\MockResponse')
 		));
@@ -218,7 +218,7 @@ class RouteTest extends \lithium\test\Unit {
 	public function testShowWithValidRoute() {
 		$request = new Request();
 		$request->params = array('args' => array('/'));
-		$command = new Route(compact('request') + array(
+		$command = new Route(\compact('request') + array(
 			'routes' => $this->_config['routes'],
 			'classes' => array('response' => 'lithium\tests\mocks\console\MockResponse')
 		));
@@ -237,7 +237,7 @@ class RouteTest extends \lithium\test\Unit {
 			'env' => 'production',
 			'args' => array('/test')
 		);
-		$command = new Route(compact('request') + array(
+		$command = new Route(\compact('request') + array(
 			'routes' => $this->_config['routes'],
 			'classes' => array('response' => 'lithium\tests\mocks\console\MockResponse')
 		));
@@ -258,7 +258,7 @@ class RouteTest extends \lithium\test\Unit {
 		$request->params = array(
 			'args' => array('post', '/')
 		);
-		$command = new Route(compact('request') + array(
+		$command = new Route(\compact('request') + array(
 			'routes' => $this->_config['routes'],
 			'classes' => array('response' => 'lithium\tests\mocks\console\MockResponse')
 		));
@@ -277,7 +277,7 @@ class RouteTest extends \lithium\test\Unit {
 	 * @return string Returns the value of `$str` with all whitespace removed.
 	 */
 	protected function _strip($str) {
-		return preg_replace('/\s/', '', $str);
+		return \preg_replace('/\s/', '', $str);
 	}
 }
 

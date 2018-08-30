@@ -13,9 +13,9 @@ use lithium\analysis\logger\adapter\Growl;
 class GrowlTest extends \lithium\test\Unit {
 
 	public function testGrowlWrite() {
-		$connection = fopen('php://memory', 'w+');
+		$connection = \fopen('php://memory', 'w+');
 
-		$growl = new Growl(compact('connection') + array(
+		$growl = new Growl(\compact('connection') + array(
 			'name' => 'Lithium',
 			'title' => 'Lithium log'
 		));
@@ -33,8 +33,8 @@ class GrowlTest extends \lithium\test\Unit {
 			102, 14
 		);
 
-		rewind($connection);
-		$result = array_map('ord', str_split(stream_get_contents($connection)));
+		\rewind($connection);
+		$result = \array_map('ord', \str_split(\stream_get_contents($connection)));
 		$this->assertEqual($bytes, $result);
 	}
 
@@ -48,7 +48,7 @@ class GrowlTest extends \lithium\test\Unit {
 		$this->expectException('/Failed to parse address/');
 
 		$message = 'info: Test message.';
-		$params = compact('message') + array('priority' => 'info', 'options' => array());
+		$params = \compact('message') + array('priority' => 'info', 'options' => array());
 		$writer = $growl->write('info', $message, array());
 		$writer('lithium\analysis\Logger', $params, null);
 	}
@@ -64,15 +64,15 @@ class GrowlTest extends \lithium\test\Unit {
 		$this->expectException('/Failed to parse address/');
 
 		$message = 'info: Test message.';
-		$params = compact('message') + array('priority' => 'info', 'options' => array());
+		$params = \compact('message') + array('priority' => 'info', 'options' => array());
 		$writer = $growl->write('info', $message, array());
 		$writer('lithium\analysis\Logger', $params, null);
 	}
 
 	public function testStickyMessages() {
-		$connection = fopen('php://memory', 'w+');
+		$connection = \fopen('php://memory', 'w+');
 
-		$growl = new Growl(compact('connection') + array(
+		$growl = new Growl(\compact('connection') + array(
 			'name' => 'Lithium',
 			'title' => 'Lithium log'
 		));
@@ -90,15 +90,15 @@ class GrowlTest extends \lithium\test\Unit {
 			105, 89
 		);
 
-		rewind($connection);
-		$result = array_map('ord', str_split(stream_get_contents($connection)));
+		\rewind($connection);
+		$result = \array_map('ord', \str_split(\stream_get_contents($connection)));
 		$this->assertEqual($bytes, $result);
 	}
 
 	public function testMessagePriority() {
-		$connection = fopen('php://memory', 'w+');
+		$connection = \fopen('php://memory', 'w+');
 
-		$growl = new Growl(compact('connection') + array(
+		$growl = new Growl(\compact('connection') + array(
 			'name' => 'Lithium',
 			'title' => 'Lithium log'
 		));
@@ -118,8 +118,8 @@ class GrowlTest extends \lithium\test\Unit {
 			130, 209, 32
 		);
 
-		rewind($connection);
-		$result = array_map('ord', str_split(stream_get_contents($connection)));
+		\rewind($connection);
+		$result = \array_map('ord', \str_split(\stream_get_contents($connection)));
 		$this->assertEqual($bytes, $result);
 	}
 }

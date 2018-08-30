@@ -34,7 +34,7 @@ class SourceTest extends \lithium\tests\integration\data\Base {
 	 */
 	public function skip() {
 		parent::connect($this->_connection);
-		if (!class_exists('li3_fixtures\test\Fixtures')) {
+		if (!\class_exists('li3_fixtures\test\Fixtures')) {
 			$this->skipIf(true, "These tests need `'li3_fixtures'` to be runned.");
 		}
 	}
@@ -130,7 +130,7 @@ class SourceTest extends \lithium\tests\integration\data\Base {
 		$result = Galleries::find('first', array('fields' => array('name')));
 		$this->assertNotInternalType('null', $result);
 
-		$this->skipIf(is_null($result), 'No result returned to test');
+		$this->skipIf(\is_null($result), 'No result returned to test');
 		$result = $result->data();
 		$this->assertEqual($expected['name'], $result['name']);
 
@@ -144,8 +144,8 @@ class SourceTest extends \lithium\tests\integration\data\Base {
 
 		foreach ($this->galleriesData as $data) {
 			$galleries[] = Galleries::create($data);
-			$this->assertTrue(end($galleries)->save());
-			$this->assertNotEmpty(end($galleries)->$key);
+			$this->assertTrue(\end($galleries)->save());
+			$this->assertNotEmpty(\end($galleries)->$key);
 		}
 
 		$this->assertIdentical(2, Galleries::count());
@@ -155,12 +155,12 @@ class SourceTest extends \lithium\tests\integration\data\Base {
 		$all = Galleries::all();
 		$this->assertIdentical(2, Galleries::count());
 
-		$expected = count($this->galleriesData);
+		$expected = \count($this->galleriesData);
 		$this->assertEqual($expected, $all->count());
-		$this->assertEqual($expected, count($all));
+		$this->assertEqual($expected, \count($all));
 
 		$id = (string) $all->first()->{$key};
-		$this->assertTrue(strlen($id) > 0);
+		$this->assertTrue(\strlen($id) > 0);
 		$this->assertNotEmpty($all->data());
 
 		foreach ($galleries as $galleries) {
@@ -218,10 +218,10 @@ class SourceTest extends \lithium\tests\integration\data\Base {
 	public function testDefaultRelationshipInfo() {
 		$db = $this->_db;
 		$this->skipIf(!$db::enabled('relationships'));
-		$this->assertEqual(array('Images'), array_keys(Galleries::relations()));
+		$this->assertEqual(array('Images'), \array_keys(Galleries::relations()));
 		$this->assertEqual(array(
 			'Galleries', 'ImagesTags', 'Comments'
-		), array_keys(Images::relations()));
+		), \array_keys(Images::relations()));
 
 		$this->assertEqual(array('Images'), Galleries::relations('hasMany'));
 		$this->assertEqual(array('Galleries'), Images::relations('belongsTo'));
@@ -243,8 +243,8 @@ class SourceTest extends \lithium\tests\integration\data\Base {
 
 		foreach ($this->galleriesData as $data) {
 			$galleries[] = Galleries::create($data);
-			$this->assertTrue(end($galleries)->save());
-			$this->assertNotEmpty(end($galleries)->{$key});
+			$this->assertTrue(\end($galleries)->save());
+			$this->assertNotEmpty(\end($galleries)->{$key});
 		}
 
 		foreach (Galleries::all() as $galleries) {

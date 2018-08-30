@@ -30,7 +30,7 @@ class Schema extends \lithium\data\DocumentSchema {
 
 	public function __construct(array $config = array()) {
 		$defaults = array('fields' => array('_id' => array('type' => 'id')));
-		parent::__construct(array_filter($config) + $defaults);
+		parent::__construct(\array_filter($config) + $defaults);
 	}
 
 	protected function _init() {
@@ -39,14 +39,14 @@ class Schema extends \lithium\data\DocumentSchema {
 
 		$this->_handlers += array(
 			'id' => function($v) {
-				return is_string($v) && preg_match('/^[0-9a-f]{24}$/', $v) ? new MongoId($v) : $v;
+				return \is_string($v) && \preg_match('/^[0-9a-f]{24}$/', $v) ? new MongoId($v) : $v;
 			},
 			'date' => function($v) {
 				$mv = 0;
-				if(is_float($v)) {
-					$mv = intval(($v - intval($v)) * 1000000);
+				if(\is_float($v)) {
+					$mv = \intval(($v - \intval($v)) * 1000000);
 				}
-				$v = is_numeric($v) ? intval($v) : strtotime($v);
+				$v = \is_numeric($v) ? \intval($v) : \strtotime($v);
 				return !$v ? new MongoDate() : new MongoDate($v, $mv);
 			},
 			'regex'   => function($v) { return new MongoRegex($v); },

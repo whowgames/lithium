@@ -20,14 +20,14 @@ class GettextTest extends \lithium\test\Unit {
 
 	public function skip() {
 		$path = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($path), "Path `{$path}` is not writable.");
+		$this->skipIf(!\is_writable($path), "Path `{$path}` is not writable.");
 	}
 
 	public function setUp() {
 		$this->_path = $path = Libraries::get(true, 'resources') . '/tmp/tests';
-		mkdir("{$this->_path}/en/LC_MESSAGES", 0755, true);
-		mkdir("{$this->_path}/de/LC_MESSAGES", 0755, true);
-		$this->adapter = new MockGettext(compact('path'));
+		\mkdir("{$this->_path}/en/LC_MESSAGES", 0755, true);
+		\mkdir("{$this->_path}/de/LC_MESSAGES", 0755, true);
+		$this->adapter = new MockGettext(\compact('path'));
 	}
 
 	public function tearDown() {
@@ -59,7 +59,7 @@ class GettextTest extends \lithium\test\Unit {
 
 	public function testReadUnreadable() {
 		$message = 'Permissions cannot be modified on Windows.';
-		$this->skipIf(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN', $message);
+		$this->skipIf(\strtoupper(\substr(PHP_OS, 0, 3)) === 'WIN', $message);
 
 		$data = array(
 			'singular 1' => array(
@@ -78,7 +78,7 @@ class GettextTest extends \lithium\test\Unit {
 
 		$this->adapter->mo = false;
 		$this->adapter->write('messageTemplate', 'root', null, $data);
-		chmod("{$this->_path}/message_default.pot", 0222);
+		\chmod("{$this->_path}/message_default.pot", 0222);
 		$this->adapter->mo = true;
 
 		$result = $this->adapter->read('messageTemplate', 'root', null);
@@ -91,7 +91,7 @@ class GettextTest extends \lithium\test\Unit {
 msgid "singular 1"
 msgstr "translated 1"
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$expected = array(
 			'singular 1' => array(
@@ -117,7 +117,7 @@ msgstr "translated 1"
 msgid "singular 2"
 msgstr "translated 2"
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$expected = array(
 			'singular 1' => array(
@@ -150,7 +150,7 @@ msgid_plural "plural 1"
 msgstr[0] "translated 1-0"
 msgstr[1] "translated 1-1"
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$expected = array(
 			'singular 1' => array(
@@ -193,7 +193,7 @@ msgstr ""
 msgid "singular 1"
 msgstr "translated 1"
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$expected = array(
 			'singular 1' => array(
@@ -226,7 +226,7 @@ msgstr ""
 msgid ""
 msgstr "translated"
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$result = $this->adapter->read('message', 'de', null);
 		$this->assertEmpty($result);
@@ -260,12 +260,12 @@ EOD;
 msgid "singular 1"
 msgstr "translated 1"
 EOD;
-		file_put_contents($file, $po);
+		\file_put_contents($file, $po);
 		$result = $this->adapter->read('message', 'de', null);
 		unset($result['pluralRule']);
 		$this->assertEqual($catalog, $result);
 
-		unlink($file);
+		\unlink($file);
 
 		$this->adapter->write('message', 'de', null, $catalog);
 		$po = <<<EOD
@@ -277,8 +277,8 @@ EOD;
 msgid "singular 1"
 msgstr "translated 1"
 EOD;
-		$result = file_get_contents($file);
-		$this->assertPattern('/' . preg_quote($po, '/') . '/', $result);
+		$result = \file_get_contents($file);
+		$this->assertPattern('/' . \preg_quote($po, '/') . '/', $result);
 	}
 
 	public function testReadPoMultiline() {
@@ -289,7 +289,7 @@ msgstr ""
 "This is a translation spanning "
 "multiple lines."
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$expected = array(
 			'An id' => array(
@@ -316,7 +316,7 @@ msgstr ""
 "This is a translation spanning "
 "multiple lines."
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$expected = array(
 			'This is an id spanning multiple lines.' => array(
@@ -348,7 +348,7 @@ msgstr[1] ""
 "This is a plural translation spanning "
 "multiple lines."
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$expected = array(
 			'This is an id spanning multiple lines.' => array(
@@ -373,12 +373,12 @@ EOD;
 
 	public function testReadPoLongIdsAndTranslations() {
 		$file = "{$this->_path}/de/LC_MESSAGES/default.po";
-		$dummy = str_repeat('X', 10000);
+		$dummy = \str_repeat('X', 10000);
 		$data = <<<EOD
 msgid "{$dummy}"
 msgstr "translated 1"
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$result = $this->adapter->read('message', 'de', null);
 		unset($result['pluralRule']);
@@ -388,7 +388,7 @@ EOD;
 msgid "singular 1"
 msgstr "{$dummy}"
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$result = $this->adapter->read('message', 'de', null);
 		unset($result['pluralRule']);
@@ -407,7 +407,7 @@ dC1MYW5ndWFnZTogR2VybWFuClBsdXJhbC1Gb3JtczogbnBsdXJhbHM9MjsgcGx1cmFsPShuICE9IDEp
 LTAAdHJhbnNsYXRlZCAxLTEAdHJhbnNsYXRlZCAyAA==
 EOD;
 
-		file_put_contents($file, base64_decode($data));
+		\file_put_contents($file, \base64_decode($data));
 
 		$expected = array(
 			'singular 1' => array(
@@ -435,7 +435,7 @@ EOD;
 	public function testReadMoMalformed() {
 		$file = "{$this->_path}/de/LC_MESSAGES/default.mo";
 
-		touch($file);
+		\touch($file);
 
 		try {
 			$this->adapter->read('message', 'de', null);
@@ -445,7 +445,7 @@ EOD;
 		}
 		$this->assert($result);
 
-		file_put_contents($file, '|---10---||---10---|');
+		\file_put_contents($file, '|---10---||---10---|');
 
 		try {
 			$this->adapter->read('message', 'de', null);
@@ -455,7 +455,7 @@ EOD;
 		}
 		$this->assert($result);
 
-		file_put_contents($file, '|---10---||---10---||---10---|');
+		\file_put_contents($file, '|---10---||---10---||---10---|');
 
 		try {
 			$this->adapter->read('message', 'de', null);
@@ -547,7 +547,7 @@ EOD;
 			)
 		);
 		$this->adapter->write('message', 'de', null, $data);
-		$result = file_get_contents("{$this->_path}/de/LC_MESSAGES/default.po");
+		$result = \file_get_contents("{$this->_path}/de/LC_MESSAGES/default.po");
 
 		$expected = 'msgstr ""\n"Project-Id';
 		$this->assertPattern("%{$expected}%", $result);
@@ -582,7 +582,7 @@ EOD;
 
 	public function testReadAndWritePoValidation() {
 		$this->adapter->mo = false;
-		mkdir("{$this->_path}/de/LC_VALIDATION", 0755, true);
+		\mkdir("{$this->_path}/de/LC_VALIDATION", 0755, true);
 
 		$file = "{$this->_path}/de/LC_VALIDATION/default.po";
 		$catalog = array(
@@ -600,16 +600,16 @@ msgid "phone"
 msgstr "/[0-9].*/i"
 EOD;
 
-		file_put_contents($file, $po);
+		\file_put_contents($file, $po);
 		$result = $this->adapter->read('validation', 'de', null);
 		unset($result['pluralRule']);
 		$this->assertEqual($catalog, $result);
 
-		unlink($file);
+		\unlink($file);
 
 		$this->adapter->write('validation', 'de', null, $catalog);
-		$result = file_get_contents($file);
-		$this->assertPattern('/' . preg_quote($po, '/') . '/', $result);
+		$result = \file_get_contents($file);
+		$this->assertPattern('/' . \preg_quote($po, '/') . '/', $result);
 	}
 
 	public function testWrittenPoHasShortFilePaths() {
@@ -629,7 +629,7 @@ EOD;
 			)
 		);
 		$this->adapter->write('messageTemplate', 'root', null, $data);
-		$result = file_get_contents("{$this->_path}/message_default.pot");
+		$result = \file_get_contents("{$this->_path}/message_default.pot");
 
 		$expected = '\#: /testa\.php:22';
 		$this->assertPattern("={$expected}=", $result);
@@ -679,7 +679,7 @@ EOD;
 		);
 
 		foreach ($chars as $unescaped => $escaped) {
-			$ord = decoct(ord($unescaped));
+			$ord = \decoct(\ord($unescaped));
 
 			$catalog = array(
 				"this is the{$unescaped}message" => array(
@@ -695,7 +695,7 @@ EOD;
 msgid "this is the{$escaped}message"
 msgstr "this is the{$escaped}translation"
 EOD;
-			file_put_contents($file, $po);
+			\file_put_contents($file, $po);
 			$result = $this->adapter->read('message', 'de', null);
 			unset($result['pluralRule']);
 
@@ -703,15 +703,15 @@ EOD;
 			$message .= "\n{:message}";
 			$this->assertEqual($catalog, $result, $message);
 
-			unlink($file);
+			\unlink($file);
 
 			$this->adapter->write('message', 'de', null, $catalog);
-			$result = file_get_contents($file);
+			$result = \file_get_contents($file);
 			$message  = "`{$escaped}` was not unescaped to `{$unescaped}` (ASCII octal {$ord})";
 			$message .= "\n{:message}";
-			$this->assertPattern('/' . preg_quote($po, '/') . '/', $result, $message);
+			$this->assertPattern('/' . \preg_quote($po, '/') . '/', $result, $message);
 
-			unlink($file);
+			\unlink($file);
 		}
 	}
 
@@ -735,8 +735,8 @@ msgstr "this is the\\ntranslation"
 EOD;
 
 		$this->adapter->write('message', 'de', null, $catalog);
-		$result = file_get_contents($file);
-		$this->assertPattern('/' . preg_quote($po, '/') . '/', $result);
+		$result = \file_get_contents($file);
+		$this->assertPattern('/' . \preg_quote($po, '/') . '/', $result);
 	}
 
 	public function testFixEscapedSingleQuoteOnWrite() {
@@ -759,8 +759,8 @@ msgstr "this is the'translation"
 EOD;
 
 		$this->adapter->write('message', 'de', null, $catalog);
-		$result = file_get_contents($file);
-		$this->assertPattern('/' . preg_quote($po, '/') . '/', $result);
+		$result = \file_get_contents($file);
+		$this->assertPattern('/' . \preg_quote($po, '/') . '/', $result);
 	}
 
 	public function testFixDoubleEscapedOnWrite() {
@@ -783,8 +783,8 @@ msgstr "this is the\\\\translation"
 EOD;
 
 		$this->adapter->write('message', 'de', null, $catalog);
-		$result = file_get_contents($file);
-		$this->assertPattern('/' . preg_quote($po, '/') . '/', $result);
+		$result = \file_get_contents($file);
+		$this->assertPattern('/' . \preg_quote($po, '/') . '/', $result);
 	}
 
 	public function testPluralRule() {
@@ -795,7 +795,7 @@ msgid_plural "plural 1"
 msgstr[0] "translated 1-0"
 msgstr[1] "translated 1-1"
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$result = $this->adapter->read('message', 'de', null);
 		$this->assertInternalType('callable', $result['pluralRule']['translated']);

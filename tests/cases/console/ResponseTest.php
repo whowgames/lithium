@@ -24,8 +24,8 @@ class ResponseTest extends \lithium\test\Unit {
 
 	public function tearDown() {
 		foreach ($this->streams as $path) {
-			if (file_exists($path)) {
-				unlink($path);
+			if (\file_exists($path)) {
+				\unlink($path);
 			}
 		}
 	}
@@ -38,8 +38,8 @@ class ResponseTest extends \lithium\test\Unit {
 
 	public function testConstructWithConfigOutput() {
 		$base = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
-		$stream = fopen($this->streams['output'], 'w');
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
+		$stream = \fopen($this->streams['output'], 'w');
 
 		$response = new Response(array(
 			'output' => $stream
@@ -51,9 +51,9 @@ class ResponseTest extends \lithium\test\Unit {
 
 	public function testConstructWithConfigError() {
 		$base = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
 
-		$stream = fopen($this->streams['error'], 'w');
+		$stream = \fopen($this->streams['error'], 'w');
 		$response = new Response(array('error' => $stream));
 		$this->assertInternalType('resource', $response->error);
 		$this->assertEqual($stream, $response->error);
@@ -61,33 +61,33 @@ class ResponseTest extends \lithium\test\Unit {
 
 	public function testOutput() {
 		$base = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
 
-		$response = new Response(array('output' => fopen($this->streams['output'], 'w+')));
+		$response = new Response(array('output' => \fopen($this->streams['output'], 'w+')));
 		$this->assertInternalType('resource', $response->output);
 
 		$this->assertEqual(2, $response->output('ok'));
-		$this->assertEqual('ok', file_get_contents($this->streams['output']));
+		$this->assertEqual('ok', \file_get_contents($this->streams['output']));
 	}
 
 	public function testStyledOutput() {
 		$base = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
 
-		$response = new Response(array('output' => fopen($this->streams['output'], 'w+')));
+		$response = new Response(array('output' => \fopen($this->streams['output'], 'w+')));
 		$response->styles(array('heading' => "\033[1;36m"));
 		$response->output('{:heading}ok');
-		$this->assertEqual("\033[1;36mok", file_get_contents($this->streams['output']));
+		$this->assertEqual("\033[1;36mok", \file_get_contents($this->streams['output']));
 	}
 
 	public function testError() {
 		$base = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
 
-		$response = new Response(array('error' => fopen($this->streams['error'], 'w+')));
+		$response = new Response(array('error' => \fopen($this->streams['error'], 'w+')));
 		$this->assertInternalType('resource', $response->error);
 		$this->assertEqual(2, $response->error('ok'));
-		$this->assertEqual('ok', file_get_contents($this->streams['error']));
+		$this->assertEqual('ok', \file_get_contents($this->streams['error']));
 	}
 }
 

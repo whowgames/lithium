@@ -60,15 +60,15 @@ class StringDeprecated {
 	 */
 	public static function uuid() {
 		$uuid = static::random(16);
-		$uuid[6] = chr(ord($uuid[6]) & static::UUID_CLEAR_VER | static::UUID_VERSION_4);
-		$uuid[8] = chr(ord($uuid[8]) & static::UUID_CLEAR_VAR | static::UUID_VAR_RFC);
+		$uuid[6] = \chr(\ord($uuid[6]) & static::UUID_CLEAR_VER | static::UUID_VERSION_4);
+		$uuid[8] = \chr(\ord($uuid[8]) & static::UUID_CLEAR_VAR | static::UUID_VAR_RFC);
 
-		return join('-', array(
-			bin2hex(substr($uuid, 0, 4)),
-			bin2hex(substr($uuid, 4, 2)),
-			bin2hex(substr($uuid, 6, 2)),
-			bin2hex(substr($uuid, 8, 2)),
-			bin2hex(substr($uuid, 10, 6))
+		return \join('-', array(
+			\bin2hex(\substr($uuid, 0, 4)),
+			\bin2hex(\substr($uuid, 4, 2)),
+			\bin2hex(\substr($uuid, 6, 2)),
+			\bin2hex(\substr($uuid, 8, 2)),
+			\bin2hex(\substr($uuid, 10, 6))
 		));
 	}
 
@@ -104,7 +104,7 @@ class StringDeprecated {
 		if ($options['encode'] !== static::ENCODE_BASE_64) {
 			return $result;
 		}
-		return strtr(rtrim(base64_encode($result), '='), '+', '.');
+		return \strtr(\rtrim(\base64_encode($result), '='), '+', '.');
 	}
 
 	/**
@@ -124,15 +124,15 @@ class StringDeprecated {
 		switch (true) {
 			case isset(static::$_source):
 				return static::$_source;
-			case is_readable('/dev/urandom') && $fp = fopen('/dev/urandom', 'rb'):
+			case \is_readable('/dev/urandom') && $fp = \fopen('/dev/urandom', 'rb'):
 				return static::$_source = function($bytes) use (&$fp) {
-					return fread($fp, $bytes);
+					return \fread($fp, $bytes);
 				};
-			case class_exists('COM', false):
+			case \class_exists('COM', false):
 				try {
 					$com = new COM('CAPICOM.Utilities.1');
 					return static::$_source = function($bytes) use ($com) {
-						return base64_decode($com->GetRandom($bytes, 0));
+						return \base64_decode($com->GetRandom($bytes, 0));
 					};
 				} catch (Exception $e) {
 				}
@@ -141,7 +141,7 @@ class StringDeprecated {
 					$rand = '';
 
 					for ($i = 0; $i < $bytes; $i++) {
-						$rand .= chr(mt_rand(0, 255));
+						$rand .= \chr(\mt_rand(0, 255));
 					}
 					return $rand;
 				};
@@ -180,9 +180,9 @@ class StringDeprecated {
 			$string = $options['salt'] . $string;
 		}
 		if ($options['key']) {
-			return hash_hmac($options['type'], $string, $options['key'], $options['raw']);
+			return \hash_hmac($options['type'], $string, $options['key'], $options['raw']);
 		}
-		return hash($options['type'], $string, $options['raw']);
+		return \hash($options['type'], $string, $options['raw']);
 	}
 
 	/**
@@ -196,7 +196,7 @@ class StringDeprecated {
 	public static function compare($left, $right) {
 		$result = true;
 
-		if (($length = strlen($left)) !== strlen($right)) {
+		if (($length = \strlen($left)) !== \strlen($right)) {
 			return false;
 		}
 		for ($i = 0; $i < $length; $i++) {
@@ -244,25 +244,25 @@ class StringDeprecated {
 		);
 		$options += $defaults;
 		$format = $options['format'];
-		reset($data);
+		\reset($data);
 
 		if ($format === 'regex' || (!$format && $options['escape'])) {
-			$format = sprintf(
+			$format = \sprintf(
 				'/(?<!%s)%s%%s%s/',
-				preg_quote($options['escape'], '/'),
-				str_replace('%', '%%', preg_quote($options['before'], '/')),
-				str_replace('%', '%%', preg_quote($options['after'], '/'))
+				\preg_quote($options['escape'], '/'),
+				\str_replace('%', '%%', \preg_quote($options['before'], '/')),
+				\str_replace('%', '%%', \preg_quote($options['after'], '/'))
 			);
 		}
 
-		if (!$format && key($data) !== 0) {
+		if (!$format && \key($data) !== 0) {
 			$replace = array();
 
 			foreach ($data as $key => $value) {
-				$value = (is_array($value) || $value instanceof Closure) ? '' : $value;
+				$value = (\is_array($value) || $value instanceof Closure) ? '' : $value;
 
 				try {
-					if (is_object($value) && method_exists($value, '__toString')) {
+					if (\is_object($value) && \method_exists($value, '__toString')) {
 						$value = (string) $value;
 					}
 				} catch (Exception $e) {
@@ -270,33 +270,33 @@ class StringDeprecated {
 				}
 				$replace["{$options['before']}{$key}{$options['after']}"] = $value;
 			}
-			$str = strtr($str, $replace);
+			$str = \strtr($str, $replace);
 			return $options['clean'] ? static::clean($str, $options) : $str;
 		}
 
-		if (strpos($str, '?') !== false && isset($data[0])) {
+		if (\strpos($str, '?') !== false && isset($data[0])) {
 			$offset = 0;
-			while (($pos = strpos($str, '?', $offset)) !== false) {
-				$val = array_shift($data);
-				$offset = $pos + strlen($val);
-				$str = substr_replace($str, $val, $pos, 1);
+			while (($pos = \strpos($str, '?', $offset)) !== false) {
+				$val = \array_shift($data);
+				$offset = $pos + \strlen($val);
+				$str = \substr_replace($str, $val, $pos, 1);
 			}
 			return $options['clean'] ? static::clean($str, $options) : $str;
 		}
 
 		foreach ($data as $key => $value) {
-			$hashVal = crc32($key);
-			$key = sprintf($format, preg_quote($key, '/'));
+			$hashVal = \crc32($key);
+			$key = \sprintf($format, \preg_quote($key, '/'));
 
 			if (!$key) {
 				continue;
 			}
-			$str = preg_replace($key, $hashVal, $str);
-			$str = str_replace($hashVal, $value, $str);
+			$str = \preg_replace($key, $hashVal, $str);
+			$str = \str_replace($hashVal, $value, $str);
 		}
 
 		if (!isset($options['format']) && isset($options['before'])) {
-			$str = str_replace($options['escape'] . $options['before'], $options['before'], $str);
+			$str = \str_replace($options['escape'] . $options['before'], $options['before'], $str);
 		}
 		return $options['clean'] ? static::clean($str, $options) : $str;
 	}
@@ -324,18 +324,18 @@ class StringDeprecated {
 		}
 		$clean = $options['clean'];
 		$clean = ($clean === true) ? array('method' => 'text') : $clean;
-		$clean = (!is_array($clean)) ? array('method' => $options['clean']) : $clean;
+		$clean = (!\is_array($clean)) ? array('method' => $options['clean']) : $clean;
 
 		switch ($clean['method']) {
 			case 'html':
 				$clean += array('word' => '[\w,.]+', 'andText' => true, 'replacement' => '');
-				$kleenex = sprintf(
+				$kleenex = \sprintf(
 					'/[\s]*[a-z]+=(")(%s%s%s[\s]*)+\\1/i',
-					preg_quote($options['before'], '/'),
+					\preg_quote($options['before'], '/'),
 					$clean['word'],
-					preg_quote($options['after'], '/')
+					\preg_quote($options['after'], '/')
 				);
-				$str = preg_replace($kleenex, $clean['replacement'], $str);
+				$str = \preg_replace($kleenex, $clean['replacement'], $str);
 
 				if ($clean['andText']) {
 					$options['clean'] = array('method' => 'text');
@@ -346,16 +346,16 @@ class StringDeprecated {
 				$clean += array(
 					'word' => '[\w,.]+', 'gap' => '[\s]*(?:(?:and|or|,)[\s]*)?', 'replacement' => ''
 				);
-				$before = preg_quote($options['before'], '/');
-				$after = preg_quote($options['after'], '/');
+				$before = \preg_quote($options['before'], '/');
+				$after = \preg_quote($options['after'], '/');
 
-				$kleenex = sprintf(
+				$kleenex = \sprintf(
 					'/(%s%s%s%s|%s%s%s%s|%s%s%s%s%s)/',
 					$before, $clean['word'], $after, $clean['gap'],
 					$clean['gap'], $before, $clean['word'], $after,
 					$clean['gap'], $before, $clean['word'], $after, $clean['gap']
 				);
-				$str = preg_replace($kleenex, $clean['replacement'], $str);
+				$str = \preg_replace($kleenex, $clean['replacement'], $str);
 			break;
 		}
 		return $str;
@@ -370,7 +370,7 @@ class StringDeprecated {
 	 * @return mixed
 	 */
 	public static function extract($regex, $str, $index = 0) {
-		if (!preg_match($regex, $str, $match)) {
+		if (!\preg_match($regex, $str, $match)) {
 			return false;
 		}
 		return isset($match[$index]) ? $match[$index] : null;
@@ -390,9 +390,9 @@ class StringDeprecated {
 	 */
 	public static function tokenize($data, array $options = array()) {
 		$defaults = array('separator' => ',', 'leftBound' => '(', 'rightBound' => ')');
-		extract($options + $defaults);
+		\extract($options + $defaults);
 
-		if (!$data || is_array($data)) {
+		if (!$data || \is_array($data)) {
 			return $data;
 		}
 
@@ -400,15 +400,15 @@ class StringDeprecated {
 		$offset = 0;
 		$buffer = '';
 		$results = array();
-		$length = strlen($data);
+		$length = \strlen($data);
 		$open = false;
 
 		while ($offset <= $length) {
 			$tmpOffset = -1;
 			$offsets = array(
-				strpos($data, $separator, $offset),
-				strpos($data, $leftBound, $offset),
-				strpos($data, $rightBound, $offset)
+				\strpos($data, $separator, $offset),
+				\strpos($data, $leftBound, $offset),
+				\strpos($data, $rightBound, $offset)
 			);
 
 			for ($i = 0; $i < 3; $i++) {
@@ -418,11 +418,11 @@ class StringDeprecated {
 			}
 
 			if ($tmpOffset === -1) {
-				$results[] = $buffer . substr($data, $offset);
+				$results[] = $buffer . \substr($data, $offset);
 				$offset = $length + 1;
 				continue;
 			}
-			$buffer .= substr($data, $offset, ($tmpOffset - $offset));
+			$buffer .= \substr($data, $offset, ($tmpOffset - $offset));
 
 			if ($data[$tmpOffset] === $separator && $depth === 0) {
 				$results[] = $buffer;
@@ -452,7 +452,7 @@ class StringDeprecated {
 		if (!$results && $buffer) {
 			$results[] = $buffer;
 		}
-		return $results ? array_map('trim', $results) : array();
+		return $results ? \array_map('trim', $results) : array();
 	}
 }
 

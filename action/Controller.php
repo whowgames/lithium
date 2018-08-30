@@ -143,7 +143,7 @@ class Controller extends \lithium\core\DynamicObject {
 		parent::_init();
 
 		foreach (static::_parents() as $parent) {
-			$inherit = get_class_vars($parent);
+			$inherit = \get_class_vars($parent);
 
 			if (isset($inherit['_render'])) {
 				$this->_render += $inherit['_render'];
@@ -177,7 +177,7 @@ class Controller extends \lithium\core\DynamicObject {
 	 */
 	public function __invoke($request, $dispatchParams, array $options = array()) {
 		$render =& $this->_render;
-		$params = compact('request', 'dispatchParams', 'options');
+		$params = \compact('request', 'dispatchParams', 'options');
 
 		return $this->_filter(__METHOD__, $params, function($self, $params) use (&$render) {
 			$dispatchParams = $params['dispatchParams'];
@@ -186,20 +186,20 @@ class Controller extends \lithium\core\DynamicObject {
 			$args = isset($dispatchParams['args']) ? $dispatchParams['args'] : array();
 			$result = null;
 
-			if (substr($action, 0, 1) === '_' || method_exists(__CLASS__, $action)) {
+			if (\substr($action, 0, 1) === '_' || \method_exists(__CLASS__, $action)) {
 				throw new DispatchException('Attempted to invoke a private method.');
 			}
-			if (!method_exists($self, $action)) {
+			if (!\method_exists($self, $action)) {
 				throw new DispatchException("Action `{$action}` not found. (Referer: '" . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'n/a') . "', URI: '" . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '') . "')");
 			}
 			$render['template'] = $render['template'] ?: $action;
 
 			if ($result = $self->invokeMethod($action, $args)) {
-				if (is_string($result)) {
+				if (\is_string($result)) {
 					$self->render(array('text' => $result));
 					return $self->response;
 				}
-				if (is_array($result)) {
+				if (\is_array($result)) {
 					$self->set($result);
 				}
 			}
@@ -242,9 +242,9 @@ class Controller extends \lithium\core\DynamicObject {
 	 */
 	public function render(array $options = array()) {
 		$media = $this->_classes['media'];
-		$class = get_class($this);
-		$name = preg_replace('/Controller$/', '', substr($class, strrpos($class, '\\') + 1));
-		$key = key($options);
+		$class = \get_class($this);
+		$name = \preg_replace('/Controller$/', '', \substr($class, \strrpos($class, '\\') + 1));
+		$key = \key($options);
 
 		if (isset($options['data'])) {
 			$this->set($options['data']);
@@ -305,12 +305,12 @@ class Controller extends \lithium\core\DynamicObject {
 		$router = $this->_classes['router'];
 		$defaults = array('location' => null, 'status' => 302, 'head' => true, 'exit' => false);
 		$options += $defaults;
-		$params = compact('url', 'options');
+		$params = \compact('url', 'options');
 
 		$this->_filter(__METHOD__, $params, function($self, $params) use ($router) {
 			$options = $params['options'];
 			$location = $options['location'] ?: $router::match($params['url'], $self->request);
-			$self->render(compact('location') + $options);
+			$self->render(\compact('location') + $options);
 		});
 
 		if ($options['exit']) {

@@ -113,14 +113,14 @@ class File extends \lithium\template\view\Renderer implements \ArrayAccess {
 		unset($options, $template, $defaults, $data);
 
 		if ($this->_config['extract']) {
-			extract($this->_data, EXTR_OVERWRITE);
+			\extract($this->_data, EXTR_OVERWRITE);
 		} elseif ($this->_view) {
-			extract((array) $this->_view->outputFilters, EXTR_OVERWRITE);
+			\extract((array) $this->_view->outputFilters, EXTR_OVERWRITE);
 		}
 
-		ob_start();
+		\ob_start();
 		include $template__;
-		return ob_get_clean();
+		return \ob_get_clean();
 	}
 
 	/**
@@ -156,7 +156,7 @@ class File extends \lithium\template\view\Renderer implements \ArrayAccess {
 	 * @return boolean Returns `true` if the value is set, otherwise `false`.
 	 */
 	public function offsetExists($offset) {
-		return array_key_exists($offset, $this->_data);
+		return \array_key_exists($offset, $this->_data);
 	}
 
 	/**
@@ -226,7 +226,7 @@ class File extends \lithium\template\view\Renderer implements \ArrayAccess {
 		}
 
 		foreach ((array) $this->_paths[$type] as $path) {
-			if (!file_exists($path = StringDeprecated::insert($path, $params))) {
+			if (!\file_exists($path = StringDeprecated::insert($path, $params))) {
 				continue;
 			}
 			return $path;

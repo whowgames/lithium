@@ -19,13 +19,13 @@ class Base64Test extends \lithium\test\Unit {
 	public function testWrite() {
 		$data = 'a test string';
 		$result = $this->Base64->write($data);
-		$expected = base64_encode($data);
+		$expected = \base64_encode($data);
 		$this->assertEqual($expected, $result);
 	}
 
 	public function testRead() {
 		$expected = 'a test string';
-		$encoded = base64_encode($expected);
+		$encoded = \base64_encode($expected);
 		$result = $this->Base64->read($encoded);
 		$this->assertEqual($expected, $result);
 	}

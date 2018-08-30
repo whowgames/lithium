@@ -15,8 +15,8 @@ class AuthTest extends \lithium\test\Unit {
 	public function testBasicEncode() {
 		$username = 'gwoo';
 		$password = 'li3';
-		$response = base64_encode("{$username}:{$password}");
-		$expected = compact('username', 'response');
+		$response = \base64_encode("{$username}:{$password}");
+		$expected = \compact('username', 'response');
 		$result = Auth::encode($username, $password);
 		$this->assertEqual($expected, $result);
 	}
@@ -25,11 +25,11 @@ class AuthTest extends \lithium\test\Unit {
 		$username = 'gwoo';
 		$password = 'li3';
 		$nc = '00000001';
-		$cnonce = md5(time());
-		$user = md5("gwoo:app:li3");
+		$cnonce = \md5(\time());
+		$user = \md5("gwoo:app:li3");
 		$nonce = "4bca0fbca7bd0:{$nc}:{$cnonce}:auth";
-		$req = md5("GET:/http_auth");
-		$response = md5("{$user}:{$nonce}:{$req}");
+		$req = \md5("GET:/http_auth");
+		$response = \md5("{$user}:{$nonce}:{$req}");
 
 		$data = array(
 			'realm' => 'app',
@@ -39,7 +39,7 @@ class AuthTest extends \lithium\test\Unit {
 			'nonce' => '4bca0fbca7bd0',
 			'opaque' => 'd3fb67a7aa4d887ec4bf83040a820a46'
 		);
-		$expected = $data + compact('username', 'response', 'nc', 'cnonce');
+		$expected = $data + \compact('username', 'response', 'nc', 'cnonce');
 		$result = Auth::encode($username, $password, $data);
 		$this->assertEqual($expected, $result);
 	}
@@ -47,7 +47,7 @@ class AuthTest extends \lithium\test\Unit {
 	public function testBasicHeader() {
 		$username = 'gwoo';
 		$password = 'li3';
-		$response = base64_encode("{$username}:{$password}");
+		$response = \base64_encode("{$username}:{$password}");
 		$data = Auth::encode($username, $password);
 		$expected = "Basic " . $response;
 		$result = Auth::header($data);
@@ -58,11 +58,11 @@ class AuthTest extends \lithium\test\Unit {
 		$username = 'gwoo';
 		$password = 'li3';
 		$nc = '00000001';
-		$cnonce = md5(time());
-		$user = md5("gwoo:app:li3");
+		$cnonce = \md5(\time());
+		$user = \md5("gwoo:app:li3");
 		$nonce = "4bca0fbca7bd0:{$nc}:{$cnonce}:auth";
-		$req = md5("GET:/http_auth");
-		$hash = md5("{$user}:{$nonce}:{$req}");
+		$req = \md5("GET:/http_auth");
+		$hash = \md5("{$user}:{$nonce}:{$req}");
 
 		$data = array(
 			'realm' => 'app',
@@ -75,7 +75,7 @@ class AuthTest extends \lithium\test\Unit {
 		$data = Auth::encode($username, $password, $data);
 		$header = Auth::header($data);
 		$this->assertPattern('/Digest/', $header);
-		preg_match('/response="(.*?)"/', $header, $matches);
+		\preg_match('/response="(.*?)"/', $header, $matches);
 		list($match, $response) = $matches;
 
 		$expected = $hash;

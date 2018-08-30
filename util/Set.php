@@ -37,17 +37,17 @@ class Set {
 	 *         first.
 	 */
 	public static function append(array $array, array $array2) {
-		$arrays = func_get_args();
-		$array = array_shift($arrays);
+		$arrays = \func_get_args();
+		$array = \array_shift($arrays);
 		foreach ($arrays as $array2) {
 			if (!$array && $array2) {
 				$array = $array2;
 				continue;
 			}
 			foreach ($array2 as $key => $value) {
-				if (!array_key_exists($key, $array)) {
+				if (!\array_key_exists($key, $array)) {
 					$array[$key] = $value;
-				} elseif (is_array($value)) {
+				} elseif (\is_array($value)) {
 					$array[$key] = static::append($array[$key], $array2[$key]);
 				}
 			}
@@ -69,16 +69,16 @@ class Set {
 		if (!$path) {
 			return $data;
 		}
-		$path = is_array($path) ? $path : explode('.', $path);
+		$path = \is_array($path) ? $path : \explode('.', $path);
 
 		foreach ($path as $i => $key) {
-			if (is_numeric($key) && intval($key) > 0 || $key === '0') {
-				$key = intval($key);
+			if (\is_numeric($key) && \intval($key) > 0 || $key === '0') {
+				$key = \intval($key);
 			}
-			if ($i === count($path) - 1) {
-				return (is_array($data) && isset($data[$key]));
+			if ($i === \count($path) - 1) {
+				return (\is_array($data) && isset($data[$key]));
 			} else {
-				if (!is_array($data) || !isset($data[$key])) {
+				if (!\is_array($data) || !isset($data[$key])) {
 					return false;
 				}
 				$data =& $data[$key];
@@ -102,24 +102,24 @@ class Set {
 		if (!$data) {
 			return array();
 		}
-		if (is_object($data)) {
-			$data = get_object_vars($data);
+		if (\is_object($data)) {
+			$data = \get_object_vars($data);
 		}
-		if (is_array($path1)) {
-			$format = array_shift($path1);
+		if (\is_array($path1)) {
+			$format = \array_shift($path1);
 			$keys = static::format($data, $format, $path1);
 		} else {
 			$keys = static::extract($data, $path1);
 		}
 		$vals = array();
-		if (!empty($path2) && is_array($path2)) {
-			$format = array_shift($path2);
+		if (!empty($path2) && \is_array($path2)) {
+			$format = \array_shift($path2);
 			$vals = static::format($data, $format, $path2);
 		} elseif (!empty($path2)) {
 			$vals = static::extract($data, $path2);
 		}
-		$valCount = count($vals);
-		$count = count($keys);
+		$valCount = \count($vals);
+		$count = \count($keys);
 
 		for ($i = $valCount; $i < $count; $i++) {
 			$vals[$i] = null;
@@ -127,7 +127,7 @@ class Set {
 		if ($groupPath) {
 			$group = static::extract($data, $groupPath);
 			if (!empty($group)) {
-				$c = count($keys);
+				$c = \count($keys);
 				for ($i = 0; $i < $c; $i++) {
 					if (!isset($group[$i])) {
 						$group[$i] = 0;
@@ -140,7 +140,7 @@ class Set {
 				return $out;
 			}
 		}
-		return array_combine($keys, $vals);
+		return \array_combine($keys, $vals);
 	}
 
 	/**
@@ -160,7 +160,7 @@ class Set {
 			if (!isset($array1[$key]) || $array1[$key] !== $val) {
 				return false;
 			}
-			if (is_array($val) && !static::contains($array1[$key], $val)) {
+			if (\is_array($val) && !static::contains($array1[$key], $val)) {
 				return false;
 			}
 		}
@@ -184,11 +184,11 @@ class Set {
 		}
 
 		if (!$options['all']) {
-			return (is_array(reset($data))) ? static::depth(reset($data)) + 1 : 1;
+			return (\is_array(\reset($data))) ? static::depth(\reset($data)) + 1 : 1;
 		}
 		$depth = array($options['count']);
 
-		if (is_array($data) && reset($data) !== false) {
+		if (\is_array($data) && \reset($data) !== false) {
 			foreach ($data as $value) {
 				$depth[] = static::depth($value, array(
 					'all' => $options['all'],
@@ -196,7 +196,7 @@ class Set {
 				));
 			}
 		}
-		return max($depth);
+		return \max($depth);
 	}
 
 	/**
@@ -257,7 +257,7 @@ class Set {
 			return array();
 		}
 
-		if (is_string($data)) {
+		if (\is_string($data)) {
 			$tmp = $path;
 			$path = $data;
 			$data = $tmp;
@@ -265,7 +265,7 @@ class Set {
 		}
 
 		if ($path === '/') {
-			return array_filter($data, function($data) {
+			return \array_filter($data, function($data) {
 				return ($data === 0 || $data === '0' || !empty($data));
 			});
 		}
@@ -276,15 +276,15 @@ class Set {
 		if (!isset($contexts[0])) {
 			$contexts = array($data);
 		}
-		$tokens = array_slice(preg_split('/(?<!=)\/(?![a-z-]*\])/', $path), 1);
+		$tokens = \array_slice(\preg_split('/(?<!=)\/(?![a-z-]*\])/', $path), 1);
 
 		do {
-			$token = array_shift($tokens);
+			$token = \array_shift($tokens);
 			$conditions = false;
 
-			if (preg_match_all('/\[([^=]+=\/[^\/]+\/|[^\]]+)\]/', $token, $m)) {
+			if (\preg_match_all('/\[([^=]+=\/[^\/]+\/|[^\]]+)\]/', $token, $m)) {
 				$conditions = $m[1];
-				$token = substr($token, 0, strpos($token, '['));
+				$token = \substr($token, 0, \strpos($token, '['));
 			}
 			$matches = array();
 
@@ -293,66 +293,66 @@ class Set {
 					$context = array('trace' => array(null), 'item' => $context, 'key' => $key);
 				}
 				if ($token === '..') {
-					if (count($context['trace']) === 1) {
+					if (\count($context['trace']) === 1) {
 						$context['trace'][] = $context['key'];
 					}
 
-					array_pop($context['trace']);
-					$parent = join('/', $context['trace']);
+					\array_pop($context['trace']);
+					$parent = \join('/', $context['trace']);
 					$context['item'] = static::extract($data, $parent);
-					array_pop($context['trace']);
-					$context['item'] = array_shift($context['item']);
+					\array_pop($context['trace']);
+					$context['item'] = \array_shift($context['item']);
 					$matches[] = $context;
 					continue;
 				}
 				$match = false;
 
-				if ($token === '@*' && is_array($context['item'])) {
+				if ($token === '@*' && \is_array($context['item'])) {
 					$matches[] = array(
-						'trace' => array_merge($context['trace'], (array) $key),
+						'trace' => \array_merge($context['trace'], (array) $key),
 						'key' => $key,
-						'item' => array_keys($context['item'])
+						'item' => \array_keys($context['item'])
 					);
-				} elseif (is_array($context['item']) && isset($context['item'][$token])) {
+				} elseif (\is_array($context['item']) && isset($context['item'][$token])) {
 					$items = $context['item'][$token];
-					if (!is_array($items)) {
+					if (!\is_array($items)) {
 						$items = array($items);
 					} elseif (!isset($items[0])) {
-						$current = current($items);
-						if ((is_array($current) && count($items) <= 1) || !is_array($current)) {
+						$current = \current($items);
+						if ((\is_array($current) && \count($items) <= 1) || !\is_array($current)) {
 							$items = array($items);
 						}
 					}
 
 					foreach ($items as $key => $item) {
 						$ctext = array($context['key']);
-						if (!is_numeric($key)) {
+						if (!\is_numeric($key)) {
 							$ctext[] = $token;
-							$token = array_shift($tokens);
+							$token = \array_shift($tokens);
 							if (isset($items[$token])) {
 								$ctext[] = $token;
 								$item = $items[$token];
 								$matches[] = array(
-									'trace' => array_merge($context['trace'], $ctext),
+									'trace' => \array_merge($context['trace'], $ctext),
 									'key' => $key,
 									'item' => $item
 								);
 								break;
 							} else {
-								array_unshift($tokens, $token);
+								\array_unshift($tokens, $token);
 							}
 						} else {
 							$ctext[] = $token;
 						}
 
 						$matches[] = array(
-							'trace' => array_merge($context['trace'], $ctext),
+							'trace' => \array_merge($context['trace'], $ctext),
 							'key' => $key,
 							'item' => $item
 						);
 					}
 				} elseif (
-					$key === $token || (ctype_digit($token) && $key == $token) || $token === '.'
+					$key === $token || (\ctype_digit($token) && $key == $token) || $token === '.'
 				) {
 					$context['trace'][] = $key;
 					$matches[] = array(
@@ -365,7 +365,7 @@ class Set {
 			if ($conditions) {
 				foreach ($conditions as $condition) {
 					$filtered = array();
-					$length = count($matches);
+					$length = \count($matches);
 
 					foreach ($matches as $i => $match) {
 						if (static::matches($match['item'], array($condition), $i + 1, $length)) {
@@ -385,9 +385,9 @@ class Set {
 		$r = array();
 
 		foreach ($matches as $match) {
-			$key = array_pop($match['trace']);
-			$condition = (!is_int($key) && $key !== null);
-			if ((!$options['flatten'] || is_array($match['item'])) && $condition) {
+			$key = \array_pop($match['trace']);
+			$condition = (!\is_int($key) && $key !== null);
+			if ((!$options['flatten'] || \is_array($match['item'])) && $condition) {
 				$r[] = array($key => $match['item']);
 			} else {
 				$r[] = $match['item'];
@@ -412,11 +412,11 @@ class Set {
 		$options += $defaults;
 		$result = array();
 
-		if (!is_null($options['path'])) {
+		if (!\is_null($options['path'])) {
 			$options['path'] .= $options['separator'];
 		}
 		foreach ($data as $key => $val) {
-			if (!is_array($val)) {
+			if (!\is_array($val)) {
 				$result[$options['path'] . $key] = $val;
 				continue;
 			}
@@ -442,18 +442,18 @@ class Set {
 		$result = array();
 
 		foreach ($data as $key => $val) {
-			if (strpos($key, $options['separator']) === false) {
+			if (\strpos($key, $options['separator']) === false) {
 				if (!isset($result[$key])) {
 					$result[$key] = $val;
 				}
 				continue;
 			}
-			list($path, $key) = explode($options['separator'], $key, 2);
-			$path = is_numeric($path) ? intval($path) : $path;
+			list($path, $key) = \explode($options['separator'], $key, 2);
+			$path = \is_numeric($path) ? \intval($path) : $path;
 			$result[$path][$key] = $val;
 		}
 		foreach ($result as $key => $value) {
-			if (is_array($value)) {
+			if (\is_array($value)) {
 				$result[$key] = static::expand($value, $options);
 			}
 		}
@@ -471,7 +471,7 @@ class Set {
 	 */
 	public static function format($data, $format, $keys) {
 		$extracted = array();
-		$count = count($keys);
+		$count = \count($keys);
 
 		if (!$count) {
 			return;
@@ -481,12 +481,12 @@ class Set {
 		}
 		$out = array();
 		$data = $extracted;
-		$count = count($data[0]);
+		$count = \count($data[0]);
 
-		if (preg_match_all('/\{([0-9]+)\}/msi', $format, $keys2) && isset($keys2[1])) {
+		if (\preg_match_all('/\{([0-9]+)\}/msi', $format, $keys2) && isset($keys2[1])) {
 			$keys = $keys2[1];
-			$format = preg_split('/\{([0-9]+)\}/msi', $format);
-			$count2 = count($format);
+			$format = \preg_split('/\{([0-9]+)\}/msi', $format);
+			$count2 = \count($format);
 
 			for ($j = 0; $j < $count; $j++) {
 				$formatted = '';
@@ -502,7 +502,7 @@ class Set {
 			}
 			return $out;
 		}
-		$count2 = count($data);
+		$count2 = \count($data);
 
 		for ($j = 0; $j < $count; $j++) {
 			$args = array();
@@ -512,7 +512,7 @@ class Set {
 					$args[] = $data[$i][$j];
 				}
 			}
-			$out[] = vsprintf($format, $args);
+			$out[] = \vsprintf($format, $args);
 		}
 		return $out;
 	}
@@ -526,16 +526,16 @@ class Set {
 	 * @return array
 	 */
 	public static function insert($list, $path, $data = array()) {
-		if (!is_array($path)) {
-			$path = explode('.', $path);
+		if (!\is_array($path)) {
+			$path = \explode('.', $path);
 		}
 		$_list =& $list;
 
 		foreach ($path as $i => $key) {
-			if (is_numeric($key) && intval($key) > 0 || $key === '0') {
-				$key = intval($key);
+			if (\is_numeric($key) && \intval($key) > 0 || $key === '0') {
+				$key = \intval($key);
 			}
-			if ($i === count($path) - 1) {
+			if ($i === \count($path) - 1) {
 				$_list[$key] = $data;
 			} else {
 				if (!isset($_list[$key])) {
@@ -558,15 +558,15 @@ class Set {
 		if (empty($array)) {
 			return null;
 		}
-		if ($array === range(0, count($array) - 1)) {
+		if ($array === \range(0, \count($array) - 1)) {
 			return true;
 		}
 		$numeric = true;
-		$keys = array_keys($array);
-		$count = count($keys);
+		$keys = \array_keys($array);
+		$count = \count($keys);
 
 		for ($i = 0; $i < $count; $i++) {
-			if (!is_numeric($array[$keys[$i]])) {
+			if (!\is_numeric($array[$keys[$i]])) {
 				$numeric = false;
 				break;
 			}
@@ -588,7 +588,7 @@ class Set {
 		if (!$conditions) {
 			return true;
 		}
-		if (is_string($conditions)) {
+		if (\is_string($conditions)) {
 			return (boolean) static::extract($data, $conditions);
 		}
 		foreach ($conditions as $condition) {
@@ -603,13 +603,13 @@ class Set {
 				}
 				continue;
 			}
-			if (!preg_match('/(.+?)([><!]?[=]|[><])(.*)/', $condition, $match)) {
-				if (ctype_digit($condition)) {
+			if (!\preg_match('/(.+?)([><!]?[=]|[><])(.*)/', $condition, $match)) {
+				if (\ctype_digit($condition)) {
 					if ($i !== (int) $condition) {
 						return false;
 					}
-				} elseif (preg_match_all('/(?:^[0-9]+|(?<=,)[0-9]+)/', $condition, $matches)) {
-					return in_array($i, $matches[0]);
+				} elseif (\preg_match_all('/(?:^[0-9]+|(?<=,)[0-9]+)/', $condition, $matches)) {
+					return \in_array($i, $matches[0]);
 				} elseif (!isset($data[$condition])) {
 					return false;
 				}
@@ -623,7 +623,7 @@ class Set {
 			$val = $data[$key];
 
 			if ($op === '=' && $expected && $expected[0] === '/') {
-				return preg_match($expected, $val);
+				return \preg_match($expected, $val);
 			} elseif ($op === '=' && $val != $expected) {
 				return false;
 			} elseif ($op === '!=' && $val == $expected) {
@@ -660,13 +660,13 @@ class Set {
 		if (!$array1 || !$array2) {
 			return $array1 ?: $array2;
 		}
-		$result = (array) current($args);
+		$result = (array) \current($args);
 
-		while (($arg = next($args)) !== false) {
+		while (($arg = \next($args)) !== false) {
 			foreach ((array) $arg as $key => $val) {
-				if (is_array($val) && isset($result[$key]) && is_array($result[$key])) {
+				if (\is_array($val) && isset($result[$key]) && \is_array($result[$key])) {
 					$result[$key] = static::merge($result[$key], $val);
-				} elseif (is_int($key)) {
+				} elseif (\is_int($key)) {
 					$result[] = $val;
 				} else {
 					$result[$key] = $val;
@@ -686,23 +686,23 @@ class Set {
 	 * @return array
 	 */
 	public static function normalize($list, $assoc = true, $sep = ',', $trim = true) {
-		if (is_string($list)) {
-			$list = explode($sep, $list);
-			$list = ($trim) ? array_map('trim', $list) : $list;
+		if (\is_string($list)) {
+			$list = \explode($sep, $list);
+			$list = ($trim) ? \array_map('trim', $list) : $list;
 			return ($assoc) ? static::normalize($list) : $list;
 		}
 
-		if (!is_array($list)) {
+		if (!\is_array($list)) {
 			return $list;
 		}
 
-		$keys = array_keys($list);
-		$count = count($keys);
+		$keys = \array_keys($list);
+		$count = \count($keys);
 		$numeric = true;
 
 		if (!$assoc) {
 			for ($i = 0; $i < $count; $i++) {
-				if (!is_int($keys[$i])) {
+				if (!\is_int($keys[$i])) {
 					$numeric = false;
 					break;
 				}
@@ -712,7 +712,7 @@ class Set {
 		if (!$numeric || $assoc) {
 			$newList = array();
 			for ($i = 0; $i < $count; $i++) {
-				if (is_int($keys[$i]) && is_scalar($list[$keys[$i]])) {
+				if (\is_int($keys[$i]) && \is_scalar($list[$keys[$i]])) {
 					$newList[$list[$keys[$i]]] = null;
 				} else {
 					$newList[$keys[$i]] = $list[$keys[$i]];
@@ -734,16 +734,16 @@ class Set {
 		if (empty($path)) {
 			return $list;
 		}
-		if (!is_array($path)) {
-			$path = explode('.', $path);
+		if (!\is_array($path)) {
+			$path = \explode('.', $path);
 		}
 		$_list =& $list;
 
 		foreach ($path as $i => $key) {
-			if (is_numeric($key) && intval($key) > 0 || $key === '0') {
-				$key = intval($key);
+			if (\is_numeric($key) && \intval($key) > 0 || $key === '0') {
+				$key = \intval($key);
 			}
-			if ($i === count($path) - 1) {
+			if ($i === \count($path) - 1) {
 				unset($_list[$key]);
 			} else {
 				if (!isset($_list[$key])) {
@@ -768,11 +768,11 @@ class Set {
 			$stack = array();
 			foreach ((array) $results as $k => $r) {
 				$id = $k;
-				if (!is_null($key)) {
+				if (!\is_null($key)) {
 					$id = $key;
 				}
-				if (is_array($r)) {
-					$stack = array_merge($stack, $flatten($flatten, $r, $id));
+				if (\is_array($r)) {
+					$stack = \array_merge($stack, $flatten($flatten, $r, $id));
 				} else {
 					$stack[] = array('id' => $id, 'value' => $r);
 				}
@@ -786,9 +786,9 @@ class Set {
 		$values = static::extract($result, '/value');
 
 		$dir = ($dir === 'desc') ? SORT_DESC : SORT_ASC;
-		array_multisort($values, $dir, $keys, $dir);
+		\array_multisort($values, $dir, $keys, $dir);
 		$sorted = array();
-		$keys = array_unique($keys);
+		$keys = \array_unique($keys);
 
 		foreach ($keys as $k) {
 			$sorted[] = $data[$k];
@@ -809,8 +809,8 @@ class Set {
 	 *         the remainder as second element
 	 */
 	public static function slice(array $data, $keys) {
-		$removed = array_intersect_key($data, array_fill_keys((array) $keys, true));
-		$data = array_diff_key($data, $removed);
+		$removed = \array_intersect_key($data, \array_fill_keys((array) $keys, true));
+		$data = \array_diff_key($data, $removed);
 		return array($data, $removed);
 	}
 

@@ -37,11 +37,11 @@ class MockStdClass extends \lithium\core\DynamicObject {
 	}
 
 	public function getClass() {
-		return get_class($this);
+		return \get_class($this);
 	}
 
 	public function isExecutable() {
-		return is_executable(__FILE__);
+		return \is_executable(__FILE__);
 	}
 
 	public static function methodFoo() {

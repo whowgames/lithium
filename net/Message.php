@@ -92,7 +92,7 @@ class Message extends \lithium\core\DynamicObject {
 		);
 		$config += $defaults;
 
-		foreach (array_intersect_key(array_filter($config), $defaults) as $key => $value) {
+		foreach (\array_intersect_key(\array_filter($config), $defaults) as $key => $value) {
 			$this->{$key} = $value;
 		}
 		parent::__construct($config);
@@ -109,9 +109,9 @@ class Message extends \lithium\core\DynamicObject {
 	public function body($data = null, $options = array()) {
 		$default = array('buffer' => null);
 		$options += $default;
-		$this->body = array_merge((array) $this->body, (array) $data);
-		$body = join("\r\n", $this->body);
-		return ($options['buffer']) ? str_split($body, $options['buffer']) : $body;
+		$this->body = \array_merge((array) $this->body, (array) $data);
+		$body = \join("\r\n", $this->body);
+		return ($options['buffer']) ? \str_split($body, $options['buffer']) : $body;
 	}
 
 	/**
@@ -126,7 +126,7 @@ class Message extends \lithium\core\DynamicObject {
 		switch ($format) {
 			case 'array':
 				$array = array();
-				$class = new ReflectionClass(get_class($this));
+				$class = new ReflectionClass(\get_class($this));
 
 				foreach ($class->getProperties(ReflectionProperty::IS_PUBLIC) as $prop) {
 					$array[$prop->getName()] = $prop->getValue($this);

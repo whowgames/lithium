@@ -25,7 +25,7 @@ class DispatcherTest extends \lithium\test\Unit {
 		Router::connect('/', array('controller' => 'test', 'action' => 'test'));
 		MockDispatcher::run(new Request(array('url' => '/')));
 
-		$result = end(MockDispatcher::$dispatched);
+		$result = \end(MockDispatcher::$dispatched);
 		$expected = array('controller' => 'Test', 'action' => 'test');
 		$this->assertEqual($expected, $result->params);
 	}
@@ -50,7 +50,7 @@ class DispatcherTest extends \lithium\test\Unit {
 		)));
 		MockDispatcher::run($request);
 		$expected = array('controller' => 'Test', 'action' => 'test');
-		$result = end(MockDispatcher::$dispatched);
+		$result = \end(MockDispatcher::$dispatched);
 		$this->assertEqual($expected, $result->params);
 	}
 
@@ -115,13 +115,13 @@ class DispatcherTest extends \lithium\test\Unit {
 		Router::connect('/', array('controller' => 'test', 'action' => 'test', 'admin' => true));
 		MockDispatcher::run(new Request(array('url' => '/')));
 
-		$result = end(MockDispatcher::$dispatched);
+		$result = \end(MockDispatcher::$dispatched);
 		$expected = array('action' => 'admin_test', 'controller' => 'Test', 'admin' => true);
 		$this->assertEqual($expected, $result->params);
 
 		MockDispatcher::config(array('rules' => array(
 			'action' => array('action' => function($params) {
-				return Inflector::camelize(strtolower($params['action']), false);
+				return Inflector::camelize(\strtolower($params['action']), false);
 			})
 		)));
 
@@ -130,7 +130,7 @@ class DispatcherTest extends \lithium\test\Unit {
 		Router::connect('/', array('controller' => 'test', 'action' => 'TeST-camelize'));
 		MockDispatcher::run(new Request(array('url' => '/')));
 
-		$result = end(MockDispatcher::$dispatched);
+		$result = \end(MockDispatcher::$dispatched);
 		$expected = array('action' => 'testCamelize', 'controller' => 'Test');
 		$this->assertEqual($expected, $result->params);
 
@@ -150,13 +150,13 @@ class DispatcherTest extends \lithium\test\Unit {
 		));
 		MockDispatcher::run(new Request(array('url' => '/')));
 
-		$result = end(MockDispatcher::$dispatched);
+		$result = \end(MockDispatcher::$dispatched);
 		$expected = array('action' => 'test', 'controller' => 'Test', 'admin' => true);
 		$this->assertEqual($expected, $result->params);
 
 		MockDispatcher::run(new Request(array('url' => '/special')));
 
-		$result = end(MockDispatcher::$dispatched);
+		$result = \end(MockDispatcher::$dispatched);
 		$expected = array(
 			'action' => 'special_test', 'controller' => 'Test',
 			'admin' => true, 'special' => true

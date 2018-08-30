@@ -181,10 +181,10 @@ class Encrypt extends \lithium\core\DynamicObject {
 		$secret = $this->_hashSecret($this->_config['secret']);
 
 		mcrypt_generic_init(static::$_resource, $secret, $vector);
-		$encrypted = mcrypt_generic(static::$_resource, serialize($decrypted));
+		$encrypted = mcrypt_generic(static::$_resource, \serialize($decrypted));
 		mcrypt_generic_deinit(static::$_resource);
 
-		return base64_encode($encrypted) . base64_encode($vector);
+		return \base64_encode($encrypted) . \base64_encode($vector);
 	}
 
 	/**
@@ -196,15 +196,15 @@ class Encrypt extends \lithium\core\DynamicObject {
 	protected function _decrypt($encrypted) {
 		$secret = $this->_hashSecret($this->_config['secret']);
 
-		$vectorSize = strlen(base64_encode(str_repeat(" ", static::_vectorSize())));
-		$vector = base64_decode(substr($encrypted, -$vectorSize));
-		$data = base64_decode(substr($encrypted, 0, -$vectorSize));
+		$vectorSize = \strlen(\base64_encode(\str_repeat(" ", static::_vectorSize())));
+		$vector = \base64_decode(\substr($encrypted, -$vectorSize));
+		$data = \base64_decode(\substr($encrypted, 0, -$vectorSize));
 
 		mcrypt_generic_init(static::$_resource, $secret, $vector);
 		$decrypted = mdecrypt_generic(static::$_resource, $data);
 		mcrypt_generic_deinit(static::$_resource);
 
-		return unserialize(trim($decrypted));
+		return \unserialize(\trim($decrypted));
 	}
 
 	/**
@@ -213,7 +213,7 @@ class Encrypt extends \lithium\core\DynamicObject {
 	 * @return boolean `true` if enabled, `false` otherwise.
 	 */
 	public static function enabled() {
-		return extension_loaded('mcrypt');
+		return \extension_loaded('mcrypt');
 	}
 
 	/**
@@ -235,11 +235,11 @@ class Encrypt extends \lithium\core\DynamicObject {
 	protected function _hashSecret($key) {
 		$size = mcrypt_enc_get_key_size(static::$_resource);
 
-		if (strlen($key) >= $size) {
+		if (\strlen($key) >= $size) {
 			return $key;
 		}
 
-		return substr(hash('sha256', $key, true), 0, $size);
+		return \substr(\hash('sha256', $key, true), 0, $size);
 	}
 
 	/**

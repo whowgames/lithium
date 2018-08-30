@@ -49,7 +49,7 @@ class StaticObject {
 	 * @return void
 	 */
 	public static function applyFilter($method, $filter = null) {
-		$class = get_called_class();
+		$class = \get_called_class();
 		if ($method === false) {
 			static::$_methodFilters[$class] = array();
 			return;
@@ -74,7 +74,7 @@ class StaticObject {
 	 * @return mixed Returns the result of the method call.
 	 */
 	public static function invokeMethod($method, $params = array()) {
-		switch (count($params)) {
+		switch (\count($params)) {
 			case 0:
 				return static::$method();
 			case 1:
@@ -88,7 +88,7 @@ class StaticObject {
 			case 5:
 				return static::$method($params[0], $params[1], $params[2], $params[3], $params[4]);
 			default:
-				return forward_static_call_array(array(get_called_class(), $method), $params);
+				return \forward_static_call_array(array(\get_called_class(), $method), $params);
 		}
 	}
 
@@ -100,7 +100,7 @@ class StaticObject {
 	 * @return bool
 	 */
 	public static function respondsTo($method, $internal = false) {
-		return Inspector::isCallable(get_called_class(), $method, $internal);
+		return Inspector::isCallable(\get_called_class(), $method, $internal);
 	}
 
 	/**
@@ -113,7 +113,7 @@ class StaticObject {
 	 * @return object
 	 */
 	protected static function _instance($name, array $options = array()) {
-		if (is_string($name) && isset(static::$_classes[$name])) {
+		if (\is_string($name) && isset(static::$_classes[$name])) {
 			$name = static::$_classes[$name];
 		}
 		return Libraries::instance(null, $name, $options);
@@ -133,7 +133,7 @@ class StaticObject {
 	 * @return mixed
 	 */
 	protected static function _filter($method, $params, $callback, $filters = array()) {
-		$class = get_called_class();
+		$class = \get_called_class();
 		$hasNoFilters = empty(static::$_methodFilters[$class][$method]);
 
 		if ($hasNoFilters && !$filters && !Filters::hasApplied($class, $method)) {
@@ -143,8 +143,8 @@ class StaticObject {
 			static::$_methodFilters += array($class => array());
 			static::$_methodFilters[$class][$method] = array();
 		}
-		$data = array_merge(static::$_methodFilters[$class][$method], $filters, array($callback));
-		return Filters::run($class, $params, compact('data', 'class', 'method'));
+		$data = \array_merge(static::$_methodFilters[$class][$method], $filters, array($callback));
+		return Filters::run($class, $params, \compact('data', 'class', 'method'));
 	}
 
 	/**
@@ -153,10 +153,10 @@ class StaticObject {
 	 * @return array Returns an array of parent classes for the current class.
 	 */
 	protected static function _parents() {
-		$class = get_called_class();
+		$class = \get_called_class();
 
 		if (!isset(self::$_parents[$class])) {
-			self::$_parents[$class] = class_parents($class);
+			self::$_parents[$class] = \class_parents($class);
 		}
 		return self::$_parents[$class];
 	}

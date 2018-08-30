@@ -81,7 +81,7 @@ class Password {
 	 *        - 34 chars long for MD5 hashes
 	 */
 	public static function hash($password, $salt = null) {
-		return crypt($password, $salt ?: static::salt());
+		return \crypt($password, $salt ?: static::salt());
 	}
 
 	/**
@@ -95,7 +95,7 @@ class Password {
 	 * @return boolean Returns a boolean indicating whether the password is correct.
 	 */
 	public static function check($password, $hash) {
-		return StringDeprecated::compare(crypt($password, $hash), $hash);
+		return StringDeprecated::compare(\crypt($password, $hash), $hash);
 	}
 
 	/**
@@ -174,7 +174,7 @@ class Password {
 		$output = '';
 
 		do {
-			$c1 = ord($input[$i++]);
+			$c1 = \ord($input[$i++]);
 			$output .= $base64[$c1 >> 2];
 			$c1 = ($c1 & 0x03) << 4;
 			if ($i >= 16) {
@@ -182,20 +182,20 @@ class Password {
 				break;
 			}
 
-			$c2 = ord($input[$i++]);
+			$c2 = \ord($input[$i++]);
 			$c1 |= $c2 >> 4;
 			$output .= $base64[$c1];
 			$c1 = ($c2 & 0x0f) << 2;
 
-			$c2 = ord($input[$i++]);
+			$c2 = \ord($input[$i++]);
 			$c1 |= $c2 >> 6;
 			$output .= $base64[$c1];
 			$output .= $base64[$c2 & 0x3f];
 		} while (1);
 
 		$result = '$2a$';
-		$result .= chr(ord('0') + $count / static::BF);
-		$result .= chr(ord('0') + $count % static::BF);
+		$result .= \chr(\ord('0') + $count / static::BF);
+		$result .= \chr(\ord('0') + $count % static::BF);
 		$result .= '$' . $output;
 
 		return $result;

@@ -45,7 +45,7 @@ class Stream extends \lithium\net\Socket {
 			$flags = STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT;
 		}
 		$errorCode = $errorMessage = null;
-		$this->_resource = stream_socket_client(
+		$this->_resource = \stream_socket_client(
 			$host, $errorCode, $errorMessage, $config['timeout'], $flags
 		);
 		if ($errorCode || $errorMessage) {
@@ -65,12 +65,12 @@ class Stream extends \lithium\net\Socket {
 	 * @return boolean True on closed connection
 	 */
 	public function close() {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return true;
 		}
-		fclose($this->_resource);
+		\fclose($this->_resource);
 
-		if (is_resource($this->_resource)) {
+		if (\is_resource($this->_resource)) {
 			$this->close();
 		}
 		return true;
@@ -82,7 +82,7 @@ class Stream extends \lithium\net\Socket {
 	 * @return boolean Returns `true` if resource pointer is at its EOF, `false` otherwise.
 	 */
 	public function eof() {
-		return is_resource($this->_resource) ? feof($this->_resource) : true;
+		return \is_resource($this->_resource) ? \feof($this->_resource) : true;
 	}
 
 	/**
@@ -94,13 +94,13 @@ class Stream extends \lithium\net\Socket {
 	 * @return string Returns string read from stream resource on success, false otherwise.
 	 */
 	public function read($length = null, $offset = null) {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return false;
 		}
 		if (!$length) {
-			return stream_get_contents($this->_resource);
+			return \stream_get_contents($this->_resource);
 		}
-		return stream_get_contents($this->_resource, $length, $offset);
+		return \stream_get_contents($this->_resource, $length, $offset);
 	}
 
 	/**
@@ -110,13 +110,13 @@ class Stream extends \lithium\net\Socket {
 	 * @return mixed False on error, number of bytes written otherwise.
 	 */
 	public function write($data = null) {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return false;
 		}
-		if (!is_object($data)) {
+		if (!\is_object($data)) {
 			$data = $this->_instance($this->_classes['request'], (array) $data + $this->_config);
 		}
-		return fwrite($this->_resource, (string) $data, strlen((string) $data));
+		return \fwrite($this->_resource, (string) $data, \strlen((string) $data));
 	}
 
 	/**
@@ -128,10 +128,10 @@ class Stream extends \lithium\net\Socket {
 	 * @return void
 	 */
 	public function timeout($time) {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return false;
 		}
-		return stream_set_timeout($this->_resource, $time);
+		return \stream_set_timeout($this->_resource, $time);
 	}
 
 	/**
@@ -145,10 +145,10 @@ class Stream extends \lithium\net\Socket {
 	 *         result of `stream_encoding()` otherwise.
 	 */
 	public function encoding($charset) {
-		if (!function_exists('stream_encoding')) {
+		if (!\function_exists('stream_encoding')) {
 			return false;
 		}
-		return is_resource($this->_resource) ? stream_encoding($this->_resource, $charset) : false;
+		return \is_resource($this->_resource) ? stream_encoding($this->_resource, $charset) : false;
 	}
 }
 

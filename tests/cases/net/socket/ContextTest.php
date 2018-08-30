@@ -30,15 +30,15 @@ class ContextTest extends \lithium\test\Unit {
 		$base = 'lithium\net\socket';
 		$namespace = __NAMESPACE__;
 		Mocker::overwriteFunction("{$namespace}\\stream_context_get_options", function($resource) {
-			rewind($resource);
-			return unserialize(stream_get_contents($resource));
+			\rewind($resource);
+			return \unserialize(\stream_get_contents($resource));
 		});
 		Mocker::overwriteFunction("{$base}\\stream_context_create", function($options) {
 			return $options;
 		});
 		Mocker::overwriteFunction("{$base}\\fopen", function($file, $mode, $includePath, $context) {
-			$handle = fopen("php://memory", "rw");
-			fputs($handle, serialize($context));
+			$handle = \fopen("php://memory", "rw");
+			\fputs($handle, \serialize($context));
 			return $handle;
 		});
 		Mocker::overwriteFunction("{$base}\\stream_get_meta_data", function($resource) {
@@ -92,7 +92,7 @@ EOD;
 		$subject->open();
 		$this->assertEqual(25, $subject->timeout());
 
-		$result = stream_context_get_options($subject->resource());
+		$result = \stream_context_get_options($subject->resource());
 		$this->assertEqual(25, $result['http']['timeout']);
 	}
 

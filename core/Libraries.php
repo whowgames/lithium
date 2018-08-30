@@ -225,10 +225,10 @@ class Libraries {
 		if (empty($path)) {
 			return static::$_paths;
 		}
-		if (is_string($path)) {
+		if (\is_string($path)) {
 			return isset(static::$_paths[$path]) ? static::$_paths[$path] : null;
 		}
-		static::$_paths = array_filter(array_merge(static::$_paths, (array) $path));
+		static::$_paths = \array_filter(\array_merge(static::$_paths, (array) $path));
 	}
 
 	/**
@@ -292,7 +292,7 @@ class Libraries {
 		if ($name === 'lithium') {
 			$defaults['defer'] = true;
 			$defaults['bootstrap'] = false;
-			$defaults['path'] = dirname(__DIR__);
+			$defaults['path'] = \dirname(__DIR__);
 			$defaults['loader'] = 'lithium\core\Libraries::load';
 		}
 		if (isset($config['default']) && $config['default']) {
@@ -304,11 +304,11 @@ class Libraries {
 		$config += $defaults;
 
 		if (!$config['path']) {
-			if (!$config['path'] = static::_locatePath('libraries', compact('name'))) {
+			if (!$config['path'] = static::_locatePath('libraries', \compact('name'))) {
 				throw new ConfigException("Library `{$name}` not found.");
 			}
 		}
-		$config['path'] = str_replace('\\', '/', $config['path']);
+		$config['path'] = \str_replace('\\', '/', $config['path']);
 		static::_configure(static::$_configurations[$name] = $config);
 		return $config;
 	}
@@ -324,17 +324,17 @@ class Libraries {
 	protected static function _configure($config) {
 		if ($config['includePath']) {
 			$path = ($config['includePath'] === true) ? $config['path'] : $config['includePath'];
-			set_include_path(get_include_path() . PATH_SEPARATOR . $path);
+			\set_include_path(\get_include_path() . PATH_SEPARATOR . $path);
 		}
 		if ($config['bootstrap'] === true) {
 			$path = "{$config['path']}/config/bootstrap.php";
-			$config['bootstrap'] = file_exists($path) ? 'config/bootstrap.php' : false;
+			$config['bootstrap'] = \file_exists($path) ? 'config/bootstrap.php' : false;
 		}
 		if ($config['bootstrap']) {
 			require "{$config['path']}/{$config['bootstrap']}";
 		}
 		if (!empty($config['loader'])) {
-			spl_autoload_register($config['loader']);
+			\spl_autoload_register($config['loader']);
 		}
 	}
 
@@ -375,21 +375,21 @@ class Libraries {
 		if ($name === true) {
 			$name = static::$_default;
 		}
-		if (is_array($name) || (!$name && $key)) {
-			$name = $name ?: array_keys(static::$_configurations);
-			$call = array(get_called_class(), 'get');
-			return array_combine($name, array_map($call, $name, array_fill(0, count($name), $key)));
+		if (\is_array($name) || (!$name && $key)) {
+			$name = $name ?: \array_keys(static::$_configurations);
+			$call = array(\get_called_class(), 'get');
+			return \array_combine($name, \array_map($call, $name, \array_fill(0, \count($name), $key)));
 		}
 		$config = isset($configs[$name]) ? $configs[$name] : null;
 
 		if ($key) {
 			return isset($config[$key]) ? $config[$key] : null;
 		}
-		if (strpos($name, '\\') === false) {
+		if (\strpos($name, '\\') === false) {
 			return $config;
 		}
 		foreach (static::$_configurations as $library => $config) {
-			if ($config['prefix'] && strpos($name, $config['prefix']) === 0) {
+			if ($config['prefix'] && \strpos($name, $config['prefix']) === 0) {
 				return $library;
 			}
 		}
@@ -405,7 +405,7 @@ class Libraries {
 		foreach ((array) $name as $library) {
 			if (isset(static::$_configurations[$library])) {
 				if (static::$_configurations[$library]['loader']) {
-					spl_autoload_unregister(static::$_configurations[$library]['loader']);
+					\spl_autoload_unregister(static::$_configurations[$library]['loader']);
 				}
 				unset(static::$_configurations[$library]);
 			}
@@ -440,13 +440,13 @@ class Libraries {
 	 */
 	public static function find($library, array $options = array()) {
 		$format = function($file, $config) {
-			$trim = array(strlen($config['path']) + 1, strlen($config['suffix']));
-			$rTrim = strpos($file, $config['suffix']) !== false ? -$trim[1] : 9999;
-			$file = preg_split('/[\/\\\\]/', substr($file, $trim[0], $rTrim));
-			return $config['prefix'] . join('\\', $file);
+			$trim = array(\strlen($config['path']) + 1, \strlen($config['suffix']));
+			$rTrim = \strpos($file, $config['suffix']) !== false ? -$trim[1] : 9999;
+			$file = \preg_split('/[\/\\\\]/', \substr($file, $trim[0], $rTrim));
+			return $config['prefix'] . \join('\\', $file);
 		};
 
-		$defaults = compact('format') + array(
+		$defaults = \compact('format') + array(
 			'path' => '',
 			'recursive' => false,
 			'filter' => '/^(\w+)?(\\\\[a-z0-9_]+)+\\\\[A-Z][a-zA-Z0-9]+$/',
@@ -458,10 +458,10 @@ class Libraries {
 
 		if ($options['namespaces'] && $options['filter'] === $defaults['filter']) {
 			$options['format'] = function($class, $config) use ($format, $defaults) {
-				if (is_dir($class)) {
+				if (\is_dir($class)) {
 					return $format($class, $config);
 				}
-				if (preg_match($defaults['filter'], $class = $format($class, $config))) {
+				if (\preg_match($defaults['filter'], $class = $format($class, $config))) {
 					return $class;
 				}
 			};
@@ -469,7 +469,7 @@ class Libraries {
 		}
 		if ($library === true) {
 			foreach (static::$_configurations as $library => $config) {
-				$libs = array_merge($libs, static::find($library, $options));
+				$libs = \array_merge($libs, static::find($library, $options));
 			}
 			return $libs;
 		}
@@ -480,7 +480,7 @@ class Libraries {
 		$config = static::$_configurations[$library];
 		$options['path'] = "{$config['path']}{$options['path']}/*";
 		$libs = static::_search($config, $options);
-		return array_values(array_filter($libs));
+		return \array_values(\array_filter($libs));
 	}
 
 	/**
@@ -500,7 +500,7 @@ class Libraries {
 
 		if ($path && include $path) {
 			static::$_cachedPaths[$class] = $path;
-			if (method_exists($class, '__init')) {
+			if (\method_exists($class, '__init')) {
 				$msg = "Deprecated `{$class}::__init()` method, needs to be called it manually.";
 				throw new RuntimeException($msg);
 			}
@@ -526,7 +526,7 @@ class Libraries {
 		foreach ($classes as $key => $value) {
 			unset(static::$_cachedPaths[$key]);
 		}
-		static::$_map = array_merge(static::$_map, $classes);
+		static::$_map = \array_merge(static::$_map, $classes);
 	}
 
 	/**
@@ -537,7 +537,7 @@ class Libraries {
 	 *        a string with a fully-namespaced class name.
 	 */
 	public static function unmap($classes) {
-		if (!is_array($classes)) {
+		if (!\is_array($classes)) {
 			$classes = array($classes);
 		}
 		foreach ($classes as $value) {
@@ -561,7 +561,7 @@ class Libraries {
 	public static function path($class, array $options = array()) {
 		$defaults = array('dirs' => false);
 		$options += $defaults;
-		$class = ltrim($class, '\\');
+		$class = \ltrim($class, '\\');
 
 		if (isset(static::$_cachedPaths[$class]) && !$options['dirs']) {
 			return static::$_cachedPaths[$class];
@@ -573,7 +573,7 @@ class Libraries {
 			$params = $options + $config;
 			$suffix = $params['suffix'];
 
-			if ($params['prefix'] && strpos($class, $params['prefix']) !== 0) {
+			if ($params['prefix'] && \strpos($class, $params['prefix']) !== 0) {
 				continue;
 			}
 			if ($transform = $params['transform']) {
@@ -582,19 +582,19 @@ class Libraries {
 				}
 				continue;
 			}
-			$path = str_replace("\\", '/', substr($class, strlen($params['prefix'])));
+			$path = \str_replace("\\", '/', \substr($class, \strlen($params['prefix'])));
 			$fullPath = "{$params['path']}/{$path}";
 
 			if (!$options['dirs']) {
 				return static::$_cachedPaths[$class] = static::realPath($fullPath . $suffix);
 			}
-			$list = glob(dirname($fullPath) . '/*');
-			$list = array_map(function($i) { return str_replace('\\', '/', $i); }, $list);
+			$list = \glob(\dirname($fullPath) . '/*');
+			$list = \array_map(function($i) { return \str_replace('\\', '/', $i); }, $list);
 
-			if (in_array($fullPath . $suffix, $list)) {
+			if (\in_array($fullPath . $suffix, $list)) {
 				return static::$_cachedPaths[$class] = static::realPath($fullPath . $suffix);
 			}
-			return is_dir($fullPath) ? static::realPath($fullPath) : null;
+			return \is_dir($fullPath) ? static::realPath($fullPath) : null;
 		}
 	}
 
@@ -609,25 +609,25 @@ class Libraries {
 	 *                `null`.
 	 */
 	public static function realPath($path) {
-		if (($absolutePath = realpath($path)) !== false) {
+		if (($absolutePath = \realpath($path)) !== false) {
 			return $absolutePath;
 		}
-		if (!preg_match('%^phar://([^.]+\.phar(?:\.gz)?)(.+)%', $path, $pathComponents)) {
+		if (!\preg_match('%^phar://([^.]+\.phar(?:\.gz)?)(.+)%', $path, $pathComponents)) {
 			return;
 		}
 		list(, $relativePath, $pharPath) = $pathComponents;
 
-		$pharPath = implode('/', array_reduce(explode('/', $pharPath), function ($parts, $value) {
+		$pharPath = \implode('/', \array_reduce(\explode('/', $pharPath), function ($parts, $value) {
 			if ($value === '..') {
-				array_pop($parts);
+				\array_pop($parts);
 			} elseif ($value !== '.') {
 				$parts[] = $value;
 			}
 			return $parts;
 		}));
 
-		if (($resolvedPath = realpath($relativePath)) !== false) {
-			if (file_exists($absolutePath = "phar://{$resolvedPath}{$pharPath}")) {
+		if (($resolvedPath = \realpath($relativePath)) !== false) {
+			if (\file_exists($absolutePath = "phar://{$resolvedPath}{$pharPath}")) {
 				return $absolutePath;
 			}
 		}
@@ -653,12 +653,12 @@ class Libraries {
 	 *         did not match.
 	 */
 	protected static function _transformPath($transform, $class, array $options = array()) {
-		if ((is_callable($transform)) && $file = $transform($class, $options)) {
+		if ((\is_callable($transform)) && $file = $transform($class, $options)) {
 			return $file;
 		}
-		if (is_array($transform)) {
+		if (\is_array($transform)) {
 			list($match, $replace) = $transform;
-			return preg_replace($match, $replace, $class) ?: null;
+			return \preg_replace($match, $replace, $class) ?: null;
 		}
 	}
 
@@ -677,7 +677,7 @@ class Libraries {
 	 * @filter
 	 */
 	public static function instance($type, $name, array $options = array()) {
-		$params = compact('type', 'name', 'options');
+		$params = \compact('type', 'name', 'options');
 		$_paths =& static::$_paths;
 
 		$implementation = function($self, $params) use (&$_paths) {
@@ -688,27 +688,27 @@ class Libraries {
 				$message = "Invalid class lookup: `\$name` and `\$type` are empty.";
 				throw new ClassNotFoundException($message);
 			}
-			if (!is_string($type) && $type !== null && !isset($_paths[$type])) {
+			if (!\is_string($type) && $type !== null && !isset($_paths[$type])) {
 				throw new ClassNotFoundException("Invalid class type `{$type}`.");
 			}
 			if (!$class = $self::locate($type, $name)) {
 				throw new ClassNotFoundException("Class `{$name}` of type `{$type}` not found. (Referer: '" . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'n/a') . "', URI: '" . (isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '') . "')");
 			}
-			if (is_object($class)) {
+			if (\is_object($class)) {
 				return $class;
 			}
-			if (!(is_string($class) && class_exists($class))) {
+			if (!(\is_string($class) && \class_exists($class))) {
 				throw new ClassNotFoundException("Class `{$name}` of type `{$type}` not defined.");
 			}
 			return new $class($params['options']);
 		};
 		if (!isset(static::$_methodFilters[__FUNCTION__])) {
-			return $implementation(get_called_class(), $params);
+			return $implementation(\get_called_class(), $params);
 		}
-		$class = get_called_class();
+		$class = \get_called_class();
 		$method = __FUNCTION__;
-		$data = array_merge(static::$_methodFilters[__FUNCTION__], array($implementation));
-		return Filters::run($class, $params, compact('data', 'class', 'method'));
+		$data = \array_merge(static::$_methodFilters[__FUNCTION__], array($implementation));
+		return Filters::run($class, $params, \compact('data', 'class', 'method'));
 	}
 
 	/**
@@ -781,11 +781,11 @@ class Libraries {
 	 *         found which match `$type`.
 	 */
 	public static function locate($type, $name = null, array $options = array()) {
-		if (is_object($name) || strpos($name, '\\') !== false) {
+		if (\is_object($name) || \strpos($name, '\\') !== false) {
 			return $name;
 		}
 		$ident = $name ? ($type . '.' . $name) : ($type . '.*');
-		$ident .= $options ? '.' . md5(serialize($options)) : null;
+		$ident .= $options ? '.' . \md5(\serialize($options)) : null;
 
 		if (isset(static::$_cachedPaths[$ident])) {
 			return static::$_cachedPaths[$ident];
@@ -832,7 +832,7 @@ class Libraries {
 		if ($cache === false) {
 			static::$_cachedPaths = array();
 		}
-		if (is_array($cache)) {
+		if (\is_array($cache)) {
 			static::$_cachedPaths += $cache;
 		}
 		return static::$_cachedPaths;
@@ -866,10 +866,10 @@ class Libraries {
 			}
 
 			foreach (static::_searchPaths($paths, $library, $params) as $tpl) {
-				$params['library'] = rtrim($config['prefix'], '\\');
-				$class = str_replace('\\*', '', StringDeprecated::insert($tpl, $params));
+				$params['library'] = \rtrim($config['prefix'], '\\');
+				$class = \str_replace('\\*', '', StringDeprecated::insert($tpl, $params));
 
-				if (file_exists($file = Libraries::path($class, $options))) {
+				if (\file_exists($file = Libraries::path($class, $options))) {
 					return ($options['type'] === 'file') ? $file : $class;
 				}
 			}
@@ -891,11 +891,11 @@ class Libraries {
 		$params = array('library' => null, 'type' => null) + $params;
 
 		foreach ($paths as $tpl => $opts) {
-			if (is_int($tpl)) {
+			if (\is_int($tpl)) {
 				$tpl = $opts;
 				$opts = array();
 			}
-			if (isset($opts['libraries']) && !in_array($library, (array) $opts['libraries'])) {
+			if (isset($opts['libraries']) && !\in_array($library, (array) $opts['libraries'])) {
 				continue;
 			}
 			$result[] = $tpl;
@@ -924,12 +924,12 @@ class Libraries {
 			$params['library'] = $config['path'];
 
 			foreach (static::_searchPaths($paths, $library, $params) as $tpl) {
-				$options['path'] = str_replace('\\', '/', StringDeprecated::insert($tpl, $params, $flags));
-				$options['path'] = str_replace('*/', '', $options['path']);
-				$classes = array_merge($classes, static::_search($config, $options));
+				$options['path'] = \str_replace('\\', '/', StringDeprecated::insert($tpl, $params, $flags));
+				$options['path'] = \str_replace('*/', '', $options['path']);
+				$classes = \array_merge($classes, static::_search($config, $options));
 			}
 		}
-		return array_unique($classes);
+		return \array_unique($classes);
 	}
 
 	/**
@@ -947,7 +947,7 @@ class Libraries {
 		$params += array('app' => LITHIUM_APP_PATH, 'root' => LITHIUM_LIBRARY_PATH);
 
 		foreach (static::$_paths[$type] as $path) {
-			if (is_dir($path = str_replace('\\', '/', StringDeprecated::insert($path, $params)))) {
+			if (\is_dir($path = \str_replace('\\', '/', StringDeprecated::insert($path, $params)))) {
 				return $path;
 			}
 		}
@@ -971,9 +971,9 @@ class Libraries {
 			'filter' => false,
 			'exclude' => false,
 			'format' => function ($file, $config) {
-				$trim = array(strlen($config['path']) + 1, strlen($config['suffix']));
-				$file = substr($file, $trim[0], -$trim[1]);
-				return $config['prefix'] . str_replace('/', '\\', $file);
+				$trim = array(\strlen($config['path']) + 1, \strlen($config['suffix']));
+				$file = \substr($file, $trim[0], -$trim[1]);
+				return $config['prefix'] . \str_replace('/', '\\', $file);
 			}
 		);
 		$options += $defaults;
@@ -982,27 +982,27 @@ class Libraries {
 		$suffix = ($options['suffix'] === null) ? $suffix : $options['suffix'];
 
 		$dFlags = GLOB_ONLYDIR & GLOB_BRACE;
-		$libs = (array) glob($path . $suffix, $options['namespaces'] ? $dFlags : GLOB_BRACE);
+		$libs = (array) \glob($path . $suffix, $options['namespaces'] ? $dFlags : GLOB_BRACE);
 
 		if ($options['recursive']) {
-			list($current, $match) = explode('/*', $path, 2);
-			$dirs = $queue = array_diff((array) glob($current . '/*', $dFlags), $libs);
-			$match = str_replace('##', '.+', preg_quote(str_replace('*', '##', $match), '/'));
-			$match = '/' . $match . preg_quote($suffix, '/') . '$/';
+			list($current, $match) = \explode('/*', $path, 2);
+			$dirs = $queue = \array_diff((array) \glob($current . '/*', $dFlags), $libs);
+			$match = \str_replace('##', '.+', \preg_quote(\str_replace('*', '##', $match), '/'));
+			$match = '/' . $match . \preg_quote($suffix, '/') . '$/';
 
 			while ($queue) {
-				if (!is_dir($dir = array_pop($queue))) {
+				if (!\is_dir($dir = \array_pop($queue))) {
 					continue;
 				}
-				$libs = array_merge($libs, (array) glob("{$dir}/*{$suffix}"));
-				$queue = array_merge($queue, array_diff((array) glob("{$dir}/*", $dFlags), $libs));
+				$libs = \array_merge($libs, (array) \glob("{$dir}/*{$suffix}"));
+				$queue = \array_merge($queue, \array_diff((array) \glob("{$dir}/*", $dFlags), $libs));
 			}
-			$libs = preg_grep($match, $libs);
+			$libs = \preg_grep($match, $libs);
 		}
 		if ($suffix) {
-			$libs = $options['preFilter'] ? preg_grep($options['preFilter'], $libs) : $libs;
+			$libs = $options['preFilter'] ? \preg_grep($options['preFilter'], $libs) : $libs;
 		}
-		return static::_filter($libs, (array) $config, $options + compact('name'));
+		return static::_filter($libs, (array) $config, $options + \compact('name'));
 	}
 
 	/**
@@ -1015,24 +1015,24 @@ class Libraries {
 	 *         provided in `$options`.
 	 */
 	protected static function _filter($libs, array $config, array $options = array()) {
-		if (is_callable($options['format'])) {
+		if (\is_callable($options['format'])) {
 			foreach ($libs as $i => $file) {
 				$libs[$i] = $options['format']($file, $config);
 			}
-			$libs = $options['name'] ? preg_grep("/{$options['name']}$/", $libs) : $libs;
+			$libs = $options['name'] ? \preg_grep("/{$options['name']}$/", $libs) : $libs;
 		}
 		if ($exclude = $options['exclude']) {
-			if (is_string($exclude)) {
-				$libs = preg_grep($exclude, $libs, PREG_GREP_INVERT);
-			} elseif (is_callable($exclude)) {
-				$libs = array_values(array_filter($libs, $exclude));
+			if (\is_string($exclude)) {
+				$libs = \preg_grep($exclude, $libs, PREG_GREP_INVERT);
+			} elseif (\is_callable($exclude)) {
+				$libs = \array_values(\array_filter($libs, $exclude));
 			}
 		}
 		if ($filter = $options['filter']) {
-			if (is_string($filter)) {
-				$libs = preg_grep($filter, $libs) ;
-			} elseif (is_callable($filter)) {
-				$libs = array_filter(array_map($filter, $libs));
+			if (\is_string($filter)) {
+				$libs = \preg_grep($filter, $libs) ;
+			} elseif (\is_callable($filter)) {
+				$libs = \array_filter(\array_map($filter, $libs));
 			}
 		}
 		return $libs;
@@ -1051,11 +1051,11 @@ class Libraries {
 		}
 		$library = $namespace = $class = '*';
 
-		if (strpos($type, '.') !== false) {
-			$parts = explode('.', $type);
-			$type = array_shift($parts);
+		if (\strpos($type, '.') !== false) {
+			$parts = \explode('.', $type);
+			$type = \array_shift($parts);
 
-			switch (count($parts)) {
+			switch (\count($parts)) {
 				case 1:
 					list($class) = $parts;
 				break;
@@ -1063,18 +1063,18 @@ class Libraries {
 					list($namespace, $class) = $parts;
 				break;
 				default:
-					$class = array_pop($parts);
-					$namespace = join('\\', $parts);
+					$class = \array_pop($parts);
+					$namespace = \join('\\', $parts);
 				break;
 			}
 		}
-		if (strpos($name, '.') !== false) {
-			$parts = explode('.', $name);
-			$library = array_shift($parts);
-			$name = array_pop($parts);
-			$namespace = $parts ? join('\\', $parts) : "*";
+		if (\strpos($name, '.') !== false) {
+			$parts = \explode('.', $name);
+			$library = \array_shift($parts);
+			$name = \array_pop($parts);
+			$namespace = $parts ? \join('\\', $parts) : "*";
 		}
-		return compact('library', 'namespace', 'type', 'class', 'name');
+		return \compact('library', 'namespace', 'type', 'class', 'name');
 	}
 }
 

@@ -23,7 +23,7 @@ class MockSerializer extends \lithium\core\DynamicObject {
 	 * @return string Serialized data.
 	 */
 	public function write($data) {
-		return serialize($data);
+		return \serialize($data);
 	}
 
 	/**
@@ -35,7 +35,7 @@ class MockSerializer extends \lithium\core\DynamicObject {
 	 * @return mixed Result of unserialization.
 	 */
 	public function read($data) {
-		return unserialize($data);
+		return \unserialize($data);
 	}
 }
 

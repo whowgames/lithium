@@ -23,7 +23,7 @@ class ExtractTest extends \lithium\test\Unit {
 
 	public function skip() {
 		$this->_path = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($this->_path), "Path `{$this->_path}` is not writable.");
+		$this->skipIf(!\is_writable($this->_path), "Path `{$this->_path}` is not writable.");
 	}
 
 	public function setUp() {
@@ -31,11 +31,11 @@ class ExtractTest extends \lithium\test\Unit {
 		Catalog::reset();
 
 		$this->command = new Extract(array(
-			'request' => new Request(array('input' => fopen('php://temp', 'w+'))),
+			'request' => new Request(array('input' => \fopen('php://temp', 'w+'))),
 			'classes' => array('response' => 'lithium\tests\mocks\console\MockResponse')
 		));
-		mkdir($this->command->source = "{$this->_path}/source");
-		mkdir($this->command->destination = "{$this->_path}/destination");
+		\mkdir($this->command->source = "{$this->_path}/source");
+		\mkdir($this->command->destination = "{$this->_path}/destination");
 	}
 
 	public function tearDown() {
@@ -45,14 +45,14 @@ class ExtractTest extends \lithium\test\Unit {
 
 	protected function _writeInput(array $input = array()) {
 		foreach ($input as $input) {
-			fwrite($this->command->request->input, $input . "\n");
+			\fwrite($this->command->request->input, $input . "\n");
 		}
-		rewind($this->command->request->input);
+		\rewind($this->command->request->input);
 	}
 
 	public function testInit() {
 		$command = new Extract();
-		$this->assertEqual(realpath(Libraries::get(true, 'path')), $command->source);
+		$this->assertEqual(\realpath(Libraries::get(true, 'path')), $command->source);
 		$this->assertEqual(Libraries::get(true, 'resources') . '/g11n', $command->destination);
 	}
 
@@ -69,17 +69,17 @@ class ExtractTest extends \lithium\test\Unit {
 	}
 
 	public function testFailWrite() {
-		rmdir($this->command->destination);
+		\rmdir($this->command->destination);
 
 		$file = "{$this->_path}/source/a.html.php";
 		$data = <<<EOD
 <h2>Flowers</h2>
 <?=\$t('Apples are green.'); ?>
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$configs = Catalog::config();
-		$configKey = key($configs);
+		$configKey = \key($configs);
 		$this->_writeInput(array($configKey, '', '', '', '', 'y'));
 		$result = $this->command->run();
 		$expected = 1;
@@ -96,12 +96,12 @@ EOD;
 <h2>Flowers</h2>
 <?=\$t('Apples are green.'); ?>
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$configs = Catalog::config();
-		$configKey1 = key($configs);
-		next($configs);
-		$configKey2 = key($configs);
+		$configKey1 = \key($configs);
+		\next($configs);
+		$configKey2 = \key($configs);
 		$this->_writeInput(array($configKey1, $configKey2, '', 'y'));
 		$result = $this->command->run();
 		$expected = 0;
@@ -114,7 +114,7 @@ EOD;
 		$file = "{$this->_path}/destination/message_default.pot";
 		$this->assertFileExists($file);
 
-		$result = file_get_contents($file);
+		$result = \file_get_contents($file);
 		$expected = '/msgid "Apples are green\."/';
 		$this->assertPattern($expected, $result);
 

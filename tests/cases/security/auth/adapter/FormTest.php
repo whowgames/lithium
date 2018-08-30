@@ -99,7 +99,7 @@ class FormTest extends \lithium\test\Unit {
 
 		$request = (object) array('data' => array('username' => 'Person'));
 
-		$expected = array('username' => sha1('Person'));
+		$expected = array('username' => \sha1('Person'));
 		$result = $subject->check($request);
 		$this->assertEqual($expected, $result);
 
@@ -286,7 +286,7 @@ class FormTest extends \lithium\test\Unit {
 		));
 
 		$result = $subject->check($request);
-		$this->assertEqual(array_keys($request->data), array_keys($result));
+		$this->assertEqual(\array_keys($request->data), \array_keys($result));
 
 		$this->assertEqual('Bob', $result['username']);
 		$this->assertEqual('editors', $result['group']);
@@ -358,7 +358,7 @@ class FormTest extends \lithium\test\Unit {
 		));
 
 		$result = $subject->check($request);
-		$this->assertEqual(array_keys($request->data), array_keys($result));
+		$this->assertEqual(\array_keys($request->data), \array_keys($result));
 	}
 
 	public function testUncallableGenericValidator() {

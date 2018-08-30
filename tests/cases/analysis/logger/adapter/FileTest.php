@@ -17,8 +17,8 @@ class FileTest extends \lithium\test\Unit {
 	public $subject;
 
 	public function skip() {
-		$path = realpath(Libraries::get(true, 'resources') . '/tmp/logs');
-		$this->skipIf(!is_writable($path), "Path `{$path}` is not writable.");
+		$path = \realpath(Libraries::get(true, 'resources') . '/tmp/logs');
+		$this->skipIf(!\is_writable($path), "Path `{$path}` is not writable.");
 	}
 
 	public function setUp() {
@@ -27,8 +27,8 @@ class FileTest extends \lithium\test\Unit {
 	}
 
 	public function tearDown() {
-		if (file_exists("{$this->path}/debug.log")) {
-			unlink("{$this->path}/debug.log");
+		if (\file_exists("{$this->path}/debug.log")) {
+			\unlink("{$this->path}/debug.log");
 		}
 	}
 
@@ -37,10 +37,10 @@ class FileTest extends \lithium\test\Unit {
 		$priority = 'debug';
 		$message = 'This is a debug message';
 		$function = $this->subject->write($priority, $message);
-		$now = date('Y-m-d H:i:s');
-		$function('lithium\analysis\Logger', compact('priority', 'message'), new Filters());
+		$now = \date('Y-m-d H:i:s');
+		$function('lithium\analysis\Logger', \compact('priority', 'message'), new Filters());
 
-		$log = file_get_contents("{$this->path}/debug.log");
+		$log = \file_get_contents("{$this->path}/debug.log");
 		$this->assertEqual("{$now} This is a debug message\n", $log);
 	}
 
@@ -51,10 +51,10 @@ class FileTest extends \lithium\test\Unit {
 		$priority = 'debug';
 		$message = 'This is a debug message';
 		$function = $this->subject->write($priority, $message);
-		$now = date('Y-m-d H:i:s');
-		$function('lithium\analysis\Logger', compact('priority', 'message'), new Filters());
+		$now = \date('Y-m-d H:i:s');
+		$function('lithium\analysis\Logger', \compact('priority', 'message'), new Filters());
 
-		$log = file_get_contents("{$this->path}/debug.log");
+		$log = \file_get_contents("{$this->path}/debug.log");
 		$this->assertEqual("This is a debug message\n", $log);
 	}
 }

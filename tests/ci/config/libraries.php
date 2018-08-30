@@ -20,12 +20,12 @@ Libraries::add('lithium');
 Libraries::add('li3_fixtures');
 Libraries::add('ci', array(
 	'default' => true,
-	'resources' => call_user_func(function() {
-		if (is_dir($resources = str_replace("//", "/", sys_get_temp_dir() . '/resources'))) {
+	'resources' => \call_user_func(function() {
+		if (\is_dir($resources = \str_replace("//", "/", \sys_get_temp_dir() . '/resources'))) {
 			return $resources;
 		}
 		foreach (array($resources, "{$resources}/logs", "{$resources}/tmp/cache/templates") as $d) {
-			mkdir($d, 0777, true);
+			\mkdir($d, 0777, true);
 		}
 		return $resources;
 	})

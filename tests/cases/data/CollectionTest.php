@@ -47,9 +47,9 @@ class CollectionTest extends \lithium\test\Unit {
 	public function testAccessorMethods() {
 		$model = $this->_model;
 		$model::config(array('meta' => array('connection' => false, 'key' => 'id')));
-		$collection = new MockCollection(compact('model'));
+		$collection = new MockCollection(\compact('model'));
 		$this->assertEqual($model, $collection->model());
-		$this->assertEqual(compact('model'), $collection->meta());
+		$this->assertEqual(\compact('model'), $collection->meta());
 	}
 
 	/**
@@ -132,7 +132,7 @@ class CollectionTest extends \lithium\test\Unit {
 			'foo'   => 'bar'
 		));
 		$result = $collection->reduce(function($memo, $value) {
-			return trim($memo . ' ' . $value);
+			return \trim($memo . ' ' . $value);
 		}, '');
 		$expected = 'Lorem Ipsum value bar';
 		$this->assertEqual($expected, $result);
@@ -223,9 +223,9 @@ class CollectionTest extends \lithium\test\Unit {
 
 	public function testHandlers() {
 		$handlers = array(
-			'stdClass' => function($value) { return substr($value->scalar, -1); }
+			'stdClass' => function($value) { return \substr($value->scalar, -1); }
 		);
-		$array = new MockCollection(compact('handlers') + array(
+		$array = new MockCollection(\compact('handlers') + array(
 			'data' => array(
 				array(
 					'value' => (object) 'hello'

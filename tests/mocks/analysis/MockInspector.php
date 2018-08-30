@@ -11,7 +11,7 @@ namespace lithium\tests\mocks\analysis;
 class MockInspector extends \lithium\analysis\Inspector {
 
 	public static function foo() {
-		$args = func_get_args();
+		$args = \func_get_args();
 		return $args;
 	}
 

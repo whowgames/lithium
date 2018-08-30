@@ -36,11 +36,11 @@ class RendererTest extends \lithium\test\Unit {
 
 	public function testInitialization() {
 		$expected = array('url', 'path', 'options', 'title', 'value', 'scripts', 'styles', 'head');
-		$result = array_keys($this->subject->handlers());
+		$result = \array_keys($this->subject->handlers());
 		$this->assertEqual($expected, $result);
 
 		$expected = array('content', 'title', 'scripts', 'styles', 'head');
-		$result = array_keys($this->subject->context());
+		$result = \array_keys($this->subject->context());
 		$this->assertEqual($expected, $result);
 	}
 
@@ -124,7 +124,7 @@ class RendererTest extends \lithium\test\Unit {
 		$this->assertEqual('/foo/bar', $url);
 
 		$helper = new Html();
-		$class = get_class($helper);
+		$class = \get_class($helper);
 		$path = $this->subject->applyHandler($helper, "{$class}::script", 'path', 'foo/file');
 		$this->assertEqual('/js/foo/file.js', $path);
 		$this->assertEqual('/some/generic/path', $this->subject->path('some/generic/path'));
@@ -140,7 +140,7 @@ class RendererTest extends \lithium\test\Unit {
 		$expected = array(
 			'url', 'path', 'options', 'title', 'value', 'scripts', 'styles', 'head', 'foo'
 		);
-		$result = array_keys($this->subject->handlers(compact('foo')));
+		$result = \array_keys($this->subject->handlers(\compact('foo')));
 		$this->assertEqual($expected, $result);
 
 		$result = $this->subject->applyHandler(null, null, 'foo', 'test value');
@@ -152,7 +152,7 @@ class RendererTest extends \lithium\test\Unit {
 
 		$bar = function($value) { return "Bar: {$value}"; };
 
-		$this->subject->handlers(compact('bar'));
+		$this->subject->handlers(\compact('bar'));
 		$result = $this->subject->applyHandler(null, null, 'bar', 'test value');
 		$expected = 'Bar: test value';
 		$this->assertEqual($expected, $result);
@@ -262,23 +262,23 @@ class RendererTest extends \lithium\test\Unit {
 		$absolute = $this->subject->url('Posts::foo', array('absolute' => true));
 		$this->assertEqual('http://foo.local/posts/foo', $absolute);
 
-		$this->assertEmpty(trim($this->subject->scripts()));
-		$this->assertEqual('foobar', trim($this->subject->scripts('foobar')));
-		$this->assertEqual('foobar', trim($this->subject->scripts()));
+		$this->assertEmpty(\trim($this->subject->scripts()));
+		$this->assertEqual('foobar', \trim($this->subject->scripts('foobar')));
+		$this->assertEqual('foobar', \trim($this->subject->scripts()));
 
-		$this->assertEmpty(trim($this->subject->styles()));
-		$this->assertEqual('foobar', trim($this->subject->styles('foobar')));
-		$this->assertEqual('foobar', trim($this->subject->styles()));
+		$this->assertEmpty(\trim($this->subject->styles()));
+		$this->assertEqual('foobar', \trim($this->subject->styles('foobar')));
+		$this->assertEqual('foobar', \trim($this->subject->styles()));
 
 		$this->assertEmpty($this->subject->title());
 		$this->assertEqual('Foo', $this->subject->title('Foo'));
 		$this->assertEqual('Bar', $this->subject->title('Bar'));
 		$this->assertEqual('Bar', $this->subject->title());
 
-		$this->assertEmpty(trim($this->subject->head()));
-		$this->assertEqual('foo', trim($this->subject->head('foo')));
-		$this->assertEqual("foo\n\tbar", trim($this->subject->head('bar')));
-		$this->assertEqual("foo\n\tbar", trim($this->subject->head()));
+		$this->assertEmpty(\trim($this->subject->head()));
+		$this->assertEqual('foo', \trim($this->subject->head('foo')));
+		$this->assertEqual("foo\n\tbar", \trim($this->subject->head('bar')));
+		$this->assertEqual("foo\n\tbar", \trim($this->subject->head()));
 	}
 
 	public function testRespondsTo() {

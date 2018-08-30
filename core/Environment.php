@@ -180,23 +180,23 @@ class Environment {
 	 *         returns `null`.
 	 */
 	public static function is($detect) {
-		if (is_callable($detect)) {
+		if (\is_callable($detect)) {
 			static::$_detector = $detect;
 		}
-		if (!is_array($detect)) {
+		if (!\is_array($detect)) {
 			return (static::$_current == $detect);
 		}
 		static::$_detector = function($request) use ($detect) {
 			if ($request->env || $request->command == 'test') {
 				return ($request->env) ? $request->env : 'test';
 			}
-			$host = method_exists($request, 'get') ? $request->get('http:host') : '.console';
+			$host = \method_exists($request, 'get') ? $request->get('http:host') : '.console';
 
 			foreach ($detect as $environment => $hosts) {
-				if (is_string($hosts) && preg_match($hosts, $host)) {
+				if (\is_string($hosts) && \preg_match($hosts, $host)) {
 					return $environment;
 				}
-				if (is_array($hosts) && in_array($host, $hosts)) {
+				if (\is_array($hosts) && \in_array($host, $hosts)) {
 					return $environment;
 				}
 			}
@@ -238,12 +238,12 @@ class Environment {
 		if (isset($arrayPointer[$path])) {
 			return $arrayPointer[$path];
 		}
-		if (strpos($path, '.') === false) {
+		if (\strpos($path, '.') === false) {
 			return null;
 		}
-		$pathKeys = explode('.', $path);
+		$pathKeys = \explode('.', $path);
 		foreach ($pathKeys as $pathKey) {
-			if (!is_array($arrayPointer) || !isset($arrayPointer[$pathKey])) {
+			if (!\is_array($arrayPointer) || !isset($arrayPointer[$pathKey])) {
 				return false;
 			}
 			$arrayPointer = &$arrayPointer[$pathKey];
@@ -294,14 +294,14 @@ class Environment {
 	 */
 	public static function set($env, $config = null) {
 		if ($config === null) {
-			if (is_object($env) || is_array($env)) {
+			if (\is_object($env) || \is_array($env)) {
 				static::$_current = static::_detector()->__invoke($env);
 			} elseif (isset(static::$_configurations[$env])) {
 				static::$_current = $env;
 			}
 			return;
 		}
-		if (is_array($env)) {
+		if (\is_array($env)) {
 			foreach ($env as $name) {
 				static::set($name, $config);
 			}
@@ -328,7 +328,7 @@ class Environment {
 	 */
 	protected static function _detector() {
 		return static::$_detector ?: function($request) {
-			$isLocal = in_array($request->env('SERVER_ADDR'), array('::1', '127.0.0.1'));
+			$isLocal = \in_array($request->env('SERVER_ADDR'), array('::1', '127.0.0.1'));
 			switch (true) {
 				case (isset($request->env)):
 					return $request->env;
@@ -336,11 +336,11 @@ class Environment {
 					return 'test';
 				case ($request->env('PLATFORM') == 'CLI'):
 					return 'development';
-				case (preg_match('/^\/test/', $request->url) && $isLocal):
+				case (\preg_match('/^\/test/', $request->url) && $isLocal):
 					return 'test';
 				case ($isLocal):
 					return 'development';
-				case (preg_match('/^test/', $request->env('HTTP_HOST'))):
+				case (\preg_match('/^test/', $request->env('HTTP_HOST'))):
 					return 'test';
 				default:
 					return 'production';

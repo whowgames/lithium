@@ -230,7 +230,7 @@ class RouterTest extends \lithium\test\Unit {
 		$result = Router::match(array(
 			'controller' => 'posts', 'action' => 'view', 'id' => '4bbf25bd8ead0e5180130000'
 		));
-		$this->assertFalse(ob_get_length());
+		$this->assertFalse(\ob_get_length());
 	}
 
 	public function testShorthandParameterMatching() {
@@ -797,23 +797,23 @@ class RouterTest extends \lithium\test\Unit {
 	 */
 	public function testRouteFormatters() {
 		$formatters = Router::formatters();
-		$this->assertEqual(array('args', 'controller'), array_keys($formatters));
+		$this->assertEqual(array('args', 'controller'), \array_keys($formatters));
 
 		$this->assertIdentical('foo/bar', $formatters['args'](array('foo', 'bar')));
 		$this->assertIdentical('list_items', $formatters['controller']('ListItems'));
 
-		Router::formatters(array('action' => function($value) { return strtolower($value); }));
+		Router::formatters(array('action' => function($value) { return \strtolower($value); }));
 		$formatters = Router::formatters();
-		$this->assertEqual(array('action', 'args', 'controller'), array_keys($formatters));
+		$this->assertEqual(array('action', 'args', 'controller'), \array_keys($formatters));
 
 		Router::formatters(array('action' => null));
 		$formatters = Router::formatters();
-		$this->assertEqual(array('args', 'controller'), array_keys($formatters));
+		$this->assertEqual(array('args', 'controller'), \array_keys($formatters));
 	}
 
 	public function testRouteModifiers() {
 		$modifiers = Router::modifiers();
-		$this->assertEqual(array('args', 'controller'), array_keys($modifiers));
+		$this->assertEqual(array('args', 'controller'), \array_keys($modifiers));
 
 		$this->assertEqual(array('foo', 'bar'), $modifiers['args']('foo/bar'));
 		$this->assertIdentical('HelloWorld', $modifiers['controller']('hello_world'));
@@ -1773,13 +1773,13 @@ class RouterTest extends \lithium\test\Unit {
 
 		$this->assertCount(0, Router::get(null, true));
 
-		$result = count(Router::get(null, 'loc1'));
+		$result = \count(Router::get(null, 'loc1'));
 		$this->assertCount(2, Router::get(null, 'loc1'));
 
 		$scopes = Router::get();
 		$result = 0;
 		foreach ($scopes as $routes) {
-			$result += count($routes);
+			$result += \count($routes);
 		}
 		$this->assertIdentical(3, $result);
 	}

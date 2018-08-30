@@ -77,7 +77,7 @@ class MultibyteTest extends \lithium\test\Unit {
 	 */
 	public function testIsBehavioral() {
 		$path = LITHIUM_LIBRARY_PATH . '/lithium/tests/resources/utf8_decoder_stress_test.txt';
-		$data = file($path);
+		$data = \file($path);
 
 		$items = array(
 			64 => true,
@@ -180,7 +180,7 @@ class MultibyteTest extends \lithium\test\Unit {
 	 */
 	public function testIsQuickBehavioral() {
 		$path = LITHIUM_LIBRARY_PATH . '/lithium/tests/resources/utf8_decoder_stress_test.txt';
-		$data = file($path);
+		$data = \file($path);
 
 		$items = array(
 			64 => true,

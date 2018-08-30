@@ -31,9 +31,9 @@ class ResponseTest extends \lithium\test\Unit {
 	public function testResponseRenderString() {
 		$this->response->body = 'Document body';
 
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		$result = ob_get_clean();
+		$result = \ob_get_clean();
 		$this->assertIdentical('Document body', $result);
 		$this->assertIdentical(array('HTTP/1.1 200 OK'), $this->response->testHeaders);
 	}
@@ -42,9 +42,9 @@ class ResponseTest extends \lithium\test\Unit {
 		$this->response->type('json');
 		$this->response->body[] = '{"message": "Hello World"}';
 
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		$result = ob_get_clean();
+		$result = \ob_get_clean();
 		$this->assertIdentical('{"message": "Hello World"}', $result);
 		$this->assertIdentical('HTTP/1.1 200 OK', $this->response->testHeaders[0]);
 	}
@@ -53,9 +53,9 @@ class ResponseTest extends \lithium\test\Unit {
 		$this->response->type(false);
 		$this->response->body = 'Document body';
 
-		ob_start();
+		\ob_start();
 		echo $this->response;
-		$result = ob_get_clean();
+		$result = \ob_get_clean();
 		$this->assertIdentical('Document body', $result);
 		$this->assertIdentical(array('HTTP/1.1 200 OK'), $this->response->testHeaders);
 	}
@@ -63,29 +63,29 @@ class ResponseTest extends \lithium\test\Unit {
 	public function testResponseCaching() {
 		$this->response->body = 'Document body';
 
-		$time = time();
-		$expires = strtotime("@{$time} +1 hour");
+		$time = \time();
+		$expires = \strtotime("@{$time} +1 hour");
 		$this->response->cache($expires);
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		$result = ob_get_clean();
+		$result = \ob_get_clean();
 		$headers = array (
 			'HTTP/1.1 200 OK',
-			'Expires: ' . gmdate('D, d M Y H:i:s', $expires) . ' GMT',
+			'Expires: ' . \gmdate('D, d M Y H:i:s', $expires) . ' GMT',
 			'Cache-Control: max-age=' . ($expires - $time),
 			'Pragma: cache'
 		);
 		$this->assertIdentical($headers, $this->response->testHeaders);
 
-		$expires = strtotime("@{$time} +2 hours");
+		$expires = \strtotime("@{$time} +2 hours");
 		$this->response->cache($expires);
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		$result = ob_get_clean();
+		$result = \ob_get_clean();
 		$headers = array (
 			'HTTP/1.1 200 OK',
-			'Expires: ' . gmdate('D, d M Y H:i:s', $expires) . ' GMT',
-			'Cache-Control: max-age=' . ($expires - time()),
+			'Expires: ' . \gmdate('D, d M Y H:i:s', $expires) . ' GMT',
+			'Cache-Control: max-age=' . ($expires - \time()),
 			'Pragma: cache'
 		);
 		$this->assertIdentical($headers, $this->response->testHeaders);
@@ -103,9 +103,9 @@ class ResponseTest extends \lithium\test\Unit {
 		);
 		$this->assertIdentical($expected, $result);
 
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		$result = ob_get_clean();
+		$result = \ob_get_clean();
 		$this->assertIdentical('Created', $result);
 
 		$headers = array (
@@ -126,21 +126,21 @@ class ResponseTest extends \lithium\test\Unit {
 	 */
 	public function testStatusCodes() {
 		$this->response->status('Created');
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		$result = ob_get_clean();
+		$result = \ob_get_clean();
 		$this->assertEqual(array('HTTP/1.1 201 Created'), $this->response->testHeaders);
 
 		$this->response->status('See Other');
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		$result = ob_get_clean();
+		$result = \ob_get_clean();
 		$this->assertEqual(array('HTTP/1.1 303 See Other'), $this->response->testHeaders);
 
 		$this->response->status('foobar');
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		$result = ob_get_clean();
+		$result = \ob_get_clean();
 		$expected = array('HTTP/1.1 500 Internal Server Error');
 		$this->assertEqual($expected, $this->response->testHeaders);
 	}
@@ -152,9 +152,9 @@ class ResponseTest extends \lithium\test\Unit {
 	 */
 	public function testHeaderTypes() {
 		$this->response->headers('download', 'report.csv');
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		ob_get_clean();
+		\ob_get_clean();
 
 		$headers = array(
 			'HTTP/1.1 200 OK',
@@ -164,9 +164,9 @@ class ResponseTest extends \lithium\test\Unit {
 
 		$this->response = new MockResponse();
 		$this->response->headers('Location', '/');
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		ob_get_clean();
+		\ob_get_clean();
 
 		$headers = array('HTTP/1.1 302 Found', 'Location: /');
 		$this->assertEqual($headers, $this->response->testHeaders);
@@ -176,9 +176,9 @@ class ResponseTest extends \lithium\test\Unit {
 		$this->response = new MockResponse();
 		$this->response->status(301);
 		$this->response->headers('Location', '/');
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		ob_get_clean();
+		\ob_get_clean();
 
 		$headers = array('HTTP/1.1 301 Moved Permanently', 'Location: /');
 		$this->assertEqual($headers, $this->response->testHeaders);
@@ -196,9 +196,9 @@ class ResponseTest extends \lithium\test\Unit {
 	 */
 	public function testBrowserRedirection() {
 		$this->response = new MockResponse(array('location' => '/'));
-		ob_start();
+		\ob_start();
 		$this->response->render();
-		ob_get_clean();
+		\ob_get_clean();
 		$this->assertEqual('HTTP/1.1 302 Found', $this->response->status());
 	}
 

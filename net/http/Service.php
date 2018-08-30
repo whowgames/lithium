@@ -112,7 +112,7 @@ class Service extends \lithium\core\DynamicObject {
 	 * @param string $params
 	 */
 	public function __call($method, $params = array()) {
-		array_unshift($params, $method);
+		\array_unshift($params, $method);
 		return $this->invokeMethod('send', $params);
 	}
 
@@ -124,7 +124,7 @@ class Service extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function respondsTo($method, $internal = false) {
-		return is_callable(array($this, $method), true);
+		return \is_callable(array($this, $method), true);
 	}
 
 	/**
@@ -230,7 +230,7 @@ class Service extends \lithium\core\DynamicObject {
 			$response = $this->connection->send($request, $options);
 			$this->connection->close();
 		}
-		$this->last = (object) compact('request', 'response');
+		$this->last = (object) \compact('request', 'response');
 
 		$handlers = $this->_responseTypes;
 		$handler = isset($handlers[$options['return']]) ? $handlers[$options['return']] : null;
@@ -255,9 +255,9 @@ class Service extends \lithium\core\DynamicObject {
 		$options += $defaults + $this->_config;
 
 		$request = $this->_instance('request', $options);
-		$request->path = str_replace('//', '/', "{$request->path}{$path}");
-		$request->method = $method = strtoupper($method);
-		$hasBody = in_array($method, array('POST', 'PUT', 'PATCH'));
+		$request->path = \str_replace('//', '/', "{$request->path}{$path}");
+		$request->method = $method = \strtoupper($method);
+		$hasBody = \in_array($method, array('POST', 'PUT', 'PATCH'));
 		$hasBody ? $request->body($data) : $request->query = $data;
 		return $request;
 	}

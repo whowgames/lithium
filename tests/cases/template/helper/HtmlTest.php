@@ -348,7 +348,7 @@ class HtmlTest extends \lithium\test\Unit {
 	 * context instead of being returned directly.
 	 */
 	public function testNonInlineScriptsAndStyles() {
-		$result = trim($this->context->scripts());
+		$result = \trim($this->context->scripts());
 		$this->assertEmpty($result);
 
 		$result = $this->html->script('application', array('inline' => false));
@@ -359,7 +359,7 @@ class HtmlTest extends \lithium\test\Unit {
 			'type' => 'text/javascript', 'src' => 'regex:/.*js\/application\.js/'
 		)));
 
-		$result = trim($this->context->styles());
+		$result = \trim($this->context->styles());
 		$this->assertEmpty($result);
 
 		$result = $this->html->style('base', array('inline' => false));
@@ -400,10 +400,10 @@ class HtmlTest extends \lithium\test\Unit {
 			'response' => new Response(),
 			'handlers' => array(
 				'url' => function($url, $ref, array $options = array()) use (&$result) {
-					$result = compact('options');
+					$result = \compact('options');
 				},
 				'path' => function($path, $ref, array $options = array()) use (&$result) {
-					$result = compact('options');
+					$result = \compact('options');
 				}
 			)
 		));

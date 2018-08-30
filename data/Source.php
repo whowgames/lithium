@@ -231,7 +231,7 @@ abstract class Source extends \lithium\core\DynamicObject {
 	 * @return array
 	 */
 	public function methods() {
-		return get_class_methods($this);
+		return \get_class_methods($this);
 	}
 
 	/**
@@ -282,7 +282,7 @@ abstract class Source extends \lithium\core\DynamicObject {
 	 */
 	public function relationFieldName($type, $name) {
 		$fieldName = Inflector::underscore($name);
-		if (preg_match('/Many$/', $type)) {
+		if (\preg_match('/Many$/', $type)) {
 			$fieldName = Inflector::pluralize($fieldName);
 		} else {
 			$fieldName = Inflector::singularize($fieldName);

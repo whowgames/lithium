@@ -25,7 +25,7 @@ class Mbstring extends \lithium\core\DynamicObject {
 	 * @return boolean Returns `true` if enabled, otherwise `false`.
 	 */
 	public static function enabled() {
-		return extension_loaded('mbstring');
+		return \extension_loaded('mbstring');
 	}
 
 	/**
@@ -36,7 +36,7 @@ class Mbstring extends \lithium\core\DynamicObject {
 	 * @return integer
 	 */
 	public function strlen($string) {
-		return mb_strlen($string, 'UTF-8');
+		return \mb_strlen($string, 'UTF-8');
 	}
 
 	/**
@@ -49,7 +49,7 @@ class Mbstring extends \lithium\core\DynamicObject {
 	 * @return integer|boolean
 	 */
 	public function strpos($haystack, $needle, $offset) {
-		return mb_strpos($haystack, $needle, $offset, 'UTF-8');
+		return \mb_strpos($haystack, $needle, $offset, 'UTF-8');
 	}
 
 	/**
@@ -61,7 +61,7 @@ class Mbstring extends \lithium\core\DynamicObject {
 	 * @return integer|boolean
 	 */
 	public function strrpos($haystack, $needle) {
-		return mb_strrpos($haystack, $needle, 0, 'UTF-8');
+		return \mb_strrpos($haystack, $needle, 0, 'UTF-8');
 	}
 
 	/**
@@ -74,7 +74,7 @@ class Mbstring extends \lithium\core\DynamicObject {
 	 * @return string|boolean
 	 */
 	public function substr($string, $start, $length) {
-		return mb_substr($string, $start, $length, 'UTF-8');
+		return \mb_substr($string, $start, $length, 'UTF-8');
 	}
 }
 

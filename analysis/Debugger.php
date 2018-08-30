@@ -53,16 +53,16 @@ class Debugger {
 		);
 		$options += $defaults;
 
-		$backtrace = $options['trace'] ?: debug_backtrace();
+		$backtrace = $options['trace'] ?: \debug_backtrace();
 		$scope = $options['scope'];
-		$count = count($backtrace);
+		$count = \count($backtrace);
 		$back = array();
 		$traceDefault = array(
 			'line' => '??', 'file' => '[internal]', 'class' => null, 'function' => '[main]'
 		);
 
 		for ($i = $options['start']; $i < $count && $i < $options['depth']; $i++) {
-			$trace = array_merge(array('file' => '[internal]', 'line' => '??'), $backtrace[$i]);
+			$trace = \array_merge(array('file' => '[internal]', 'line' => '??'), $backtrace[$i]);
 			$function = '[main]';
 
 			if (isset($backtrace[$i + 1])) {
@@ -72,26 +72,26 @@ class Debugger {
 				if (!empty($next['class'])) {
 					$function = $next['class'] . '::' . $function . '(';
 					if ($options['args'] && isset($next['args'])) {
-						$args = array_map(array('static', 'export'), $next['args']);
-						$function .= join(', ', $args);
+						$args = \array_map(array('static', 'export'), $next['args']);
+						$function .= \join(', ', $args);
 					}
 					$function .= ')';
 				}
 			}
 
-			if ($options['closures'] && strpos($function, '{closure}') !== false) {
+			if ($options['closures'] && \strpos($function, '{closure}') !== false) {
 				$function = static::_closureDef($backtrace[$i], $function);
 			}
-			if (in_array($function, array('call_user_func_array', 'trigger_error'))) {
+			if (\in_array($function, array('call_user_func_array', 'trigger_error'))) {
 				continue;
 			}
 			$trace['functionRef'] = $function;
 
 			if ($options['format'] === 'points' && $trace['file'] !== '[internal]') {
 				$back[] = array('file' => $trace['file'], 'line' => $trace['line']);
-			} elseif (is_string($options['format']) && $options['format'] !== 'array') {
-				$back[] = StringDeprecated::insert($options['format'], array_map(
-					function($data) { return is_object($data) ? get_class($data) : $data; },
+			} elseif (\is_string($options['format']) && $options['format'] !== 'array') {
+				$back[] = StringDeprecated::insert($options['format'], \array_map(
+					function($data) { return \is_object($data) ? \get_class($data) : $data; },
 					$trace
 				));
 			} elseif (empty($options['format'])) {
@@ -100,9 +100,9 @@ class Debugger {
 				$back[] = $trace;
 			}
 
-			if (!empty($scope) && array_intersect_assoc($scope, $trace) == $scope) {
+			if (!empty($scope) && \array_intersect_assoc($scope, $trace) == $scope) {
 				if (!$options['includeScope']) {
-					$back = array_slice($back, 0, count($back) - 1);
+					$back = \array_slice($back, 0, \count($back) - 1);
 				}
 				break;
 			}
@@ -111,7 +111,7 @@ class Debugger {
 		if ($options['format'] === 'array' || $options['format'] === 'points') {
 			return $back;
 		}
-		return join("\n", $back);
+		return \join("\n", $back);
 	}
 
 	/**
@@ -121,12 +121,12 @@ class Debugger {
 	 * @return string The exported contents.
 	 */
 	public static function export($var) {
-		$export = var_export($var, true);
+		$export = \var_export($var, true);
 
-		if (is_array($var)) {
+		if (\is_array($var)) {
 			$replace = array(" (", " )", "  ", " )", "=> \n\t");
 			$with = array("(", ")", "\t", "\t)", "=> ");
-			$export = str_replace($replace, $with, $export);
+			$export = \str_replace($replace, $with, $export);
 		}
 		return $export;
 	}
@@ -139,9 +139,9 @@ class Debugger {
 	 * @return mixed Returns the line number where the method called is defined.
 	 */
 	protected static function _definition($reference, $callLine) {
-		if (file_exists($reference)) {
-			foreach (array_reverse(token_get_all(file_get_contents($reference))) as $token) {
-				if (!is_array($token) || $token[2] > $callLine) {
+		if (\file_exists($reference)) {
+			foreach (\array_reverse(\token_get_all(\file_get_contents($reference))) as $token) {
+				if (!\is_array($token) || $token[2] > $callLine) {
 					continue;
 				}
 				if ($token[0] === T_FUNCTION) {
@@ -150,20 +150,20 @@ class Debugger {
 			}
 			return;
 		}
-		list($class, $method) = explode('::', $reference);
+		list($class, $method) = \explode('::', $reference);
 
-		if (!class_exists($class)) {
+		if (!\class_exists($class)) {
 			return;
 		}
 
 		$classRef = new ReflectionClass($class);
 		$methodInfo = Inspector::info($reference);
-		$methodDef = join("\n", Inspector::lines($classRef->getFileName(), range(
+		$methodDef = \join("\n", Inspector::lines($classRef->getFileName(), \range(
 			$methodInfo['start'] + 1, $methodInfo['end'] - 1
 		)));
 
-		foreach (array_reverse(token_get_all("<?php {$methodDef} ?>")) as $token) {
-			if (!is_array($token) || $token[2] > $callLine) {
+		foreach (\array_reverse(\token_get_all("<?php {$methodDef} ?>")) as $token) {
+			if (!\is_array($token) || $token[2] > $callLine) {
 				continue;
 			}
 			if ($token[0] === T_FUNCTION) {
@@ -190,13 +190,13 @@ class Debugger {
 		}
 
 		if ($class = Inspector::classes(array('file' => $frame['file']))) {
-			foreach (Inspector::methods(key($class), 'extents') as $method => $extents) {
+			foreach (Inspector::methods(\key($class), 'extents') as $method => $extents) {
 				$line = $frame['line'];
 
 				if (!($extents[0] <= $line && $line <= $extents[1])) {
 					continue;
 				}
-				$class = key($class);
+				$class = \key($class);
 				$reference = "{$class}::{$method}";
 				$function = "{$reference}()::{closure}";
 				break;

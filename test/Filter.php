@@ -32,7 +32,7 @@ abstract class Filter extends \lithium\core\StaticObject {
 	 * @return array The results of the analysis.
 	 */
 	public static function analyze($report, array $options = array()) {
-		return $report->results['filters'][get_called_class()];
+		return $report->results['filters'][\get_called_class()];
 	}
 
 	/**

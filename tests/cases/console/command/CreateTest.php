@@ -23,16 +23,16 @@ class CreateTest extends \lithium\test\Unit {
 
 	public function skip() {
 		$this->_testPath = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($this->_testPath), "Path `{$this->_testPath}` is not writable.");
+		$this->skipIf(!\is_writable($this->_testPath), "Path `{$this->_testPath}` is not writable.");
 	}
 
 	public function setUp() {
-		$this->_backup['cwd'] = getcwd();
+		$this->_backup['cwd'] = \getcwd();
 		$this->_backup['_SERVER'] = $_SERVER;
 		$_SERVER['argv'] = array();
 
 		Libraries::add('create_test', array('path' => $this->_testPath . '/create_test'));
-		$this->request = new Request(array('input' => fopen('php://temp', 'w+')));
+		$this->request = new Request(array('input' => \fopen('php://temp', 'w+')));
 		$this->request->params = array('library' => 'create_test', 'action' => null);
 
 		Connections::add('default', array(
@@ -43,7 +43,7 @@ class CreateTest extends \lithium\test\Unit {
 
 	public function tearDown() {
 		$_SERVER = $this->_backup['_SERVER'];
-		chdir($this->_backup['cwd']);
+		\chdir($this->_backup['cwd']);
 		$this->_cleanUp();
 	}
 
@@ -81,7 +81,7 @@ class CreateTest extends \lithium\test\Unit {
 	}
 
 	public function testSave() {
-		chdir($this->_testPath);
+		\chdir($this->_testPath);
 		$this->request->params = array('library' => 'create_test', 'template' => 'test');
 		$create = new MockCreate(array('request' => $this->request));
 		$result = $create->save(array(

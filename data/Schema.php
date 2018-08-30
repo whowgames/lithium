@@ -35,8 +35,8 @@ class Schema extends \lithium\core\DynamicObject implements \ArrayAccess {
 		parent::_init();
 
 		foreach ($this->_fields as $key => $type) {
-			if (is_string($type)) {
-				$this->_fields[$key] = compact('type');
+			if (\is_string($type)) {
+				$this->_fields[$key] = \compact('type');
 				continue;
 			}
 			if (isset($this->_fields[$key][0]) && !isset($this->_fields[$key]['type'])) {
@@ -59,7 +59,7 @@ class Schema extends \lithium\core\DynamicObject implements \ArrayAccess {
 	}
 
 	public function names() {
-		return array_keys($this->_fields);
+		return \array_keys($this->_fields);
 	}
 
 	public function defaults($name = null) {
@@ -87,11 +87,11 @@ class Schema extends \lithium\core\DynamicObject implements \ArrayAccess {
 	}
 
 	public function has($field) {
-		if (is_string($field)) {
+		if (\is_string($field)) {
 			return isset($this->_fields[$field]);
 		}
-		if (is_array($field)) {
-			return array_intersect($field, array_keys($this->_fields)) == $field;
+		if (\is_array($field)) {
+			return \array_intersect($field, \array_keys($this->_fields)) == $field;
 		}
 	}
 

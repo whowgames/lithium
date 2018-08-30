@@ -36,7 +36,7 @@ class Help extends \lithium\console\Command {
 			return true;
 		}
 
-		if (!preg_match('/\\\\/', $command)) {
+		if (!\preg_match('/\\\\/', $command)) {
 			$command = Inflector::camelize($command);
 		}
 
@@ -45,10 +45,10 @@ class Help extends \lithium\console\Command {
 			return false;
 		}
 
-		if (strpos($command, '\\') !== false) {
-			$command = join('', array_slice(explode("\\", $command), -1));
+		if (\strpos($command, '\\') !== false) {
+			$command = \join('', \array_slice(\explode("\\", $command), -1));
 		}
-		$command = strtolower(Inflector::slug($command));
+		$command = \strtolower(Inflector::slug($command));
 
 		$run = null;
 		$methods = $this->_methods($class);
@@ -96,21 +96,21 @@ class Help extends \lithium\console\Command {
 	 * @return array
 	 */
 	public function api($class = null, $type = null, $name = null) {
-		$class = str_replace(".", "\\", $class);
+		$class = \str_replace(".", "\\", $class);
 
 		switch ($type) {
 			default:
 				$info = Inspector::info($class);
 				$result = array('class' => array(
 					'name' => $info['shortName'],
-					'description' => trim($info['description'] . PHP_EOL . PHP_EOL . $info['text'])
+					'description' => \trim($info['description'] . PHP_EOL . PHP_EOL . $info['text'])
 				));
 			break;
 			case 'method':
-				$result = $this->_methods($class, compact('name'));
+				$result = $this->_methods($class, \compact('name'));
 			break;
 			case 'property':
-				$result = $this->_properties($class, compact('name'));
+				$result = $this->_properties($class, \compact('name'));
 			break;
 		}
 		$this->_render($result);
@@ -131,8 +131,8 @@ class Help extends \lithium\console\Command {
 			if ($item->name[0] === '_') {
 				return;
 			}
-			$modifiers = array_values(Inspector::invokeMethod('_modifiers', array($item)));
-			$setAccess = array_intersect($modifiers, array('private', 'protected')) != array();
+			$modifiers = \array_values(Inspector::invokeMethod('_modifiers', array($item)));
+			$setAccess = \array_intersect($modifiers, array('private', 'protected')) != array();
 
 			if ($setAccess) {
 				$item->setAccessible(true);
@@ -146,7 +146,7 @@ class Help extends \lithium\console\Command {
 					'description' => null
 				);
 			}
-			$result = compact('modifiers', 'args') + array(
+			$result = \compact('modifiers', 'args') + array(
 				'docComment' => $item->getDocComment(),
 				'name' => $item->getName()
 			);
@@ -159,11 +159,11 @@ class Help extends \lithium\console\Command {
 		$methods = Inspector::methods($class)->map($map, array('collect' => false));
 		$results = array();
 
-		foreach (array_filter($methods) as $method) {
+		foreach (\array_filter($methods) as $method) {
 			$comment = Docblock::comment($method['docComment']);
 
 			$name = $method['name'];
-			$description = trim($comment['description'] . PHP_EOL . $comment['text']);
+			$description = \trim($comment['description'] . PHP_EOL . $comment['text']);
 			$args = $method['args'];
 			$return = null;
 
@@ -174,9 +174,9 @@ class Help extends \lithium\console\Command {
 				$arg['usage'] = $arg['optional'] ? "[<{$arg['name']}>]" : "<{$arg['name']}>";
 			}
 			if (isset($comment['tags']['return'])) {
-				$return = trim(strtok($comment['tags']['return'], ' '));
+				$return = \trim(\strtok($comment['tags']['return'], ' '));
 			}
-			$results[$name] = compact('name', 'description', 'return', 'args');
+			$results[$name] = \compact('name', 'description', 'return', 'args');
 
 			if ($name && $name == $options['name']) {
 				return array($name => $results[$name]);
@@ -200,20 +200,20 @@ class Help extends \lithium\console\Command {
 		$results = array();
 
 		foreach ($properties as &$property) {
-			$name = str_replace('_', '-', Inflector::underscore($property['name']));
+			$name = \str_replace('_', '-', Inflector::underscore($property['name']));
 
 			$comment = Docblock::comment($property['docComment']);
-			$description = trim($comment['description']);
-			$type = isset($comment['tags']['var']) ? strtok($comment['tags']['var'], ' ') : null;
+			$description = \trim($comment['description']);
+			$type = isset($comment['tags']['var']) ? \strtok($comment['tags']['var'], ' ') : null;
 
-			$usage = strlen($name) == 1 ? "-{$name}" : "--{$name}";
+			$usage = \strlen($name) == 1 ? "-{$name}" : "--{$name}";
 
 			if ($type != 'boolean') {
 				$usage .= "=<{$type}>";
 			}
 			$usage = "[{$usage}]";
 
-			$results[$name] = compact('name', 'description', 'type', 'usage');
+			$results[$name] = \compact('name', 'description', 'type', 'usage');
 
 			if ($name == $options['name']) {
 				return array($name => $results[$name]);
@@ -235,7 +235,7 @@ class Help extends \lithium\console\Command {
 			if ($name === 'run' || empty($param['name'])) {
 				continue;
 			}
-			$usage = (!empty($param['usage'])) ? trim($param['usage'], ' []') : $param['name'];
+			$usage = (!empty($param['usage'])) ? \trim($param['usage'], ' []') : $param['name'];
 			$this->out($this->_pad($usage), 'option');
 
 			if ($param['description']) {
@@ -254,13 +254,13 @@ class Help extends \lithium\console\Command {
 		$commands = Libraries::locate('command', null, array('recursive' => false));
 
 		foreach ($commands as $key => $command) {
-			$library = strtok($command, '\\');
+			$library = \strtok($command, '\\');
 
-			if (!$key || strtok($commands[$key - 1] , '\\') != $library) {
+			if (!$key || \strtok($commands[$key - 1] , '\\') != $library) {
 				$this->out("{:heading}COMMANDS{:end} {:blue}via {$library}{:end}");
 			}
 			$info = Inspector::info($command);
-			$name = strtolower(Inflector::slug($info['shortName']));
+			$name = \strtolower(Inflector::slug($info['shortName']));
 
 			$this->out($this->_pad($name) , 'heading');
 			$this->out($this->_pad($info['description']), 2);
@@ -282,15 +282,15 @@ class Help extends \lithium\console\Command {
 	 * @return void
 	 */
 	protected function _renderUsage($command, $method, $properties = array()) {
-		$params = array_reduce($properties, function($a, $b) {
+		$params = \array_reduce($properties, function($a, $b) {
 			return "{$a} {$b['usage']}";
 		});
-		$args = array_reduce($method['args'], function($a, $b) {
+		$args = \array_reduce($method['args'], function($a, $b) {
 			return "{$a} {$b['usage']}";
 		});
 		$format = "{:command}li3 %s%s{:end}{:command}%s{:end}{:option}%s{:end}";
 		$name = $method['name'] == 'run' ? '' : " {$method['name']}";
-		$this->out($this->_pad(sprintf($format, $command ?: 'COMMAND', $name, $params, $args)));
+		$this->out($this->_pad(\sprintf($format, $command ?: 'COMMAND', $name, $params, $args)));
 	}
 
 	/**
@@ -302,7 +302,7 @@ class Help extends \lithium\console\Command {
 	protected function _renderDescription($info) {
 		$this->out('DESCRIPTION', 'heading');
 		$break = PHP_EOL . PHP_EOL;
-		$description = trim("{$info['description']}{$break}{$info['text']}");
+		$description = \trim("{$info['description']}{$break}{$info['text']}");
 		$this->out($this->_pad($description, PHP_EOL));
 	}
 
@@ -314,8 +314,8 @@ class Help extends \lithium\console\Command {
 	 * @return string
 	 */
 	protected function _pad($message, $level = 1) {
-		$padding = str_repeat(' ', $level * 4);
-		return $padding . str_replace("\n", "\n{$padding}", $message);
+		$padding = \str_repeat(' ', $level * 4);
+		return $padding . \str_replace("\n", "\n{$padding}", $message);
 	}
 }
 

@@ -290,7 +290,7 @@ class QueryTest extends \lithium\test\Unit {
 	public function testConditionFromRecord() {
 		$entity = new Record();
 		$entity->id = 12;
-		$query = new Query(compact('entity') + array('model' => $this->_model));
+		$query = new Query(\compact('entity') + array('model' => $this->_model));
 
 		$expected = array('id' => 12);
 		$result = $query->conditions();
@@ -315,7 +315,7 @@ class QueryTest extends \lithium\test\Unit {
 		$export = $query->export($ds);
 
 		$this->assertInternalType('array', $export);
-		$this->skipIf(!is_array($export), 'Query::export() does not return an array');
+		$this->skipIf(!\is_array($export), 'Query::export() does not return an array');
 
 		$expected = array(
 			'alias',
@@ -341,10 +341,10 @@ class QueryTest extends \lithium\test\Unit {
 			'with',
 			'relationships'
 		);
-		$result = array_keys($export);
+		$result = \array_keys($export);
 
-		sort($expected);
-		sort($result);
+		\sort($expected);
+		\sort($result);
 		$this->assertEqual($expected, $result);
 
 		$expected = '{MockQueryPost}.{id}, {MockQueryPost}.{author_id}, {MockQueryPost}.{title}';
@@ -435,7 +435,7 @@ class QueryTest extends \lithium\test\Unit {
 		$this->skipIf(!isset($export['relationships']));
 		$this->assertEqual($expected, $export['relationships']);
 
-		$query = new Query(compact('model') + array(
+		$query = new Query(\compact('model') + array(
 			'type' => 'read',
 			'with' => 'MockQueryComment',
 			'limit' => 3,
@@ -457,10 +457,10 @@ class QueryTest extends \lithium\test\Unit {
 	 */
 	public function testWhitelisting() {
 		$data = array('foo' => 1, 'bar' => 2, 'baz' => 3);
-		$query = new Query(compact('data'));
+		$query = new Query(\compact('data'));
 		$this->assertEqual($data, $query->data());
 
-		$query = new Query(compact('data') + array('whitelist' => array('foo', 'bar')));
+		$query = new Query(\compact('data') + array('whitelist' => array('foo', 'bar')));
 		$this->assertEqual(array('foo' => 1, 'bar' => 2), $query->data());
 	}
 
@@ -482,7 +482,7 @@ class QueryTest extends \lithium\test\Unit {
 		$query->calculate($calculate);
 		$this->assertEqual($calculate, $query->calculate());
 
-		$query = new Query(compact('calculate', 'group'));
+		$query = new Query(\compact('calculate', 'group'));
 		$this->assertEqual($group, $query->group());
 		$this->assertEqual($calculate, $query->calculate());
 
@@ -507,14 +507,14 @@ class QueryTest extends \lithium\test\Unit {
 	public function testEntityConditions() {
 		$entity = new Record(array('model' => $this->_model, 'exists' => true));
 		$entity->id = 13;
-		$query = new Query(compact('entity'));
+		$query = new Query(\compact('entity'));
 		$this->assertEqual(array('id' => 13), $query->conditions());
 	}
 
 	public function testInvalidEntityCondition() {
 		$entity = new Record(array('model' => $this->_model, 'exists' => true));
 		$entity->_id = 13;
-		$query = new Query(compact('entity'));
+		$query = new Query(\compact('entity'));
 		$this->expectException('/No matching primary key found/');
 		$query->conditions();
 	}
@@ -576,7 +576,7 @@ class QueryTest extends \lithium\test\Unit {
 
 	public function testAliasAndPaths() {
 		$model = 'lithium\tests\mocks\data\model\MockQueryComment';
-		$query = new Query(compact('model'));
+		$query = new Query(\compact('model'));
 
 		$this->assertIdentical('MockQueryComment', $query->alias());
 		$this->assertIdentical('MockQueryComment', $query->alias(true));
@@ -592,7 +592,7 @@ class QueryTest extends \lithium\test\Unit {
 		$this->assertIdentical('MockQueryComment__2', $query->alias(true, 'Model1'));
 		$this->assertIdentical('MockQueryComment2__2', $query->alias(true, 'Model2'));
 
-		$query = new Query(compact('model') + array(
+		$query = new Query(\compact('model') + array(
 			'source' => 'my_custom_table',
 			'alias' => 'MyCustomAlias'
 		));

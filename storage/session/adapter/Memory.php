@@ -69,7 +69,7 @@ class Memory extends \lithium\core\DynamicObject {
 		$session = $this->_session;
 
 		return function($self, $params) use ($session) {
-			extract($params);
+			\extract($params);
 
 			if (!$key) {
 				return $session;
@@ -90,7 +90,7 @@ class Memory extends \lithium\core\DynamicObject {
 		$session =& $this->_session;
 
 		return function($self, $params) use (&$session) {
-			extract($params);
+			\extract($params);
 			return (boolean) ($session[$key] = $value);
 		};
 	}
@@ -106,7 +106,7 @@ class Memory extends \lithium\core\DynamicObject {
 		$session =& $this->_session;
 
 		return function($self, $params) use (&$session) {
-			extract($params);
+			\extract($params);
 			unset($session[$key]);
 			return !isset($session[$key]);
 		};

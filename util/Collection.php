@@ -152,7 +152,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 		if ($format === false) {
 			return static::$_formats = array('array' => 'lithium\util\Collection::toArray');
 		}
-		if ((is_null($handler)) && class_exists($format)) {
+		if ((\is_null($handler)) && \class_exists($format)) {
 			return static::$_formats[] = $format;
 		}
 		return static::$_formats[$format] = $handler;
@@ -185,16 +185,16 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *         values wrapped in a `Collection` instance.
 	 */
 	public function invoke($method, array $params = array(), array $options = array()) {
-		$class = get_class($this);
+		$class = \get_class($this);
 		$defaults = array('merge' => false, 'collect' => false);
 		$options += $defaults;
 		$data = array();
 
 		foreach ($this as $object) {
-			$value = call_user_func_array(array(&$object, $method), $params);
-			($options['merge']) ? $data = array_merge($data, $value) : $data[$this->key()] = $value;
+			$value = \call_user_func_array(array(&$object, $method), $params);
+			($options['merge']) ? $data = \array_merge($data, $value) : $data[$this->key()] = $value;
 		}
-		return ($options['collect']) ? new $class(compact('data')) : $data;
+		return ($options['collect']) ? new $class(\compact('data')) : $data;
 	}
 
 	/**
@@ -216,7 +216,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return bool
 	 */
 	public function respondsTo($method, $internal = false) {
-		$magicMethod = count($this->_data) > 0 && $this->_data[0]->respondsTo($method, $internal);
+		$magicMethod = \count($this->_data) > 0 && $this->_data[0]->respondsTo($method, $internal);
 		return $magicMethod || parent::respondsTo($method, $internal);
 	}
 
@@ -255,15 +255,15 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	}
 
 	protected function _to($format, &$data, &$options) {
-		if (is_object($format) && is_callable($format)) {
+		if (\is_object($format) && \is_callable($format)) {
 			return $format($data, $options);
 		}
 
-		if (isset(static::$_formats[$format]) && is_callable(static::$_formats[$format])) {
+		if (isset(static::$_formats[$format]) && \is_callable(static::$_formats[$format])) {
 			$handler = static::$_formats[$format];
-			$handler = is_string($handler) ? explode('::', $handler, 2) : $handler;
+			$handler = \is_string($handler) ? \explode('::', $handler, 2) : $handler;
 
-			if (is_array($handler)) {
+			if (\is_array($handler)) {
 				list($class, $method) = $handler;
 				return $class::$method($data, $options);
 			}
@@ -271,10 +271,10 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 		}
 
 		foreach (static::$_formats as $key => $handler) {
-			if (!is_int($key)) {
+			if (!\is_int($key)) {
 				continue;
 			}
-			if (in_array($format, $handler::formats($format, $data, $options))) {
+			if (\in_array($format, $handler::formats($format, $data, $options))) {
 				return $handler::to($format, $data, $options);
 			}
 		}
@@ -293,11 +293,11 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	public function find($filter, array $options = array()) {
 		$defaults = array('collect' => true);
 		$options += $defaults;
-		$data = array_filter($this->_data, $filter);
+		$data = \array_filter($this->_data, $filter);
 
 		if ($options['collect']) {
-			$class = get_class($this);
-			$data = new $class(compact('data'));
+			$class = \get_class($this);
+			$data = new $class(\compact('data'));
 		}
 		return $data;
 	}
@@ -332,7 +332,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return object This collection instance.
 	 */
 	public function each($filter) {
-		$this->_data = array_map($filter, $this->_data);
+		$this->_data = \array_map($filter, $this->_data);
 		return $this;
 	}
 
@@ -350,11 +350,11 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	public function map($filter, array $options = array()) {
 		$defaults = array('collect' => true);
 		$options += $defaults;
-		$data = array_map($filter, $this->_data);
+		$data = \array_map($filter, $this->_data);
 
 		if ($options['collect']) {
-			$class = get_class($this);
-			return new $class(compact('data'));
+			$class = \get_class($this);
+			return new $class(\compact('data'));
 		}
 		return $data;
 	}
@@ -367,7 +367,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return mixed A single reduced value
 	 */
 	public function reduce($filter, $initial = false) {
-		return array_reduce($this->_data, $filter, $initial);
+		return \array_reduce($this->_data, $filter, $initial);
 	}
 
 	/**
@@ -380,10 +380,10 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return $this, useful for chaining this with other methods.
 	 */
 	public function sort($sorter = 'sort', array $options = array()) {
-		if (is_string($sorter) && strpos($sorter, 'sort') !== false && is_callable($sorter)) {
-			call_user_func_array($sorter, array(&$this->_data));
-		} elseif (is_callable($sorter)) {
-			usort($this->_data, $sorter);
+		if (\is_string($sorter) && \strpos($sorter, 'sort') !== false && \is_callable($sorter)) {
+			\call_user_func_array($sorter, array(&$this->_data));
+		} elseif (\is_callable($sorter)) {
+			\usort($this->_data, $sorter);
 		}
 		return $this;
 	}
@@ -395,7 +395,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return boolean `true` if offset exists, `false` otherwise.
 	 */
 	public function offsetExists($offset) {
-		return array_key_exists($offset, $this->_data);
+		return \array_key_exists($offset, $this->_data);
 	}
 
 	/**
@@ -416,7 +416,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return mixed The value which was set.
 	 */
 	public function offsetSet($offset, $value) {
-		if (is_null($offset)) {
+		if (\is_null($offset)) {
 			return $this->_data[] = $value;
 		}
 		return $this->_data[$offset] = $value;
@@ -428,8 +428,8 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @param string $offset The offset to unset.
 	 */
 	public function offsetUnset($offset) {
-		prev($this->_data);
-		if (key($this->_data) === null) {
+		\prev($this->_data);
+		if (\key($this->_data) === null) {
 			$this->rewind();
 		}
 		unset($this->_data[$offset]);
@@ -441,8 +441,8 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return mixed The current item after rewinding.
 	 */
 	public function rewind() {
-		reset($this->_data);
-		return current($this->_data);
+		\reset($this->_data);
+		return \current($this->_data);
 	}
 
 	/**
@@ -451,8 +451,8 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return mixed The current item after moving.
 	 */
 	public function end() {
-		end($this->_data);
-		return current($this->_data);
+		\end($this->_data);
+		return \current($this->_data);
 	}
 
 	/**
@@ -461,7 +461,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return boolean `true` if valid, `false` otherwise.
 	 */
 	public function valid() {
-		return key($this->_data) !== null;
+		return \key($this->_data) !== null;
 	}
 
 	/**
@@ -470,7 +470,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return mixed The current item or `false` on failure.
 	 */
 	public function current() {
-		return current($this->_data);
+		return \current($this->_data);
 	}
 
 	/**
@@ -479,7 +479,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return scalar Scalar on success or `null` on failure.
 	 */
 	public function key() {
-		return key($this->_data);
+		return \key($this->_data);
 	}
 
 	/**
@@ -489,10 +489,10 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return mixed The current item after moving or the last item on failure.
 	 */
 	public function prev() {
-		if (!prev($this->_data)) {
-			end($this->_data);
+		if (!\prev($this->_data)) {
+			\end($this->_data);
 		}
-		return current($this->_data);
+		return \current($this->_data);
 	}
 
 	/**
@@ -501,8 +501,8 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return The current item after moving or `false` on failure.
 	 */
 	public function next($self = null, $params = null, $chain = null) {
-		next($this->_data);
-		return current($this->_data);
+		\next($this->_data);
+		return \current($this->_data);
 	}
 
 	/**
@@ -511,7 +511,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @param mixed $value The item to append.
 	 */
 	public function append($value) {
-		is_object($value) ? $this->_data[] =& $value : $this->_data[] = $value;
+		\is_object($value) ? $this->_data[] =& $value : $this->_data[] = $value;
 	}
 
 	/**
@@ -520,7 +520,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return integer Returns the number of items in the collection.
 	 */
 	public function count() {
-		$count = iterator_count($this);
+		$count = \iterator_count($this);
 		$this->rewind();
 		return $count;
 	}
@@ -531,7 +531,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @return array The keys of the items.
 	 */
 	public function keys() {
-		return array_keys($this->_data);
+		return \array_keys($this->_data);
 	}
 
 	/**
@@ -553,22 +553,22 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 
 		foreach ($data as $key => $item) {
 			switch (true) {
-				case is_array($item):
+				case \is_array($item):
 					$result[$key] = static::toArray($item, $options);
 				break;
-				case (!is_object($item)):
+				case (!\is_object($item)):
 					$result[$key] = $item;
 				break;
-				case (isset($options['handlers'][$class = get_class($item)])):
+				case (isset($options['handlers'][$class = \get_class($item)])):
 					$result[$key] = $options['handlers'][$class]($item);
 				break;
-				case (method_exists($item, 'to')):
+				case (\method_exists($item, 'to')):
 					$result[$key] = $item->to('array', $options);
 				break;
-				case ($vars = get_object_vars($item)):
+				case ($vars = \get_object_vars($item)):
 					$result[$key] = static::toArray($vars, $options);
 				break;
-				case (method_exists($item, '__toString')):
+				case (\method_exists($item, '__toString')):
 					$result[$key] = (string) $item;
 				break;
 				default:

@@ -108,7 +108,7 @@ class DocumentTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, $doc->modified());
 		$doc->sync();
 
-		$this->assertEqual(array_fill_keys(array_keys($expected), false), $doc->modified());
+		$this->assertEqual(\array_fill_keys(\array_keys($expected), false), $doc->modified());
 
 		$doc->_id = 5;
 		$doc->content = null;
@@ -140,12 +140,12 @@ class DocumentTest extends \lithium\test\Unit {
 		);
 
 		$fields = array('id', 'name', 'content', 'array', 'subdoc', 'subdocs');
-		$expected = array_fill_keys($fields, true);
+		$expected = \array_fill_keys($fields, true);
 
 		$this->assertEqual($expected, $doc->modified());
 		$doc->sync();
 
-		$this->assertEqual(array_fill_keys($fields, false), $doc->modified());
+		$this->assertEqual(\array_fill_keys($fields, false), $doc->modified());
 
 		$doc->id = 5;
 		$doc->content = null;
@@ -160,7 +160,7 @@ class DocumentTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, $doc->modified());
 		$doc->sync();
 
-		$expected = array_fill_keys($fields, false);
+		$expected = \array_fill_keys($fields, false);
 
 		$this->assertEqual($expected, $doc->modified());
 		$doc->sync();
@@ -190,7 +190,7 @@ class DocumentTest extends \lithium\test\Unit {
 		)));
 		$exists = true;
 
-		$doc = new Document(compact('schema', 'exists'));
+		$doc = new Document(\compact('schema', 'exists'));
 		$doc->array = array(1, 2, 3);
 		$doc->forceArray = 'foo';
 		$result = $doc->export();
@@ -381,7 +381,7 @@ class DocumentTest extends \lithium\test\Unit {
 	public function testUpdateWithMultipleKeys() {
 		$model = 'lithium\tests\mocks\data\model\MockDocumentMultipleKey';
 		$model::config(array('meta' => array('key' => array('_id', 'rev'), 'foo' => true)));
-		$doc = new Document(compact('model'));
+		$doc = new Document(\compact('model'));
 
 		$result = $model::meta('key');
 		$this->assertEqual(array('_id', 'rev'), $result);
@@ -501,8 +501,8 @@ class DocumentTest extends \lithium\test\Unit {
 		$doc->set(array('hair' => true, 'fast' => false));
 
 		$expected = array('fast', 'fat', 'hair', 'tall');
-		$result = array_keys($doc->data());
-		sort($result);
+		$result = \array_keys($doc->data());
+		\sort($result);
 		$this->assertEqual($expected, $result);
 	}
 
@@ -603,7 +603,7 @@ class DocumentTest extends \lithium\test\Unit {
 		);
 		$model = $this->_model;
 
-		$doc = new Document(compact('model', 'data'));
+		$doc = new Document(\compact('model', 'data'));
 		$expected = $data;
 		$result = $doc->data();
 		$this->assertEqual($expected, $result);
@@ -667,7 +667,7 @@ class DocumentTest extends \lithium\test\Unit {
 	public function testDocumentNesting() {
 		$model = $this->_model;
 		$data = array('top' => 'level', 'second' => array('level' => 'of data'));
-		$doc = new Document(compact('model', 'data'));
+		$doc = new Document(\compact('model', 'data'));
 
 		$this->assertTrue(isset($doc->top));
 		$this->assertTrue(isset($doc->second->level));
@@ -683,20 +683,20 @@ class DocumentTest extends \lithium\test\Unit {
 		$values = array(null, 'bar', 'dib');
 
 		foreach ($doc as $key => $value) {
-			$this->assertEqual(next($keys), $key);
-			$this->assertEqual(next($values), $value);
+			$this->assertEqual(\next($keys), $key);
+			$this->assertEqual(\next($values), $value);
 		}
-		reset($keys);
-		reset($values);
+		\reset($keys);
+		\reset($values);
 		foreach ($doc as $key => $value) {
-			$this->assertEqual(next($keys), $key);
-			$this->assertEqual(next($values), $value);
+			$this->assertEqual(\next($keys), $key);
+			$this->assertEqual(\next($values), $value);
 		}
 	}
 
 	public function testExport() {
 		$data = array('foo' => 'bar', 'baz' => 'dib');
-		$doc = new Document(compact('data') + array('exists' => false));
+		$doc = new Document(\compact('data') + array('exists' => false));
 
 		$expected = array(
 			'data' => array('foo' => 'bar', 'baz' => 'dib'),
@@ -718,17 +718,17 @@ class DocumentTest extends \lithium\test\Unit {
 			'foo' => array('bar' => 'bar', 'baz' => 'dib'),
 			'deeply' => array('nested' => array('object' => array('should' => 'exist')))
 		);
-		$doc = new Document(compact('model', 'data') + array('exists' => false));
+		$doc = new Document(\compact('model', 'data') + array('exists' => false));
 
 		$this->assertFalse($doc->exists());
 		$this->assertFalse($doc->foo->exists());
 
-		$doc = new Document(compact('model', 'data') + array('exists' => true));
+		$doc = new Document(\compact('model', 'data') + array('exists' => true));
 		$this->assertTrue($doc->exists());
 		$this->assertTrue($doc->foo->exists());
 		$this->assertTrue($doc->deeply->nested->object->exists());
 
-		$doc = new Document(compact('model', 'data') + array('exists' => true));
+		$doc = new Document(\compact('model', 'data') + array('exists' => true));
 		$subDoc = new Document(array('data' => array('bar' => 'stuff')));
 
 		$this->assertTrue($doc->foo->exists());
@@ -749,7 +749,7 @@ class DocumentTest extends \lithium\test\Unit {
 	public function testModifiedExport() {
 		$model = $this->_model;
 		$data = array('foo' => 'bar', 'baz' => 'dib');
-		$doc = new Document(compact('model', 'data') + array('exists' => false));
+		$doc = new Document(\compact('model', 'data') + array('exists' => false));
 
 		$doc->nested = array('more' => 'data');
 		$newData = $doc->export();
@@ -766,7 +766,7 @@ class DocumentTest extends \lithium\test\Unit {
 		$this->assertEqual(array('more' => 'data'), $result['update']);
 		$this->assertEqual('nested', $result['key']);
 
-		$doc = new Document(compact('model') + array('exists' => true, 'data' => array(
+		$doc = new Document(\compact('model') + array('exists' => true, 'data' => array(
 			'foo' => 'bar', 'baz' => 'dib'
 		)));
 
@@ -779,7 +779,7 @@ class DocumentTest extends \lithium\test\Unit {
 		$modified = $doc->export();
 		$this->assertTrue($modified['exists']);
 		$this->assertEqual(array('foo' => 'bar', 'baz' => 'dib'), $modified['data']);
-		$this->assertEqual(array('foo', 'baz', 'nested'), array_keys($modified['update']));
+		$this->assertEqual(array('foo', 'baz', 'nested'), \array_keys($modified['update']));
 		$this->assertNull($modified['key']);
 
 		$nested = $modified['update']['nested']->export();
@@ -797,7 +797,7 @@ class DocumentTest extends \lithium\test\Unit {
 
 		$expected = array('more' => 'cowbell') + $modified['data'];
 		$this->assertEqual($expected, $modified['update']);
-		$this->assertEqual(array('foo', 'baz', 'nested'), array_keys($modified['data']));
+		$this->assertEqual(array('foo', 'baz', 'nested'), \array_keys($modified['data']));
 		$this->assertEqual('bar', $modified['data']['foo']);
 		$this->assertEqual('dib', $modified['data']['baz']);
 		$this->assertTrue($modified['exists']);
@@ -853,8 +853,8 @@ class DocumentTest extends \lithium\test\Unit {
 		$this->assertEqual('first', $doc->nested->foo);
 		$this->assertEqual('second', $doc->nested->bar);
 		$this->assertEqual('value', $doc->really->nested->key);
-		$result = array_keys($doc->data());
-		sort($result);
+		$result = \array_keys($doc->data());
+		\sort($result);
 		$this->assertEqual(array('nested', 'really', 'simple'), $result);
 	}
 
@@ -867,7 +867,7 @@ class DocumentTest extends \lithium\test\Unit {
 			'foo.foo' => array('type' => 'integer'),
 			'foo.bar' => array('type' => 'integer')
 		)));
-		$doc = new Document(compact('model', 'schema'));
+		$doc = new Document(\compact('model', 'schema'));
 		$doc->foo[] = array('foo' => 1, 'bar' => 100);
 
 		$expected = array('foo' => array(array('foo' => 1, 'bar' => 100)));
@@ -877,10 +877,10 @@ class DocumentTest extends \lithium\test\Unit {
 	public function testIdGetDoesNotSet() {
 		$document = MockDocumentPost::create();
 		$message = 'The `_id` key should not be set.';
-		$this->assertFalse(array_key_exists('_id', $document->data()), $message);
+		$this->assertFalse(\array_key_exists('_id', $document->data()), $message);
 
 		$document->_id === "";
-		$this->assertFalse(array_key_exists('_id', $document->data()), $message);
+		$this->assertFalse(\array_key_exists('_id', $document->data()), $message);
 	}
 
 	/**
@@ -899,7 +899,7 @@ class DocumentTest extends \lithium\test\Unit {
 			10 => 0,
 			12 => 0
 		);
-		$doc = new Document(compact('data'));
+		$doc = new Document(\compact('data'));
 		$this->assertIdentical($data, $doc->data());
 	}
 
@@ -918,9 +918,9 @@ class DocumentTest extends \lithium\test\Unit {
 			)
 		));
 		$handlers = array(
-			'stdClass' => function($value) { return date('d/m/Y H:i', strtotime($value->scalar)); }
+			'stdClass' => function($value) { return \date('d/m/Y H:i', \strtotime($value->scalar)); }
 		);
-		$array = new Document(compact('model', 'schema', 'handlers') + array(
+		$array = new Document(\compact('model', 'schema', 'handlers') + array(
 			'data' => array(
 				'_id' => '2',
 				'date' => '2013-06-06 13:00:00'

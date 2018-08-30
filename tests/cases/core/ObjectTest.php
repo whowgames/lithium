@@ -87,7 +87,7 @@ class ObjectTest extends \lithium\test\Unit {
 		$object->applyFilter(array('method', 'method2'), function($self, $params, $chain) {
 			return $chain->next($self, $params, $chain);
 		});
-		$this->assertIdentical(array_keys($object->method2()), array('method', 'method2'));
+		$this->assertIdentical(\array_keys($object->method2()), array('method', 'method2'));
 	}
 
 	/**
@@ -181,7 +181,7 @@ class ObjectTest extends \lithium\test\Unit {
 			'key' => 'value', '_protected' => 'test'
 		));
 		$expected = 'lithium\tests\mocks\core\MockObjectConfiguration';
-		$this->assertEqual($expected, get_class($result));
+		$this->assertEqual($expected, \get_class($result));
 
 		$this->assertEqual('test', $result->getProtected());
 	}
@@ -189,14 +189,14 @@ class ObjectTest extends \lithium\test\Unit {
 	public function testInstanceWithClassesKey() {
 		$object = new MockInstantiator();
 		$expected = 'lithium\tests\mocks\core\MockRequest';
-		$result = get_class($object->instance('request'));
+		$result = \get_class($object->instance('request'));
 		$this->assertEqual($expected, $result);
 	}
 
 	public function testInstanceWithNamespacedClass() {
 		$object = new MockInstantiator();
 		$expected = 'lithium\tests\mocks\core\MockRequest';
-		$result = get_class($object->instance('lithium\tests\mocks\core\MockRequest'));
+		$result = \get_class($object->instance('lithium\tests\mocks\core\MockRequest'));
 		$this->assertEqual($expected, $result);
 	}
 
@@ -204,7 +204,7 @@ class ObjectTest extends \lithium\test\Unit {
 		$object = new MockInstantiator();
 		$request = new MockRequest();
 		$expected = 'lithium\tests\mocks\core\MockRequest';
-		$result = get_class($object->instance($request));
+		$result = \get_class($object->instance($request));
 		$this->assertEqual($expected, $result);
 	}
 

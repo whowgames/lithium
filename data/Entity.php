@@ -178,8 +178,8 @@ class Entity extends \lithium\core\DynamicObject {
 	 * @return mixed Result.
 	 */
 	public function __set($name, $value) {
-		if (is_array($name) && !$value) {
-			return array_map(array(&$this, '__set'), array_keys($name), array_values($name));
+		if (\is_array($name) && !$value) {
+			return \array_map(array(&$this, '__set'), \array_keys($name), \array_values($name));
 		}
 		$this->_updated[$name] = $value;
 	}
@@ -205,10 +205,10 @@ class Entity extends \lithium\core\DynamicObject {
 	 * @return mixed
 	 */
 	public function __call($method, $params) {
-		if (($model = $this->_model) && method_exists($model, '_object')) {
-			array_unshift($params, $this);
+		if (($model = $this->_model) && \method_exists($model, '_object')) {
+			\array_unshift($params, $this);
 			$class = $model::invokeMethod('_object');
-			return call_user_func_array(array(&$class, $method), $params);
+			return \call_user_func_array(array(&$class, $method), $params);
 		}
 		$message = "No model bound to call `{$method}`.";
 		throw new BadMethodCallException($message);
@@ -226,7 +226,7 @@ class Entity extends \lithium\core\DynamicObject {
 		$modelRespondsTo = false;
 		$parentRespondsTo = parent::respondsTo($method, $internal);
 		$staticRespondsTo = $class::respondsTo($method, $internal);
-		if (method_exists($class, '_object')) {
+		if (\method_exists($class, '_object')) {
 			$model = $class::invokeMethod('_object');
 			$modelRespondsTo = $model->respondsTo($method);
 		} else {
@@ -277,7 +277,7 @@ class Entity extends \lithium\core\DynamicObject {
 		$schema = null;
 
 		switch (true) {
-			case (is_object($this->_schema)):
+			case (\is_object($this->_schema)):
 				$schema = $this->_schema;
 			break;
 			case ($model = $this->_model):
@@ -308,16 +308,16 @@ class Entity extends \lithium\core\DynamicObject {
 		if ($field === null) {
 			return $this->_errors;
 		}
-		if (is_array($field)) {
-			return ($this->_errors = array_merge_recursive($this->_errors, $field));
+		if (\is_array($field)) {
+			return ($this->_errors = \array_merge_recursive($this->_errors, $field));
 		}
 		if ($value === null && isset($this->_errors[$field])) {
 			return $this->_errors[$field];
 		}
 		if ($value !== null) {
-			if (array_key_exists($field, $this->_errors)) {
+			if (\array_key_exists($field, $this->_errors)) {
 				$current = $this->_errors[$field];
-				return ($this->_errors[$field] = array_merge((array) $current, (array) $value));
+				return ($this->_errors[$field] = \array_merge((array) $current, (array) $value));
 			}
 			return ($this->_errors[$field] = $value);
 		}
@@ -363,7 +363,7 @@ class Entity extends \lithium\core\DynamicObject {
 		}
 		if ($id && $model) {
 			$key = $model::meta('key');
-			$key = is_array($key) ? array_combine($key, $id) : array($key => $id);
+			$key = \is_array($key) ? \array_combine($key, $id) : array($key => $id);
 		}
 		$this->_data = $this->_updated = ($key + $data + $this->_updated);
 	}
@@ -386,7 +386,7 @@ class Entity extends \lithium\core\DynamicObject {
 		if (!isset($this->_updated[$field])) {
 			return $this->_updated[$field] = $value;
 		}
-		if (!is_numeric($this->_updated[$field])) {
+		if (!\is_numeric($this->_updated[$field])) {
 			throw new UnexpectedValueException("Field '{$field}' cannot be incremented.");
 		}
 		return $this->_updated[$field] += $value;
@@ -421,24 +421,24 @@ class Entity extends \lithium\core\DynamicObject {
 				return null;
 			}
 
-			if (!array_key_exists($field, $this->_updated)) {
+			if (!\array_key_exists($field, $this->_updated)) {
 				return false;
 			}
 
 			$value = $this->_updated[$field];
-			if (is_object($value) && method_exists($value, 'modified')) {
+			if (\is_object($value) && \method_exists($value, 'modified')) {
 				$modified = $value->modified();
-				return $modified === true || is_array($modified) && in_array(true, $modified, true);
+				return $modified === true || \is_array($modified) && \in_array(true, $modified, true);
 			}
 
 			$isSet = isset($this->_data[$field]);
 			return !$isSet || ($this->_data[$field] !== $this->_updated[$field]);
 		}
 
-		$fields = array_fill_keys(array_keys($this->_data), false);
+		$fields = \array_fill_keys(\array_keys($this->_data), false);
 
 		foreach ($this->_updated as $field => $value) {
-			if (is_object($value) && method_exists($value, 'modified')) {
+			if (\is_object($value) && \method_exists($value, 'modified')) {
 				if (!isset($this->_data[$field])) {
 					$fields[$field] = true;
 					continue;
@@ -446,7 +446,7 @@ class Entity extends \lithium\core\DynamicObject {
 				$modified = $value->modified();
 
 				$fields[$field] = (
-					$modified === true || is_array($modified) && in_array(true, $modified, true)
+					$modified === true || \is_array($modified) && \in_array(true, $modified, true)
 				);
 			} else {
 				$fields[$field] = (
@@ -494,7 +494,7 @@ class Entity extends \lithium\core\DynamicObject {
 		switch ($format) {
 			case 'array':
 				$data = $this->_updated;
-				$rel = array_map(function($obj) { return $obj->data(); }, $this->_relationships);
+				$rel = \array_map(function($obj) { return $obj->data(); }, $this->_relationships);
 				$data = $rel + $data;
 				$options['indexed'] = isset($options['indexed']) ? $options['indexed'] : false;
 				$result = Collection::toArray($data, $options);

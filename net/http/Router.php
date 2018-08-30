@@ -137,26 +137,26 @@ class Router extends \lithium\core\StaticObject {
 	 * @return array Array of routes
 	 */
 	public static function connect($template, $params = array(), $options = array()) {
-		if (is_array($options) && isset($options['scope'])) {
+		if (\is_array($options) && isset($options['scope'])) {
 			$name = $options['scope'];
 		} else {
 			$name = static::$_scope;
 		}
-		if (is_object($template)) {
+		if (\is_object($template)) {
 			return (static::$_configurations[$name][] = $template);
 		}
-		if (is_string($params)) {
+		if (\is_string($params)) {
 			$params = static::_parseString($params, false);
 		}
-		if (isset($params[0]) && is_array($tmp = static::_parseString($params[0], false))) {
+		if (isset($params[0]) && \is_array($tmp = static::_parseString($params[0], false))) {
 			unset($params[0]);
 			$params = $tmp + $params;
 		}
 		$params = static::_parseController($params);
-		if (is_callable($options)) {
+		if (\is_callable($options)) {
 			$options = array('handler' => $options);
 		}
-		$config = compact('template', 'params') + $options + array(
+		$config = \compact('template', 'params') + $options + array(
 			'formatters' => static::formatters(),
 			'modifiers' => static::modifiers(),
 			'unicode' => static::$_unicode
@@ -207,7 +207,7 @@ class Router extends \lithium\core\StaticObject {
 		if (!static::$_modifiers) {
 			static::$_modifiers = array(
 				'args' => function($value) {
-					return explode('/', $value);
+					return \explode('/', $value);
 				},
 				'controller' => function($value) {
 					return Inflector::camelize($value);
@@ -215,7 +215,7 @@ class Router extends \lithium\core\StaticObject {
 			);
 		}
 		if ($modifiers) {
-			static::$_modifiers = array_filter($modifiers + static::$_modifiers);
+			static::$_modifiers = \array_filter($modifiers + static::$_modifiers);
 		}
 		return static::$_modifiers;
 	}
@@ -245,19 +245,19 @@ class Router extends \lithium\core\StaticObject {
 		if (!static::$_formatters) {
 			static::$_formatters = array(
 				'args' => function($value) {
-					return is_array($value) ? join('/', $value) : $value;
+					return \is_array($value) ? \join('/', $value) : $value;
 				},
 				'controller' => function($value) {
-					if (strpos($value, '\\')) {
-						$value = explode('\\', $value);
-						$value = end($value);
+					if (\strpos($value, '\\')) {
+						$value = \explode('\\', $value);
+						$value = \end($value);
 					}
 					return Inflector::underscore($value);
 				}
 			);
 		}
 		if ($formatters) {
-			static::$_formatters = array_filter($formatters + static::$_formatters);
+			static::$_formatters = \array_filter($formatters + static::$_formatters);
 		}
 		return static::$_formatters;
 	}
@@ -279,19 +279,19 @@ class Router extends \lithium\core\StaticObject {
 	public static function parse($request) {
 		foreach (static::$_configurations as $name => $value) {
 			$orig = $request->params;
-			$name = is_int($name) ? false : $name;
+			$name = \is_int($name) ? false : $name;
 
 			if (!$url = static::_parseScope($name, $request)) {
 				continue;
 			}
 
 			foreach (static::$_configurations[$name] as $route) {
-				if (!$match = $route->parse($request, compact('url'))) {
+				if (!$match = $route->parse($request, \compact('url'))) {
 					continue;
 				}
 				$request = $match;
 				if ($route->canContinue() && isset($request->params['args'])) {
-					$url = '/' . join('/', $request->params['args']);
+					$url = '/' . \join('/', $request->params['args']);
 					unset($request->params['args']);
 					continue;
 				}
@@ -366,7 +366,7 @@ class Router extends \lithium\core\StaticObject {
 	public static function match($url = array(), $context = null, array $options = array()) {
 		$options = static::_matchOptions($url, $context, $options);
 
-		if (is_string($url = static::_prepareParams($url, $context, $options))) {
+		if (\is_string($url = static::_prepareParams($url, $context, $options))) {
 			return $url;
 		}
 
@@ -388,14 +388,14 @@ class Router extends \lithium\core\StaticObject {
 					$export = $route->export();
 					$keys = $export['match'] + $export['keys'] + $export['defaults'];
 					unset($keys['args']);
-					$url = array_diff_key($url, $keys);
+					$url = \array_diff_key($url, $keys);
 					continue;
 				}
 				if ($stack) {
 					$stack[] = $match;
 					$match = static::_compileStack($stack);
 				}
-				$path = rtrim("{$base}{$match}{$suffix}", '/') ?: '/';
+				$path = \rtrim("{$base}{$match}{$suffix}", '/') ?: '/';
 				$path = ($options) ? static::_prefix($path, $context, $options) : $path;
 				return $path ?: '/';
 			}
@@ -433,9 +433,9 @@ class Router extends \lithium\core\StaticObject {
 		$options += array('scope' => static::scope());
 		$vars = array();
 		$scope = $options['scope'];
-		if (is_array($scope)) {
-			list($tmp, $vars) = each($scope);
-			if (!is_array($vars)) {
+		if (\is_array($scope)) {
+			list($tmp, $vars) = \each($scope);
+			if (!\is_array($vars)) {
 				$vars = $scope;
 				$scope = static::scope();
 			} else {
@@ -443,7 +443,7 @@ class Router extends \lithium\core\StaticObject {
 			}
 		}
 		if ($config = static::attached($scope, $vars)) {
-			if (is_array($url)) {
+			if (\is_array($url)) {
 				unset($url['library']);
 			}
 			$config['host'] = $config['host'] ? : $defaults['host'];
@@ -456,7 +456,7 @@ class Router extends \lithium\core\StaticObject {
 
 			$base = isset($config['base']) ? '/' . $config['base'] : $defaults['base'];
 			$base = $base . ($config['prefix'] ? '/' . $config['prefix'] : '');
-			$config['base'] = $config['absolute'] ? '/' . trim($base, '/') : rtrim($base, '/');
+			$config['base'] = $config['absolute'] ? '/' . \trim($base, '/') : \rtrim($base, '/');
 			$defaults = $config + $defaults;
 		}
 		return $options + $defaults;
@@ -464,10 +464,10 @@ class Router extends \lithium\core\StaticObject {
 
 	protected static function _compileStack($stack) {
 		$result = null;
-		list($result, $query) = array_pad(explode('?', array_pop($stack), 2), 2, null);
-		foreach (array_reverse($stack) as $fragment) {
-			$result = ltrim($result, '/');
-			$result = str_replace(($result ? '' : '/') . '{:args}', $result, $fragment);
+		list($result, $query) = \array_pad(\explode('?', \array_pop($stack), 2), 2, null);
+		foreach (\array_reverse($stack) as $fragment) {
+			$result = \ltrim($result, '/');
+			$result = \str_replace(($result ? '' : '/') . '{:args}', $result, $fragment);
 		}
 		return $result . ($query ? '?' . $query : '');
 	}
@@ -475,40 +475,40 @@ class Router extends \lithium\core\StaticObject {
 	protected static function _formatError($url) {
 		$match = array("\n", 'array (', ',)', '=> NULL', '(  \'', ',  ');
 		$replace = array('', '(', ')', '=> null', '(\'', ', ');
-		return str_replace($match, $replace, var_export($url, true));
+		return \str_replace($match, $replace, \var_export($url, true));
 	}
 
 	protected static function _parseController(array $params) {
 		if (!isset($params['controller'])) {
 			return $params;
 		}
-		if (strpos($params['controller'], '.')) {
-			$separated = explode('.', $params['controller'], 2);
+		if (\strpos($params['controller'], '.')) {
+			$separated = \explode('.', $params['controller'], 2);
 			list($params['library'], $params['controller']) = $separated;
 		}
-		if (strpos($params['controller'], '\\') === false) {
+		if (\strpos($params['controller'], '\\') === false) {
 			$params['controller'] = Inflector::camelize($params['controller']);
 		}
 		return $params;
 	}
 
 	protected static function _prepareParams($url, $context, array $options) {
-		if (is_string($url)) {
-			if (strpos($url, '://')) {
+		if (\is_string($url)) {
+			if (\strpos($url, '://')) {
 				return $url;
 			}
 			foreach (array('#', '//', 'mailto', 'javascript') as $prefix) {
-				if (strpos($url, $prefix) === 0) {
+				if (\strpos($url, $prefix) === 0) {
 					return $url;
 				}
 			}
-			if (is_string($url = static::_parseString($url, $context, $options))) {
+			if (\is_string($url = static::_parseString($url, $context, $options))) {
 				return static::_prefix($url, $context, $options);
 			}
 		}
 		$isArray = (
 			isset($url[0]) &&
-			is_array($params = static::_parseString($url[0], $context, $options))
+			\is_array($params = static::_parseString($url[0], $context, $options))
 		);
 		if ($isArray) {
 			unset($url[0]);
@@ -619,17 +619,17 @@ class Router extends \lithium\core\StaticObject {
 	 * @return array
 	 */
 	protected static function _parseString($path, $context, array $options = array()) {
-		if (!preg_match('/^[A-Za-z0-9._\\\\]+::[A-Za-z0-9_]+$/', $path)) {
-			$base = rtrim($options['base'], '/');
+		if (!\preg_match('/^[A-Za-z0-9._\\\\]+::[A-Za-z0-9_]+$/', $path)) {
+			$base = \rtrim($options['base'], '/');
 			if ((!$path || $path[0] != '/') && $context && isset($context->controller)) {
 				$formatters = static::formatters();
 				$base .= '/' . $formatters['controller']($context->controller);
 			}
-			$path = trim($path, '/');
+			$path = \trim($path, '/');
 			return "{$base}/{$path}";
 		}
-		list($controller, $action) = explode('::', $path, 2);
-		return compact('controller', 'action');
+		list($controller, $action) = \explode('::', $path, 2);
+		return \compact('controller', 'action');
 	}
 
 	/**
@@ -656,7 +656,7 @@ class Router extends \lithium\core\StaticObject {
 
 		$former = static::$_scope;
 		static::$_scope = $name;
-		call_user_func($closure);
+		\call_user_func($closure);
 		static::$_scope = $former;
 	}
 
@@ -713,7 +713,7 @@ class Router extends \lithium\core\StaticObject {
 			return;
 		}
 
-		if (is_array($config) || $config === false) {
+		if (\is_array($config) || $config === false) {
 			static::$_scopes->set($name, $config);
 		}
 	}
@@ -773,16 +773,16 @@ class Router extends \lithium\core\StaticObject {
 		$match = '@\{:([^:}]+):?((?:[^{]+(?:\{[0-9,]+\})?)*?)\}@S';
 		$fields = array('scheme', 'host');
 		foreach ($fields as $field) {
-			if (preg_match_all($match, $config[$field], $m)) {
+			if (\preg_match_all($match, $config[$field], $m)) {
 				$tokens = $m[0];
 				$names = $m[1];
 				$regexs = $m[2];
 				foreach ($names as $i => $name) {
 					if (isset($vars[$name])) {
-						if (($regex = $regexs[$i]) && !preg_match("@^{$regex}\$@", $vars[$name])) {
+						if (($regex = $regexs[$i]) && !\preg_match("@^{$regex}\$@", $vars[$name])) {
 							continue;
 						}
-						$config[$field] = str_replace($tokens[$i], $vars[$name], $config[$field]);
+						$config[$field] = \str_replace($tokens[$i], $vars[$name], $config[$field]);
 					}
 				}
 			}
@@ -795,7 +795,7 @@ class Router extends \lithium\core\StaticObject {
 	 */
 	protected static function _initScopes() {
 		static::$_scopes = static::_instance('configuration');
-		$self = get_called_class();
+		$self = \get_called_class();
 		static::$_scopes->initConfig = function($name, $config) use ($self) {
 			$defaults = array(
 				'absolute' => false,
@@ -813,7 +813,7 @@ class Router extends \lithium\core\StaticObject {
 			if (!$config['pattern']) {
 				$config = $self::invokeMethod('_compileScope', array($config));
 			}
-			$config['base'] = $config['base'] ? trim($config['base'], '/') : $config['base'];
+			$config['base'] = $config['base'] ? \trim($config['base'], '/') : $config['base'];
 			return $config;
 		};
 	}
@@ -837,7 +837,7 @@ class Router extends \lithium\core\StaticObject {
 
 		$config += $defaults;
 
-		$config['prefix'] = trim($config['prefix'], '/');
+		$config['prefix'] = \trim($config['prefix'], '/');
 		$prefix = '/' . ($config['prefix'] ? $config['prefix'] . '/' : '');
 
 		if (!$config['absolute']) {
@@ -846,15 +846,15 @@ class Router extends \lithium\core\StaticObject {
 			$fields = array('scheme', 'host');
 			foreach ($fields as $field) {
 				$dots = '/(?!\{[^\}]*)\.(?![^\{]*\})/';
-				$pattern[$field] = preg_replace($dots, '\.', $config[$field]);
+				$pattern[$field] = \preg_replace($dots, '\.', $config[$field]);
 				$match = '@\{:([^:}]+):?((?:[^{]+(?:\{[0-9,]+\})?)*?)\}@S';
-				if (preg_match_all($match, $pattern[$field], $m)) {
+				if (\preg_match_all($match, $pattern[$field], $m)) {
 					$tokens = $m[0];
 					$names = $m[1];
 					$regexs = $m[2];
 					foreach ($names as $i => $name) {
 						$regex = $regexs[$i] ? : '[^/]+?';
-						$pattern[$field] = str_replace(
+						$pattern[$field] = \str_replace(
 							$tokens[$i],
 							"(?P<{$name}>{$regex})",
 							$pattern[$field]
@@ -878,7 +878,7 @@ class Router extends \lithium\core\StaticObject {
 	 * @return mixed The url to route, or `false` if the request doesn't match the scope.
 	 */
 	protected static function _parseScope($name, $request) {
-		$url = trim($request->url, '/');
+		$url = \trim($request->url, '/');
 		$url = $url ? '/' . $url . '/' : '/';
 
 		if (!$config = static::attached($name)) {
@@ -889,20 +889,20 @@ class Router extends \lithium\core\StaticObject {
 		$host = $request->host;
 
 		if ($config['absolute']) {
-			preg_match($config['pattern'], $scheme . $host . $url, $match);
+			\preg_match($config['pattern'], $scheme . $host . $url, $match);
 		} else {
-			preg_match($config['pattern'], $url, $match);
+			\preg_match($config['pattern'], $url, $match);
 		}
 
 		if ($match) {
-			$result = array_intersect_key($match, array_flip($config['params']));
+			$result = \array_intersect_key($match, \array_flip($config['params']));
 			$request->params = array();
 			if (isset($config['library'])) {
 				$request->params['library'] = $config['library'];
 			}
 			$request->params += $result;
 			if ($config['prefix']) {
-				$url = preg_replace('@^/' . trim($config['prefix'], '/') . '@', '', $url);
+				$url = \preg_replace('@^/' . \trim($config['prefix'], '/') . '@', '', $url);
 			}
 			return $url;
 		}

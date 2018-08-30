@@ -59,7 +59,7 @@ class MultiKeyRecordSet extends \lithium\data\collection\RecordSet {
 	public function offsetExists($offset) {
 		$offset = (!$offset || $offset === true) ? 0 : $offset;
 		$this->offsetGet($offset);
-		if (in_array($offset, $this->_index)) {
+		if (\in_array($offset, $this->_index)) {
 			return true;
 		}
 		return false;
@@ -83,8 +83,8 @@ class MultiKeyRecordSet extends \lithium\data\collection\RecordSet {
 	 */
 	public function offsetGet($offset) {
 		$offset = (!$offset || $offset === true) ? 0 : $offset;
-		if (in_array($offset, $this->_index)) {
-			return $this->_data[array_search($offset, $this->_index)];
+		if (\in_array($offset, $this->_index)) {
+			return $this->_data[\array_search($offset, $this->_index)];
 		}
 		if ($this->closed()) {
 			return null;
@@ -94,7 +94,7 @@ class MultiKeyRecordSet extends \lithium\data\collection\RecordSet {
 			while ($record = $this->_populate($offset)) {
 				$curKey = $model::key($record);
 				$keySet = $offsetKey == $curKey;
-				if (!is_null($offset) && $keySet) {
+				if (!\is_null($offset) && $keySet) {
 					return $record;
 				}
 			}
@@ -112,9 +112,9 @@ class MultiKeyRecordSet extends \lithium\data\collection\RecordSet {
 	public function offsetUnset($offset) {
 		$offset = (!$offset || $offset === true) ? 0 : $offset;
 		$this->offsetGet($offset);
-		unset($this->_index[$index = array_search($offset, $this->_index)]);
-		prev($this->_data);
-		if (key($this->_data) === null) {
+		unset($this->_index[$index = \array_search($offset, $this->_index)]);
+		\prev($this->_data);
+		if (\key($this->_data) === null) {
 			$this->rewind();
 		}
 		unset($this->_data[$index]);
@@ -131,8 +131,8 @@ class MultiKeyRecordSet extends \lithium\data\collection\RecordSet {
 			$this->current();
 		}
 		if ($this->_valid) {
-			$key = $this->_index[key($this->_data)];
-			return (is_array($key) && !$full) ? reset($key) : $key;
+			$key = $this->_index[\key($this->_data)];
+			return (\is_array($key) && !$full) ? \reset($key) : $key;
 		}
 		return null;
 	}
@@ -161,7 +161,7 @@ class MultiKeyRecordSet extends \lithium\data\collection\RecordSet {
 		unset($options['indexed']);
 
 		$this->offsetGet(null);
-		if (!$options['internal'] && !is_scalar(current($this->_index))) {
+		if (!$options['internal'] && !\is_scalar(\current($this->_index))) {
 			$options['internal'] = true;
 		}
 		return $result = parent::to($format, $options);
@@ -237,22 +237,22 @@ class MultiKeyRecordSet extends \lithium\data\collection\RecordSet {
 	protected function _set($data = null, $offset = null, $options = array()) {
 		if ($model = $this->_model) {
 			$options += array('defaults' => false);
-			$data = !is_object($data) ? $model::create($data, $options) : $data;
+			$data = !\is_object($data) ? $model::create($data, $options) : $data;
 			$key = $model::key($data);
 		} else {
 			$key = $offset;
 		}
 
-		if ($key === array() || $key === null || is_bool($key)) {
-			$key = count($this->_data);
+		if ($key === array() || $key === null || \is_bool($key)) {
+			$key = \count($this->_data);
 		}
 
-		if (is_array($key)) {
-			$key = count($key) === 1 ? reset($key) : $key;
+		if (\is_array($key)) {
+			$key = \count($key) === 1 ? \reset($key) : $key;
 		}
 
-		if (in_array($key, $this->_index)) {
-			$index = array_search($key, $this->_index);
+		if (\in_array($key, $this->_index)) {
+			$index = \array_search($key, $this->_index);
 			$this->_data[$index] = $data;
 			return $this->_data[$index];
 		}

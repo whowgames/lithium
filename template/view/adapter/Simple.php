@@ -35,10 +35,10 @@ class Simple extends \lithium\template\view\Renderer {
 		$context = array();
 		$this->_context = $options['context'] + $this->_context;
 
-		foreach (array_keys($this->_context) as $key) {
+		foreach (\array_keys($this->_context) as $key) {
 			$context[$key] = $this->__get($key);
 		}
-		$data = array_merge($this->_toString($context), $this->_toString($data));
+		$data = \array_merge($this->_toString($context), $this->_toString($data));
 		return StringDeprecated::insert($template, $data, $options);
 	}
 
@@ -65,15 +65,15 @@ class Simple extends \lithium\template\view\Renderer {
 	protected function _toString($data) {
 		foreach ($data as $key => $val) {
 			switch (true) {
-				case is_object($val) && !$val instanceof Closure:
+				case \is_object($val) && !$val instanceof Closure:
 					try {
 						$data[$key] = (string) $val;
 					} catch (Exception $e) {
 						$data[$key] = '';
 					}
 				break;
-				case is_array($val):
-					$data = array_merge($data, Set::flatten($val));
+				case \is_array($val):
+					$data = \array_merge($data, Set::flatten($val));
 				break;
 			}
 		}

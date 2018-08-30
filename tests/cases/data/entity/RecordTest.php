@@ -45,7 +45,7 @@ class RecordTest extends \lithium\test\Unit {
 	 */
 	public function testDataPropertyAccess() {
 		$data = array('title' => 'Test record', 'body' => 'Some test record data');
-		$this->_record = new Record(compact('data'));
+		$this->_record = new Record(\compact('data'));
 
 		$this->assertEqual('Test record', $this->_record->title);
 		$this->assertTrue(isset($this->_record->title));
@@ -64,7 +64,7 @@ class RecordTest extends \lithium\test\Unit {
 	 */
 	public function testRecordFormatExport() {
 		$data = array('foo' => 'bar');
-		$this->_record = new Record(compact('data'));
+		$this->_record = new Record(\compact('data'));
 
 		$this->assertEqual($data, $this->_record->to('array'));
 		$this->assertEqual($this->_record, $this->_record->to('foo'));

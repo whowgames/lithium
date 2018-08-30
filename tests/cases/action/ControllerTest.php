@@ -20,8 +20,8 @@ class ControllerTest extends \lithium\test\Unit {
 	 */
 	public function testConstructionWithCustomRequest() {
 		$request = new MockControllerRequest();
-		$postsController = new MockPostsController(compact('request'));
-		$result = get_class($postsController->request);
+		$postsController = new MockPostsController(\compact('request'));
+		$result = \get_class($postsController->request);
 		$this->assertEqual($result, 'lithium\tests\mocks\action\MockControllerRequest');
 	}
 
@@ -130,7 +130,7 @@ class ControllerTest extends \lithium\test\Unit {
 		$request = new Request();
 		$request->params['controller'] = 'lithium\tests\mocks\action\MockPostsController';
 
-		$controller = new MockPostsController(compact('request') + array('classes' => array(
+		$controller = new MockPostsController(\compact('request') + array('classes' => array(
 			'media' => 'lithium\tests\mocks\action\MockMediaClass'
 		)));
 
@@ -145,7 +145,7 @@ class ControllerTest extends \lithium\test\Unit {
 		$request = new Request();
 		$request->params['controller'] = 'lithium\tests\mocks\action\MockPostsController';
 
-		$controller = new MockPostsController(compact('request') + array('classes' => array(
+		$controller = new MockPostsController(\compact('request') + array('classes' => array(
 			'media' => 'lithium\tests\mocks\action\MockMediaClass'
 		)));
 
@@ -167,7 +167,7 @@ class ControllerTest extends \lithium\test\Unit {
 		$request = new Request();
 		$request->params['controller'] = 'lithium\tests\mocks\action\MockPostsController';
 
-		$controller = new MockPostsController(compact('request') + array('classes' => array(
+		$controller = new MockPostsController(\compact('request') + array('classes' => array(
 			'media' => 'lithium\tests\mocks\action\MockMediaClass'
 		)));
 
@@ -353,7 +353,7 @@ class ControllerTest extends \lithium\test\Unit {
 			'action' => 'index'
 		);
 
-		$postsController = new MockPostsController(compact('request'));
+		$postsController = new MockPostsController(\compact('request'));
 		$postsController->__invoke($request, $request->params);
 	}
 
@@ -371,7 +371,7 @@ class ControllerTest extends \lithium\test\Unit {
 		$request = new Request();
 		$request->params['controller'] = 'lithium\tests\mocks\action\MockPostsController';
 
-		$controller = new MockPostsController(compact('request') + array('classes' => array(
+		$controller = new MockPostsController(\compact('request') + array('classes' => array(
 			'media' => 'lithium\tests\mocks\action\MockMediaClass'
 		)));
 

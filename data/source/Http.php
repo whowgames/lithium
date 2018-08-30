@@ -115,17 +115,17 @@ class Http extends \lithium\data\Source {
 	 */
 	public function __call($method, $params) {
 		if (!isset($this->_methods[$method])) {
-			if (method_exists($this->connection, $method)) {
+			if (\method_exists($this->connection, $method)) {
 				return $this->connection->invokeMethod($method, $params);
 			}
 			$this->_methods[$method] = array('path' => "/{$method}");
 		}
 		$params += array(array(), array());
 
-		if (!is_object($params[0])) {
+		if (!\is_object($params[0])) {
 			$config = (array) $params[0];
 
-			if (count($config) === count($config, COUNT_RECURSIVE)) {
+			if (\count($config) === \count($config, COUNT_RECURSIVE)) {
 				$config = array('data' => $config);
 			}
 			$params[0] = new Query($this->_methods[$method] + $config);
@@ -157,15 +157,15 @@ class Http extends \lithium\data\Source {
 	 * @return result
 	 */
 	public function send($query = null, array $options = array()) {
-		$query = !is_object($query) ? new Query((array) $query) : $query;
+		$query = !\is_object($query) ? new Query((array) $query) : $query;
 		$method = $query->method() ?: "get";
 		$path = $query->path();
 		$data = $query->data();
 		$insert = (array) $options + $data + $query->export($this);
 
-		if (preg_match_all('/\{:(\w+)\}/', $path, $matches)) {
-			$keys = array_flip($matches[1]);
-			$data = array_diff_key($data,  array_flip($matches[1]));
+		if (\preg_match_all('/\{:(\w+)\}/', $path, $matches)) {
+			$keys = \array_flip($matches[1]);
+			$data = \array_diff_key($data,  \array_flip($matches[1]));
 		}
 		$path = StringDeprecated::insert($path, $insert, array('clean' => true));
 		$data += (array) $query->conditions() + array('limit' => $query->limit());
@@ -215,7 +215,7 @@ class Http extends \lithium\data\Source {
 	 * @return array - returns an empty array
 	 */
 	public function describe($entity, $fields = array(), array $meta = array()) {
-		return $this->_instance('schema', compact('fields', 'meta'));
+		return $this->_instance('schema', \compact('fields', 'meta'));
 	}
 
 	/**
@@ -227,7 +227,7 @@ class Http extends \lithium\data\Source {
 	 * @filter
 	 */
 	public function create($query, array $options = array()) {
-		$query = !is_object($query) ? new Query() : $query;
+		$query = !\is_object($query) ? new Query() : $query;
 		$query->method() ?: $query->method("post");
 		$query->path() ?: $query->path("/{:source}");
 		return $this->_filter(__METHOD__, array($query, $options), function($self, $params) {
@@ -245,7 +245,7 @@ class Http extends \lithium\data\Source {
 	 * @filter
 	 */
 	public function read($query, array $options = array()) {
-		$query = !is_object($query) ? new Query() : $query;
+		$query = !\is_object($query) ? new Query() : $query;
 		$query->method() ?: $query->method("get");
 		$query->path() ?: $query->path("/{:source}");
 		return $this->_filter(__METHOD__, array($query, $options), function($self, $params) {
@@ -263,7 +263,7 @@ class Http extends \lithium\data\Source {
 	 * @filter
 	 */
 	public function update($query, array $options = array()) {
-		$query = !is_object($query) ? new Query() : $query;
+		$query = !\is_object($query) ? new Query() : $query;
 		$query->method() ?: $query->method("put");
 		$query->path() ?: $query->path("/{:source}/{:id}");
 		return $this->_filter(__METHOD__, array($query, $options), function($self, $params) {
@@ -281,7 +281,7 @@ class Http extends \lithium\data\Source {
 	 * @filter
 	 */
 	public function delete($query, array $options = array()) {
-		$query = !is_object($query) ? new Query() : $query;
+		$query = !\is_object($query) ? new Query() : $query;
 		$query->method() ?: $query->method("delete");
 		$query->path() ?: $query->path("/{:source}/{:id}");
 		return $this->_filter(__METHOD__, array($query, $options), function($self, $params) {
@@ -302,7 +302,7 @@ class Http extends \lithium\data\Source {
 	 */
 	public function relationship($class, $type, $name, array $options = array()) {
 		if (isset($this->_classes['relationship'])) {
-			return $this->_instance('relationship', compact('type', 'name') + $options);
+			return $this->_instance('relationship', \compact('type', 'name') + $options);
 		}
 		return null;
 	}

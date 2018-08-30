@@ -47,7 +47,7 @@ class DocumentSet extends \lithium\data\Collection {
 	 * @return boolean
 	 */
 	public function modified() {
-		if (count($this->_original) !== count($this->_data)) {
+		if (\count($this->_original) !== \count($this->_data)) {
 			return true;
 		}
 		foreach ($this->_original as $key => $doc) {
@@ -58,12 +58,12 @@ class DocumentSet extends \lithium\data\Collection {
 			if ($doc !== $updated) {
 				return true;
 			}
-			if (!is_object($updated) || !method_exists($updated, 'modified')) {
+			if (!\is_object($updated) || !\method_exists($updated, 'modified')) {
 				continue;
 			}
 			$modified = $this->_data[$key]->modified();
 
-			if (in_array(true, $modified)) {
+			if (\in_array(true, $modified)) {
 				return true;
 			}
 		}
@@ -87,8 +87,8 @@ class DocumentSet extends \lithium\data\Collection {
 		return array(
 			'exists' => $this->_exists,
 			'key'  => $this->_pathKey,
-			'data' => array_values($this->_original),
-			'update' => array_values($this->_data)
+			'data' => \array_values($this->_original),
+			'update' => \array_values($this->_data)
 		);
 	}
 
@@ -112,19 +112,19 @@ class DocumentSet extends \lithium\data\Collection {
 		if ($schema = $this->schema()) {
 			$model = $this->_model;
 			$pathKey = $this->_pathKey;
-			$options =  compact('model', 'pathKey') + $options;
-			$data = !is_object($data) ? $schema->cast($this, $offset, $data, $options) : $data;
+			$options =  \compact('model', 'pathKey') + $options;
+			$data = !\is_object($data) ? $schema->cast($this, $offset, $data, $options) : $data;
 			$key = $model && $data instanceof Document ? $model::key($data) : $offset;
 		} else {
 			$key = $offset;
 		}
-		if (is_array($key)) {
-			$key = count($key) === 1 ? current($key) : null;
+		if (\is_array($key)) {
+			$key = \count($key) === 1 ? \current($key) : null;
 		}
-		if (is_object($key)) {
+		if (\is_object($key)) {
 			$key = (string) $key;
 		}
-		if (method_exists($data, 'assignTo')) {
+		if (\method_exists($data, 'assignTo')) {
 			$data->assignTo($this);
 		}
 		$key !== null ? $this->_data[$key] = $data : $this->_data[] = $data;

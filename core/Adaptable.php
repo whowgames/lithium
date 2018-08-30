@@ -73,7 +73,7 @@ class Adaptable extends \lithium\core\StaticObject {
 	 * @return object `Collection` of configurations or void if setting configurations.
 	 */
 	public static function config($config = null) {
-		if ($config && is_array($config)) {
+		if ($config && \is_array($config)) {
 			static::$_configurations = $config;
 			return;
 		}
@@ -81,9 +81,9 @@ class Adaptable extends \lithium\core\StaticObject {
 			return static::_config($config);
 		}
 		$result = array();
-		static::$_configurations = array_filter(static::$_configurations);
+		static::$_configurations = \array_filter(static::$_configurations);
 
-		foreach (array_keys(static::$_configurations) as $key) {
+		foreach (\array_keys(static::$_configurations) as $key) {
 			$result[$key] = static::_config($key);
 		}
 		return $result;
@@ -141,7 +141,7 @@ class Adaptable extends \lithium\core\StaticObject {
 		$stack = new SplDoublyLinkedList();
 
 		foreach ($config['strategies'] as $key => $strategy) {
-			if (!is_array($strategy)) {
+			if (!\is_array($strategy)) {
 				$name = $strategy;
 				$class = static::_strategy($name, static::$_strategies);
 				$stack->push(new $class());
@@ -171,7 +171,7 @@ class Adaptable extends \lithium\core\StaticObject {
 		if (!$strategies = static::strategies($name)) {
 			return $data;
 		}
-		if (!count($strategies)) {
+		if (!\count($strategies)) {
 			return $data;
 		}
 
@@ -181,7 +181,7 @@ class Adaptable extends \lithium\core\StaticObject {
 		}
 
 		foreach ($strategies as $strategy) {
-			if (method_exists($strategy, $method)) {
+			if (\method_exists($strategy, $method)) {
 				$data = $strategy->{$method}($data, $options);
 			}
 		}
@@ -214,7 +214,7 @@ class Adaptable extends \lithium\core\StaticObject {
 	 * @filter This method can be filtered.
 	 */
 	protected static function _initAdapter($class, array $config) {
-		return static::_filter(__FUNCTION__, compact('class', 'config'), function($self, $params) {
+		return static::_filter(__FUNCTION__, \compact('class', 'config'), function($self, $params) {
 			return new $params['class']($params['config']);
 		});
 	}
@@ -229,11 +229,11 @@ class Adaptable extends \lithium\core\StaticObject {
 	 */
 	protected static function _class($config, $paths = array()) {
 		if (!$name = $config['adapter']) {
-			$self = get_called_class();
+			$self = \get_called_class();
 			throw new ConfigException("No adapter set for configuration in class `{$self}`.");
 		}
 		if (!$class = static::_locate($paths, $name)) {
-			$self = get_called_class();
+			$self = \get_called_class();
 			throw new ConfigException("Could not find adapter `{$name}` in class `{$self}`.");
 		}
 		return $class;
@@ -249,11 +249,11 @@ class Adaptable extends \lithium\core\StaticObject {
 	 */
 	protected static function _strategy($name, $paths = array()) {
 		if (!$name) {
-			$self = get_called_class();
+			$self = \get_called_class();
 			throw new ConfigException("No strategy set for configuration in class `{$self}`.");
 		}
 		if (!$class = static::_locate($paths, $name)) {
-			$self = get_called_class();
+			$self = \get_called_class();
 			throw new ConfigException("Could not find strategy `{$name}` in class `{$self}`.");
 		}
 		return $class;

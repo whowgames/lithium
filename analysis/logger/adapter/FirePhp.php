@@ -182,10 +182,10 @@ class FirePhp extends \lithium\core\DynamicObject {
 		$key = 'X-Wf-1-1-1-' . $this->_counter++;
 
 		$content = array(array('Type' => $this->_levels[$type]), $message);
-		$content = json_encode($content);
-		$content = strlen($content) . '|' . $content . '|';
+		$content = \json_encode($content);
+		$content = \strlen($content) . '|' . $content . '|';
 
-		return compact('key', 'content');
+		return \compact('key', 'content');
 	}
 }
 

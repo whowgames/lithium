@@ -103,16 +103,16 @@ class Command extends \lithium\core\DynamicObject {
 		parent::_init();
 		$this->request = $this->_config['request'];
 
-		if (!is_object($this->request) || !$this->request->params) {
+		if (!\is_object($this->request) || !$this->request->params) {
 			return;
 		}
 		$this->response = $this->_config['response'];
 
-		if (!is_object($this->response)) {
+		if (!\is_object($this->response)) {
 			$this->response = $this->_instance('response', $this->response);
 		}
 		$default = array('command' => null, 'action' => null, 'args' => null);
-		$params = array_diff_key((array) $this->request->params, $default);
+		$params = \array_diff_key((array) $this->request->params, $default);
 
 		foreach ($params as $key => $param) {
 			$this->{$key} = $param;
@@ -135,7 +135,7 @@ class Command extends \lithium\core\DynamicObject {
 			$this->response->status = 1;
 			$result = $this->invokeMethod($action, $args);
 
-			if (is_int($result)) {
+			if (\is_int($result)) {
 				$this->response->status = $result;
 			} elseif ($result || $result === null) {
 				$this->response->status = 0;
@@ -161,7 +161,7 @@ class Command extends \lithium\core\DynamicObject {
 			'response' => $this->response,
 			'classes' => $this->_classes
 		));
-		return $help->run(get_class($this));
+		return $help->run(\get_class($this));
 	}
 
 	/**
@@ -213,17 +213,17 @@ class Command extends \lithium\core\DynamicObject {
 		$options += $defaults;
 		$choices = null;
 
-		if (is_array($options['choices'])) {
-			$choices = '(' . implode('/', $options['choices']) . ')';
+		if (\is_array($options['choices'])) {
+			$choices = '(' . \implode('/', $options['choices']) . ')';
 		}
 		$default = $options['default'] ? "[{$options['default']}] " : '';
 
 		do {
 			$this->out("{$prompt} {$choices} \n {$default}> ", false);
-			$result = trim($this->request->input());
+			$result = \trim($this->request->input());
 		} while (
 			!empty($options['choices']) &&
-			!in_array($result, $options['choices'], true) &&
+			!\in_array($result, $options['choices'], true) &&
 			(empty($options['quit']) || $result !== $options['quit']) &&
 			(!$options['default'] || $result !== '')
 		);
@@ -258,7 +258,7 @@ class Command extends \lithium\core\DynamicObject {
 	 */
 	public function header($text, $line = null) {
 		if (!$line) {
-			$line = strlen($text);
+			$line = \strlen($text);
 		}
 		$this->hr($line);
 		$this->out($text, 'heading');
@@ -308,18 +308,18 @@ class Command extends \lithium\core\DynamicObject {
 	public function columns($rows, $options = array()) {
 		$defaults = array('separator' => "\t", "error" => false);
 		$options += $defaults;
-		$lengths = array_reduce($rows, function($columns, $row) {
+		$lengths = \array_reduce($rows, function($columns, $row) {
 			foreach ((array) $row as $key => $val) {
-				if (!isset($columns[$key]) || strlen($val) > $columns[$key]) {
-					$columns[$key] = strlen($val);
+				if (!isset($columns[$key]) || \strlen($val) > $columns[$key]) {
+					$columns[$key] = \strlen($val);
 				}
 			}
 			return $columns;
 		});
-		$rows = array_reduce($rows, function($rows, $row) use ($lengths, $options) {
+		$rows = \array_reduce($rows, function($rows, $row) use ($lengths, $options) {
 			$text = '';
 			foreach ((array) $row as $key => $val) {
-				$text = $text . str_pad($val, $lengths[$key]) . $options['separator'];
+				$text = $text . \str_pad($val, $lengths[$key]) . $options['separator'];
 			}
 			$rows[] = $text;
 			return $rows;
@@ -338,7 +338,7 @@ class Command extends \lithium\core\DynamicObject {
 	 * @return string
 	 */
 	public function nl($number = 1) {
-		return str_repeat("\n", $number);
+		return \str_repeat("\n", $number);
 	}
 
 	/**
@@ -349,7 +349,7 @@ class Command extends \lithium\core\DynamicObject {
 	 * @return integer
 	 */
 	public function hr($length = 80, $newlines = 1) {
-		return $this->out(str_repeat('-', $length), $newlines);
+		return $this->out(\str_repeat('-', $length), $newlines);
 	}
 
 	/**
@@ -358,7 +358,7 @@ class Command extends \lithium\core\DynamicObject {
 	 * @return void
 	 */
 	public function clear() {
-		passthru(strtoupper(substr(PHP_OS, 0, 3)) == 'WIN' ? 'cls' : 'clear');
+		\passthru(\strtoupper(\substr(PHP_OS, 0, 3)) == 'WIN' ? 'cls' : 'clear');
 	}
 
 	/**
@@ -391,10 +391,10 @@ class Command extends \lithium\core\DynamicObject {
 	protected function _response($type, $string, $options) {
 		$defaults = array('nl' => 1, 'style' => null);
 
-		if (!is_array($options)) {
-			if (!$options || is_int($options)) {
+		if (!\is_array($options)) {
+			if (!$options || \is_int($options)) {
 				$options = array('nl' => $options);
-			} elseif (is_string($options)) {
+			} elseif (\is_string($options)) {
 				$options = array('style' => $options);
 			} else {
 				$options = array();
@@ -402,14 +402,14 @@ class Command extends \lithium\core\DynamicObject {
 		}
 		$options += $defaults;
 
-		if (is_array($string)) {
+		if (\is_array($string)) {
 			$method = ($type == 'error' ? $type : 'out');
 			foreach ($string as $out) {
 				$this->{$method}($out, $options);
 			}
 			return;
 		}
-		extract($options);
+		\extract($options);
 
 		if ($style !== null && !$this->plain) {
 			$string = "{:{$style}}{$string}{:end}";

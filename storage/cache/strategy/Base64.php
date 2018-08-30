@@ -23,7 +23,7 @@ class Base64 extends \lithium\core\DynamicObject {
 	 * @return string Serialized data.
 	 */
 	public function write($data) {
-		return base64_encode($data);
+		return \base64_encode($data);
 	}
 
 	/**
@@ -36,7 +36,7 @@ class Base64 extends \lithium\core\DynamicObject {
 	 * @return mixed Result of unserialization.
 	 */
 	public function read($data) {
-		return base64_decode($data);
+		return \base64_decode($data);
 	}
 }
 

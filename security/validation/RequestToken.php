@@ -109,7 +109,7 @@ class RequestToken {
 		$session = static::$_classes['session'];
 
 		if ($options['regenerate'] || !($token = $session::read($options['sessionKey']))) {
-			$token = StringDeprecated::hash(uniqid(microtime(true)), $options);
+			$token = StringDeprecated::hash(\uniqid(\microtime(true)), $options);
 			$session::write($options['sessionKey'], $token);
 		}
 		return $token;
@@ -161,7 +161,7 @@ class RequestToken {
 		$options += $defaults;
 		$session = static::$_classes['session'];
 
-		if (is_object($key) && isset($key->data)) {
+		if (\is_object($key) && isset($key->data)) {
 			$result = Set::extract($key->data, '/security/token');
 			$key = $result ? $result[0] : null;
 		}

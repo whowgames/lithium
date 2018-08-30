@@ -39,14 +39,14 @@ class Affected extends \lithium\test\Filter {
 		$testsClasses = $tests->map('get_class', array('collect' => false));
 
 		foreach ($tests as $test) {
-			$affected = array_merge($affected, self::_affected($test->subject()));
+			$affected = \array_merge($affected, self::_affected($test->subject()));
 		}
-		$affected = array_unique($affected);
+		$affected = \array_unique($affected);
 
 		foreach ($affected as $class) {
 			$test = Unit::get($class);
 
-			if ($test && !in_array($test, $testsClasses)) {
+			if ($test && !\in_array($test, $testsClasses)) {
 				$tests[] = new $test();
 			}
 			$report->collect(__CLASS__, array($class => $test));
@@ -81,8 +81,8 @@ class Affected extends \lithium\test\Filter {
 	 */
 	protected static function _affected($dependency, $exclude = null) {
 		$exclude = $exclude ?: '/(tests|webroot|resources|libraries|plugins)/';
-		$classes = Libraries::find(true, compact('exclude') + array('recursive' => true));
-		$dependency = ltrim($dependency, '\\');
+		$classes = Libraries::find(true, \compact('exclude') + array('recursive' => true));
+		$dependency = \ltrim($dependency, '\\');
 		$affected = array();
 
 		foreach ($classes as $class) {
@@ -90,11 +90,11 @@ class Affected extends \lithium\test\Filter {
 				$depends = static::$_cachedDepends[$class];
 			} else {
 				$depends = Inspector::dependencies($class);
-				$depends = array_map(function($c) { return ltrim($c, '\\'); }, $depends);
+				$depends = \array_map(function($c) { return \ltrim($c, '\\'); }, $depends);
 				static::$_cachedDepends[$class] = $depends;
 			}
 
-			if (in_array($dependency, $depends)) {
+			if (\in_array($dependency, $depends)) {
 				$affected[] = $class;
 			}
 		}

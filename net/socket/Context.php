@@ -56,11 +56,11 @@ class Context extends \lithium\net\Socket {
 		$url = "{$config['scheme']}://{$config['host']}:{$config['port']}";
 		$context = array($config['scheme'] => array('timeout' => $this->_timeout));
 
-		if (is_object($config['message'])) {
+		if (\is_object($config['message'])) {
 			$url = $config['message']->to('url');
 			$context = $config['message']->to('context', array('timeout' => $this->_timeout));
 		}
-		$this->_resource = fopen($url, $config['mode'], false, stream_context_create($context));
+		$this->_resource = \fopen($url, $config['mode'], false, \stream_context_create($context));
 		return $this->_resource;
 	}
 
@@ -70,11 +70,11 @@ class Context extends \lithium\net\Socket {
 	 * @return boolean Success.
 	 */
 	public function close() {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return true;
 		}
-		fclose($this->_resource);
-		if (is_resource($this->_resource)) {
+		\fclose($this->_resource);
+		if (\is_resource($this->_resource)) {
 			$this->close();
 		}
 		return true;
@@ -86,10 +86,10 @@ class Context extends \lithium\net\Socket {
 	 * @return boolean Success.
 	 */
 	public function eof() {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return true;
 		}
-		return feof($this->_resource);
+		return \feof($this->_resource);
 	}
 
 	/**
@@ -98,16 +98,16 @@ class Context extends \lithium\net\Socket {
 	 * @return void
 	 */
 	public function read() {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return false;
 		}
-		$meta = stream_get_meta_data($this->_resource);
+		$meta = \stream_get_meta_data($this->_resource);
 		if (isset($meta['wrapper_data'])) {
-			$headers = join("\r\n", $meta['wrapper_data']) . "\r\n\r\n";
+			$headers = \join("\r\n", $meta['wrapper_data']) . "\r\n\r\n";
 		} else {
 			$headers = null;
 		}
-		return $headers . stream_get_contents($this->_resource);
+		return $headers . \stream_get_contents($this->_resource);
 	}
 
 	/**
@@ -117,13 +117,13 @@ class Context extends \lithium\net\Socket {
 	 * @return boolean Success
 	 */
 	public function write($data = null) {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return false;
 		}
-		if (!is_object($data)) {
+		if (!\is_object($data)) {
 			$data = $this->_instance($this->_classes['request'], (array) $data + $this->_config);
 		}
-		return stream_context_set_option(
+		return \stream_context_set_option(
 			$this->_resource, $data->to('context', array('timeout' => $this->_timeout))
 		);
 	}

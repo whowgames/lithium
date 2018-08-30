@@ -36,7 +36,7 @@ class Coverage extends \lithium\test\Filter {
 		$defaults = array('method' => 'run');
 		$options += $defaults;
 
-		if (!function_exists('xdebug_start_code_coverage')) {
+		if (!\function_exists('xdebug_start_code_coverage')) {
 			$msg = "Xdebug not installed. Please install Xdebug before running code coverage.";
 			throw new RuntimeException($msg);
 		}
@@ -63,11 +63,11 @@ class Coverage extends \lithium\test\Filter {
 	 */
 	public static function analyze($report, array $classes = array()) {
 		$data = static::collect($report->results['filters'][__CLASS__]);
-		$classes = $classes ?: array_filter(get_declared_classes(), function($class) use ($data) {
+		$classes = $classes ?: \array_filter(\get_declared_classes(), function($class) use ($data) {
 			$unit = 'lithium\test\Unit';
-			return (!(is_subclass_of($class, $unit)) || array_key_exists($class, $data));
+			return (!(\is_subclass_of($class, $unit)) || \array_key_exists($class, $data));
 		});
-		$classes = array_values(array_intersect((array) $classes, array_keys($data)));
+		$classes = \array_values(\array_intersect((array) $classes, \array_keys($data)));
 		$densities = $result = array();
 
 		foreach ($classes as $class) {
@@ -77,7 +77,7 @@ class Coverage extends \lithium\test\Filter {
 		$executableLines = array();
 
 		if ($classes) {
-			$executableLines = array_combine($classes, array_map(
+			$executableLines = \array_combine($classes, \array_map(
 				function($cls) { return Inspector::executable($cls, array('public' => false)); },
 				$classes
 			));
@@ -85,14 +85,14 @@ class Coverage extends \lithium\test\Filter {
 
 		foreach ($densities as $class => $density) {
 			$executable = $executableLines[$class];
-			$covered = array_intersect(array_keys($density), $executable);
-			$uncovered = array_diff($executable, $covered);
-			if (count($executable)) {
-				$percentage = round(count($covered) / (count($executable) ?: 1), 4) * 100;
+			$covered = \array_intersect(\array_keys($density), $executable);
+			$uncovered = \array_diff($executable, $covered);
+			if (\count($executable)) {
+				$percentage = \round(\count($covered) / (\count($executable) ?: 1), 4) * 100;
 			} else {
 				$percentage = 100;
 			}
-			$result[$class] = compact('class', 'executable', 'covered', 'uncovered', 'percentage');
+			$result[$class] = \compact('class', 'executable', 'covered', 'uncovered', 'percentage');
 		}
 
 		$result = static::collectLines($result);
@@ -114,13 +114,13 @@ class Coverage extends \lithium\test\Filter {
 			$out = array();
 			$file = Libraries::path($class);
 
-			$aggregate['covered'] += count($coverage['covered']);
-			$aggregate['executable'] += count($coverage['executable']);
+			$aggregate['covered'] += \count($coverage['covered']);
+			$aggregate['executable'] += \count($coverage['executable']);
 
-			$uncovered = array_flip($coverage['uncovered']);
-			$contents = explode("\n", file_get_contents($file));
-			array_unshift($contents, ' ');
-			$count = count($contents);
+			$uncovered = \array_flip($coverage['uncovered']);
+			$contents = \explode("\n", \file_get_contents($file));
+			\array_unshift($contents, ' ');
+			$count = \count($contents);
 
 			for ($i = 1; $i <= $count; $i++) {
 				if (isset($uncovered[$i])) {
@@ -177,7 +177,7 @@ class Coverage extends \lithium\test\Filter {
 		$packagedResults = array();
 
 		foreach ($filterResults as $results) {
-			$class = key($results);
+			$class = \key($results);
 			$results = $results[$class];
 			foreach ($results as $file => $lines) {
 				unset($results[$file][0]);
@@ -215,7 +215,7 @@ class Coverage extends \lithium\test\Filter {
 		foreach ($runs as $run) {
 			foreach ($run as $file => $coverage) {
 				if ($classMap) {
-					if (!$class = array_search($file, $classMap)) {
+					if (!$class = \array_search($file, $classMap)) {
 						continue;
 					}
 					$file = $class;
@@ -223,7 +223,7 @@ class Coverage extends \lithium\test\Filter {
 				if (!isset($results[$file])) {
 					$results[$file] = array();
 				}
-				$coverage = array_filter($coverage, function($line) { return ($line === 1); });
+				$coverage = \array_filter($coverage, function($line) { return ($line === 1); });
 
 				foreach ($coverage as $line => $isCovered) {
 					if (!isset($results[$file][$line])) {

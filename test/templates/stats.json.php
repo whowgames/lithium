@@ -1,1 +1,1 @@
-<?php echo json_encode(compact('count', 'stats', 'filters')); ?>
+<?php echo \json_encode(\compact('count', 'stats', 'filters')); ?>
