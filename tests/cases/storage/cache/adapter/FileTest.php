@@ -36,19 +36,19 @@ class FileTest extends \lithium\test\Unit {
 	}
 
 	public function setUp() {
-		$this->_hasEmpty = file_exists(Libraries::get(true, 'resources') . "/tmp/cache/empty");
+		$this->_hasEmpty = \file_exists(Libraries::get(true, 'resources') . "/tmp/cache/empty");
 		$this->File = new File();
 	}
 
 	public function tearDown() {
-		$resources = realpath(Libraries::get(true, 'resources'));
+		$resources = \realpath(Libraries::get(true, 'resources'));
 		$paths = array("{$resources}/tmp/cache", "{$resources}/tmp/cache/templates");
 
 		if ($this->_hasEmpty) {
 			foreach ($paths as $path) {
-				$path = realpath($path);
-				if (is_dir($path) && is_writable($path)) {
-					touch("{$resources}/empty");
+				$path = \realpath($path);
+				if (\is_dir($path) && \is_writable($path)) {
+					\touch("{$resources}/empty");
 				}
 			}
 		}
@@ -63,30 +63,30 @@ class FileTest extends \lithium\test\Unit {
 	public function testWrite() {
 		$key = 'key';
 		$data = 'data';
-		$time = time();
+		$time = \time();
 		$expiry = "@{$time} +1 minute";
 		$time = $time + 60;
 
 		$closure = $this->File->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->File, $params, null);
 		$expected = 25;
 		$this->assertEqual($expected, $result);
 
 		$this->assertFileExists(Libraries::get(true, 'resources') . "/tmp/cache/{$key}");
 		$this->assertEqual(
-			file_get_contents(Libraries::get(true, 'resources') . "/tmp/cache/{$key}"),
+			\file_get_contents(Libraries::get(true, 'resources') . "/tmp/cache/{$key}"),
 			"{:expiry:$time}\ndata"
 		);
 
-		$this->assertTrue(unlink(Libraries::get(true, 'resources') . "/tmp/cache/{$key}"));
+		$this->assertTrue(\unlink(Libraries::get(true, 'resources') . "/tmp/cache/{$key}"));
 		$this->assertFileNotExists(Libraries::get(true, 'resources') . "/tmp/cache/{$key}");
 	}
 
 	public function testWriteDefaultCacheExpiry() {
-		$time = time();
+		$time = \time();
 		$file = new File(array('expiry' => "@{$time} +1 minute"));
 		$key = 'default_keykey';
 		$data = 'data';
@@ -95,40 +95,40 @@ class FileTest extends \lithium\test\Unit {
 		$closure = $file->write($key, $data);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data');
+		$params = \compact('key', 'data');
 		$result = $closure($file, $params, null);
 		$expected = 25;
 		$this->assertEqual($expected, $result);
 
 		$this->assertFileExists(Libraries::get(true, 'resources') . "/tmp/cache/{$key}");
 		$this->assertEqual(
-			file_get_contents(Libraries::get(true, 'resources') . "/tmp/cache/{$key}"),
+			\file_get_contents(Libraries::get(true, 'resources') . "/tmp/cache/{$key}"),
 			"{:expiry:{$time}}\ndata"
 		);
 
-		$this->assertTrue(unlink(Libraries::get(true, 'resources') . "/tmp/cache/{$key}"));
+		$this->assertTrue(\unlink(Libraries::get(true, 'resources') . "/tmp/cache/{$key}"));
 		$this->assertFileNotExists(Libraries::get(true, 'resources') . "/tmp/cache/{$key}");
 	}
 
 	public function testRead() {
 		$key = 'key';
-		$time = time() + 60;
+		$time = \time() + 60;
 
 		$closure = $this->File->read($key);
 		$this->assertInternalType('callable', $closure);
 
 		$path = Libraries::get(true, 'resources') . "/tmp/cache/{$key}";
-		file_put_contents($path, "{:expiry:$time}\ndata");
+		\file_put_contents($path, "{:expiry:$time}\ndata");
 		$this->assertFileExists($path);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->File, $params, null);
 		$this->assertEqual('data', $result);
 
-		unlink($path);
+		\unlink($path);
 
 		$key = 'non_existent';
-		$params = compact('key');
+		$params = \compact('key');
 		$closure = $this->File->read($key);
 		$this->assertInternalType('callable', $closure);
 
@@ -138,51 +138,51 @@ class FileTest extends \lithium\test\Unit {
 
 	public function testExpiredRead() {
 		$key = 'expired_key';
-		$time = time() + 1;
+		$time = \time() + 1;
 
 		$closure = $this->File->read($key);
 		$this->assertInternalType('callable', $closure);
 		$path = Libraries::get(true, 'resources') . "/tmp/cache/{$key}";
 
-		file_put_contents($path, "{:expiry:$time}\ndata");
+		\file_put_contents($path, "{:expiry:$time}\ndata");
 		$this->assertFileExists($path);
 
-		sleep(2);
-		$params = compact('key');
+		\sleep(2);
+		$params = \compact('key');
 		$this->assertFalse($closure($this->File, $params, null));
 
 	}
 
 	public function testDelete() {
 		$key = 'key_to_delete';
-		$time = time() + 1;
+		$time = \time() + 1;
 		$path = Libraries::get(true, 'resources') . "/tmp/cache/{$key}";
 
-		file_put_contents($path, "{:expiry:$time}\ndata");
+		\file_put_contents($path, "{:expiry:$time}\ndata");
 		$this->assertFileExists($path);
 
 		$closure = $this->File->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$this->assertTrue($closure($this->File, $params, null));
 
 		$key = 'non_existent';
-		$params = compact('key');
+		$params = \compact('key');
 		$this->assertFalse($closure($this->File, $params, null));
 	}
 
 	public function testClear() {
 		$key = 'key_to_clear';
-		$time = time() + 1;
+		$time = \time() + 1;
 		$path = Libraries::get(true, 'resources') . "/tmp/cache/{$key}";
-		file_put_contents($path, "{:expiry:$time}\ndata");
+		\file_put_contents($path, "{:expiry:$time}\ndata");
 
 		$result = $this->File->clear();
 		$this->assertTrue($result);
 		$this->assertFileNotExists($path);
 
-		$result = touch(Libraries::get(true, 'resources') . "/tmp/cache/empty");
+		$result = \touch(Libraries::get(true, 'resources') . "/tmp/cache/empty");
 		$this->assertTrue($result);
 	}
 

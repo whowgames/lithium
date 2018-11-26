@@ -53,10 +53,10 @@ class ExporterTest extends \lithium\test\Unit {
 	public function setUp() {
 		$this->_handlers = array(
 			'id' => function($v) {
-				return is_string($v) && preg_match('/^[0-9a-f]{24}$/', $v) ? new MongoId($v) : $v;
+				return \is_string($v) && \preg_match('/^[0-9a-f]{24}$/', $v) ? new MongoId($v) : $v;
 			},
 			'date' => function($v) {
-				$v = is_numeric($v) ? intval($v) : strtotime($v);
+				$v = \is_numeric($v) ? \intval($v) : \strtotime($v);
 				return !$v ? new MongoDate() : new MongoDate($v);
 			},
 			'regex'   => function($v) { return new MongoRegex($v); },
@@ -83,7 +83,7 @@ class ExporterTest extends \lithium\test\Unit {
 	}
 
 	public function testCreateWithFixedData() {
-		$time = time();
+		$time = \time();
 		$doc = new Document(array('exists' => false, 'data' => array(
 			'_id' => new MongoId(),
 			'created' => new MongoDate($time),
@@ -127,7 +127,7 @@ class ExporterTest extends \lithium\test\Unit {
 			'deeply' => array('nested' => 'object', 'nested2' => 'object2')
 		);
 		$result = Exporter::get('create', $doc->export());
-		$this->assertEqual(array('create'), array_keys($result));
+		$this->assertEqual(array('create'), \array_keys($result));
 		$this->assertEqual($expected, $result['create']);
 	}
 
@@ -175,7 +175,7 @@ class ExporterTest extends \lithium\test\Unit {
 			'deeply' => array('type' => 'object', 'array' => true),
 			'foo' => array('type' => 'string')
 		)));
-		$config = compact('model', 'schema', 'exists');
+		$config = \compact('model', 'schema', 'exists');
 
 		$doc = new Document($config + array('data' => array(
 			'numbers' => new DocumentSet($config + array(
@@ -238,7 +238,7 @@ class ExporterTest extends \lithium\test\Unit {
 		$doc->objects[] = array('foo' => 'dob');
 
 		$exist = $doc->objects->find(
-			function ($data) { return (strcmp($data->foo, 'dob') === 0); },
+			function ($data) { return (\strcmp($data->foo, 'dob') === 0); },
 			array('collect' => false)
 		);
 		$this->assertTrue(!empty($exist));
@@ -306,7 +306,7 @@ class ExporterTest extends \lithium\test\Unit {
 	public function testNestedObjectCasting() {
 		$model = $this->_model;
 		$data = array('notifications' => array('foo' => '', 'bar' => '1', 'baz' => 0, 'dib' => 42));
-		$result = $model::schema()->cast(null, null, $data, compact('model'));
+		$result = $model::schema()->cast(null, null, $data, \compact('model'));
 
 		$this->assertIdentical(false, $result['notifications']->foo);
 		$this->assertIdentical(true, $result['notifications']->bar);
@@ -320,7 +320,7 @@ class ExporterTest extends \lithium\test\Unit {
 	 * @return void
 	 */
 	public function testTypeCasting() {
-		$time = time();
+		$time = \time();
 		$data = array(
 			'_id' => '4c8f86167675abfabd970300',
 			'title' => 'Foo',
@@ -331,16 +331,16 @@ class ExporterTest extends \lithium\test\Unit {
 			'empty_array' => array(),
 			'authors' => '4c8f86167675abfabdb00300',
 			'created' => $time,
-			'modified' => date('Y-m-d H:i:s', $time),
+			'modified' => \date('Y-m-d H:i:s', $time),
 			'rank_count' => '45',
 			'rank' => '3.45688'
 		);
 		$model = $this->_model;
 		$handlers = $this->_handlers;
-		$options = compact('model', 'handlers');
+		$options = \compact('model', 'handlers');
 		$schema = new Schema(array('fields' => $this->_schema));
 		$result = $schema->cast(null, null, $data, $options);
-		$this->assertEqual(array_keys($data), array_keys($result->data()));
+		$this->assertEqual(\array_keys($data), \array_keys($result->data()));
 		$this->assertInstanceOf('MongoId', $result->_id);
 		$this->assertEqual('4c8f86167675abfabd970300', (string) $result->_id);
 
@@ -378,7 +378,7 @@ class ExporterTest extends \lithium\test\Unit {
 	 * @return void
 	 */
 	public function testTypeCastingSubObjectArrays() {
-		$time = time();
+		$time = \time();
 		$data = array(
 			'_id' => '4c8f86167675abfabd970300',
 			'accounts' => array(
@@ -396,11 +396,11 @@ class ExporterTest extends \lithium\test\Unit {
 		);
 		$model = $this->_model;
 		$handlers = $this->_handlers;
-		$options = compact('model', 'handlers');
+		$options = \compact('model', 'handlers');
 		$schema = new Schema(array('fields' => $this->_schema));
 		$result = $schema->cast(null, null, $data, $options);
 
-		$this->assertEqual(array_keys($data), array_keys($result->data()));
+		$this->assertEqual(\array_keys($data), \array_keys($result->data()));
 		$this->assertInstanceOf('MongoId', $result->_id);
 		$this->assertEqual('4c8f86167675abfabd970300', (string) $result->_id);
 
@@ -428,7 +428,7 @@ class ExporterTest extends \lithium\test\Unit {
 			'obj.foo' => array('type' => 'string'),
 			'obj.bar' => array('type' => 'string')
 		));
-		$doc = new Document(compact('model'));
+		$doc = new Document(\compact('model'));
 		$doc->list[] = array('foo' => '!!', 'bar' => '??');
 
 		$data = array('list' => array(array('foo' => '!!', 'bar' => '??')));
@@ -440,7 +440,7 @@ class ExporterTest extends \lithium\test\Unit {
 		$result = Exporter::get('update', $doc->export());
 		$this->assertEqual($data, $result['update']);
 
-		$doc = new Document(compact('model'));
+		$doc = new Document(\compact('model'));
 		$doc->list = array();
 		$doc->list[] = array('foo' => '!!', 'bar' => '??');
 
@@ -455,7 +455,7 @@ class ExporterTest extends \lithium\test\Unit {
 	}
 
 	public function testArrayConversion() {
-		$time = time();
+		$time = \time();
 		$doc = new Document(array('data' => array(
 			'_id' => new MongoId(),
 			'date' => new MongoDate($time)
@@ -502,13 +502,13 @@ class ExporterTest extends \lithium\test\Unit {
 			'bar' => array('type' => 'boolean')
 		));
 		$data = array('sub' => array('foo' => 0), 'bar' => 1);
-		$doc = new Document(compact('data', 'model'));
+		$doc = new Document(\compact('data', 'model'));
 
 		$this->assertIdentical(true, $doc->bar);
 		$this->assertIdentical(false, $doc->sub->foo);
 
 		$data = array('sub.foo' => '1', 'bar' => '0');
-		$doc = new Document(compact('data', 'model', 'schema'));
+		$doc = new Document(\compact('data', 'model', 'schema'));
 
 		$this->assertIdentical(false, $doc->bar);
 		$this->assertIdentical(true, $doc->sub->foo);
@@ -567,12 +567,12 @@ class ExporterTest extends \lithium\test\Unit {
 			'accounts' => array('type' => 'object', 'array' => true),
 			'accounts.name' => array('type' => 'string')
 		));
-		$doc = new Document(compact('model'));
+		$doc = new Document(\compact('model'));
 		$this->assertEqual(array(), $doc->accounts->data());
 		$doc->sync();
 
 		$data = array('name' => 'New account');
-		$doc->accounts[] = new Document(compact('data'));
+		$doc->accounts[] = new Document(\compact('data'));
 
 		$result = Exporter::get('update', $doc->export());
 		$expected = array('update' => array('accounts.0' => $data));
@@ -617,7 +617,7 @@ class ExporterTest extends \lithium\test\Unit {
 
 		$model = $this->_model;
 		$handlers = $this->_handlers;
-		$options = compact('model', 'handlers');
+		$options = \compact('model', 'handlers');
 
 		$schema = new Schema(array('fields' => array(
 			'_id' => array('type' => 'MongoId'),
@@ -707,7 +707,7 @@ class ExporterTest extends \lithium\test\Unit {
 
 		$model = $this->_model;
 		$handlers = $this->_handlers;
-		$options = compact('model', 'handlers');
+		$options = \compact('model', 'handlers');
 		$schema = new Schema(array('fields' => $this->_schema));
 		$set = $schema->cast(null, null, $data, $options);
 
@@ -761,7 +761,7 @@ class ExporterTest extends \lithium\test\Unit {
 
 		$model = $this->_model;
 		$handlers = $this->_handlers;
-		$options = compact('model', 'handlers');
+		$options = \compact('model', 'handlers');
 		$schema = new Schema(array('fields' => $this->_schema));
 		$set = $schema->cast(null, null, $data, $options);
 
@@ -820,7 +820,7 @@ class ExporterTest extends \lithium\test\Unit {
 
 		$model = $this->_model;
 
-		$array = new DocumentSet(compact('model', 'schema', 'data'));
+		$array = new DocumentSet(\compact('model', 'schema', 'data'));
 		$obj = $array['4c8f86167675abfabd970300']->accounts;
 		$this->assertInstanceOf('lithium\data\collection\DocumentSet', $obj);
 		$obj = $array['4c8f86167675abfabd970301']->accounts;
@@ -871,7 +871,7 @@ class ExporterTest extends \lithium\test\Unit {
 
 		$model = $this->_model;
 
-		$document = new Document(compact('model', 'schema', 'data'));
+		$document = new Document(\compact('model', 'schema', 'data'));
 		$this->assertInstanceOf('lithium\data\collection\DocumentSet', $document->accounts);
 
 		$export = $document->export();
@@ -899,7 +899,7 @@ class ExporterTest extends \lithium\test\Unit {
 
 		$model = $this->_model;
 
-		$document = new Document(compact('model', 'schema', 'data'));
+		$document = new Document(\compact('model', 'schema', 'data'));
 		$this->assertInstanceOf('lithium\data\entity\Document', $document->accounts[0]);
 	}
 }

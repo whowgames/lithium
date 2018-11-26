@@ -39,7 +39,7 @@ class ValidatorTest extends \lithium\test\Unit {
 			);
 
 			$isSet = isset($existing[$options['field']]);
-			$inArray = in_array($data,$existing[$options['field']]);
+			$inArray = \in_array($data,$existing[$options['field']]);
 			return isset($options['field']) && $isSet && $inArray;
 		});
 
@@ -76,7 +76,7 @@ class ValidatorTest extends \lithium\test\Unit {
 		Validator::add('foo', '/^foo$/');
 		$this->assertTrue(Validator::isFoo('foo'));
 		$this->assertFalse(Validator::isFoo('bar'));
-		$this->assertTrue(in_array('foo', Validator::rules()));
+		$this->assertTrue(\in_array('foo', Validator::rules()));
 		$this->assertEqual('/^foo$/', Validator::rules('foo'));
 
 		$this->expectException("Rule `bar` is not a validation rule.");
@@ -197,7 +197,7 @@ class ValidatorTest extends \lithium\test\Unit {
 	public function testNotEmptyRule() {
 		$this->assertTrue(Validator::isNotEmpty('abcdefg'));
 		$this->assertTrue(Validator::isNotEmpty('fasdf '));
-		$this->assertTrue(Validator::isNotEmpty('fooo' . chr(243) . 'blabla'));
+		$this->assertTrue(Validator::isNotEmpty('fooo' . \chr(243) . 'blabla'));
 		$this->assertTrue(Validator::isNotEmpty('abçďĕʑʘπй'));
 		$this->assertTrue(Validator::isNotEmpty('José'));
 		$this->assertTrue(Validator::isNotEmpty('é'));
@@ -1088,23 +1088,23 @@ class ValidatorTest extends \lithium\test\Unit {
 		$upper = 10;
 
 		$value = 0;
-		$result = Validator::isInRange($value, null, compact('lower', 'upper'));
+		$result = Validator::isInRange($value, null, \compact('lower', 'upper'));
 		$this->assertFalse($result);
 
 		$value = 1;
-		$result = Validator::isInRange($value, null, compact('lower', 'upper'));
+		$result = Validator::isInRange($value, null, \compact('lower', 'upper'));
 		$this->assertTrue($result);
 
 		$value = 5;
-		$result = Validator::isInRange($value, null, compact('lower', 'upper'));
+		$result = Validator::isInRange($value, null, \compact('lower', 'upper'));
 		$this->assertTrue($result);
 
 		$value = 10;
-		$result = Validator::isInRange($value, null, compact('lower', 'upper'));
+		$result = Validator::isInRange($value, null, \compact('lower', 'upper'));
 		$this->assertTrue($result);
 
 		$value = 11;
-		$result = Validator::isInRange($value, null, compact('lower', 'upper'));
+		$result = Validator::isInRange($value, null, \compact('lower', 'upper'));
 		$this->assertFalse($result);
 
 		$result = Validator::isInRange(-1, null, array('upper' => 1));

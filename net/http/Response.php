@@ -138,14 +138,14 @@ class Response extends \lithium\net\http\Message {
 		if (!$header = $this->headers('Content-Type')) {
 			return;
 		}
-		$header = is_array($header) ? end($header) : $header;
-		preg_match('/([-\w\/\.+]+)(;\s*?charset=(.+))?/i', $header, $match);
+		$header = \is_array($header) ? \end($header) : $header;
+		\preg_match('/([-\w\/\.+]+)(;\s*?charset=(.+))?/i', $header, $match);
 
 		if (isset($match[1])) {
-			$this->type(trim($match[1]));
+			$this->type(\trim($match[1]));
 		}
 		if (isset($match[3])) {
-			$this->encoding = strtoupper(trim($match[3]));
+			$this->encoding = \strtoupper(\trim($match[3]));
 		}
 	}
 
@@ -182,13 +182,13 @@ class Response extends \lithium\net\http\Message {
 		if ($status) {
 			$this->status = array('code' => null, 'message' => null);
 
-			if (is_array($status)) {
+			if (\is_array($status)) {
 				$key = null;
 				$this->status = $status + $this->status;
-			} elseif (is_numeric($status) && isset($this->_statuses[$status])) {
+			} elseif (\is_numeric($status) && isset($this->_statuses[$status])) {
 				$this->status = array('code' => $status, 'message' => $this->_statuses[$status]);
 			} else {
-				$statuses = array_flip($this->_statuses);
+				$statuses = \array_flip($this->_statuses);
 
 				if (isset($statuses[$status])) {
 					$this->status = array('code' => $statuses[$status], 'message' => $status);
@@ -228,21 +228,21 @@ class Response extends \lithium\net\http\Message {
 			$key = $this->cookies;
 			$this->cookies = array();
 		}
-		if (is_array($key)) {
+		if (\is_array($key)) {
 			foreach ($key as $cookie => $value) {
 				$this->cookies($cookie, $value);
 			}
-		} elseif (is_string($key)) {
+		} elseif (\is_string($key)) {
 			if ($value === null) {
 				return isset($this->cookies[$key]) ? $this->cookies[$key] : null;
 			}
 			if ($value === false) {
 				unset($this->cookies[$key]);
 			} else {
-				if (is_array($value)) {
-					if (array_values($value) === $value) {
+				if (\is_array($value)) {
+					if (\array_values($value) === $value) {
 						foreach ($value as $i => $set) {
-							if (!is_array($set)) {
+							if (!\is_array($set)) {
 								$value[$i] = array('value' => $set);
 							}
 						}
@@ -252,13 +252,13 @@ class Response extends \lithium\net\http\Message {
 				}
 				if (isset($this->cookies[$key])) {
 					$orig = $this->cookies[$key];
-					if (array_values($orig) !== $orig) {
+					if (\array_values($orig) !== $orig) {
 						$orig = array($orig);
 					}
-					if (array_values($value) !== $value) {
+					if (\array_values($value) !== $value) {
 						$value = array($value);
 					}
-					$this->cookies[$key] = array_merge($orig, $value);
+					$this->cookies[$key] = \array_merge($orig, $value);
 				} else {
 					$this->cookies[$key] = $value;
 				}
@@ -280,35 +280,35 @@ class Response extends \lithium\net\http\Message {
 		foreach ($this->cookies() as $name => $value) {
 			if (!isset($value['value'])) {
 				foreach ($value as $set) {
-					$cookies[] = compact('name') + $set;
+					$cookies[] = \compact('name') + $set;
 				}
 			} else {
-				$cookies[] = compact('name') + $value;
+				$cookies[] = \compact('name') + $value;
 			}
 		}
-		$invalid = str_split(",; \+\t\r\n\013\014");
-		$replace = array_map('rawurlencode', $invalid);
-		$replace = array_combine($invalid, $replace);
+		$invalid = \str_split(",; \+\t\r\n\013\014");
+		$replace = \array_map('rawurlencode', $invalid);
+		$replace = \array_combine($invalid, $replace);
 
 		foreach ($cookies as &$cookie) {
-			if (!is_scalar($cookie['value'])) {
+			if (!\is_scalar($cookie['value'])) {
 				$message = "Non-scalar value cannot be rendered for cookie `{$cookie['name']}`";
 				throw new UnexpectedValueException($message);
 			}
-			$value = strtr($cookie['value'], $replace);
+			$value = \strtr($cookie['value'], $replace);
 			$header = $cookie['name'] . '=' . $value;
 
 			if (!empty($cookie['expires'])) {
-				if (is_string($cookie['expires'])) {
-					$cookie['expires'] = strtotime($cookie['expires']);
+				if (\is_string($cookie['expires'])) {
+					$cookie['expires'] = \strtotime($cookie['expires']);
 				}
-				$header .= '; Expires=' . gmdate('D, d-M-Y H:i:s', $cookie['expires']) . ' GMT';
+				$header .= '; Expires=' . \gmdate('D, d-M-Y H:i:s', $cookie['expires']) . ' GMT';
 			}
 			if (!empty($cookie['path'])) {
-				$header .= '; Path=' . strtr($cookie['path'], $replace);
+				$header .= '; Path=' . \strtr($cookie['path'], $replace);
 			}
 			if (!empty($cookie['domain'])) {
-				$header .= '; Domain=' . strtr($cookie['domain'], $replace);
+				$header .= '; Domain=' . \strtr($cookie['domain'], $replace);
 			}
 			if (!empty($cookie['secure'])) {
 				$header .= '; Secure';
@@ -343,20 +343,20 @@ class Response extends \lithium\net\http\Message {
 	 * @return After parsing out other message components, returns just the message body.
 	 */
 	protected function _parseMessage($body) {
-		if (!($parts = explode("\r\n\r\n", $body, 2)) || count($parts) === 1) {
-			return trim($body);
+		if (!($parts = \explode("\r\n\r\n", $body, 2)) || \count($parts) === 1) {
+			return \trim($body);
 		}
 		list($headers, $body) = $parts;
-		$headers = str_replace("\r", "", explode("\n", $headers));
+		$headers = \str_replace("\r", "", \explode("\n", $headers));
 
-		if (array_filter($headers) === array()) {
-			return trim($body);
+		if (\array_filter($headers) === array()) {
+			return \trim($body);
 		}
-		preg_match('/HTTP\/(\d+\.\d+)\s+(\d+)(?:\s+(.*))?/i', array_shift($headers), $match);
+		\preg_match('/HTTP\/(\d+\.\d+)\s+(\d+)(?:\s+(.*))?/i', \array_shift($headers), $match);
 		$this->headers($headers, false);
 
 		if (!$match) {
-			return trim($body);
+			return \trim($body);
 		}
 		list($line, $this->version, $code) = $match;
 		if (isset($this->_statuses[$code])) {
@@ -365,7 +365,7 @@ class Response extends \lithium\net\http\Message {
 		if (isset($match[3])) {
 			$message = $match[3];
 		}
-		$this->status = compact('code', 'message') + $this->status;
+		$this->status = \compact('code', 'message') + $this->status;
 		$this->protocol = "HTTP/{$this->version}";
 		return $body;
 	}
@@ -377,19 +377,19 @@ class Response extends \lithium\net\http\Message {
 	 */
 	protected function _parseCookies($headers) {
 		foreach ((array) $headers as $header) {
-			$parts = array_map('trim', array_filter(explode('; ', $header)));
-			$cookie = array_shift($parts);
-			list($name, $value) = array_map('urldecode', explode('=', $cookie, 2)) + array('','');
+			$parts = \array_map('trim', \array_filter(\explode('; ', $header)));
+			$cookie = \array_shift($parts);
+			list($name, $value) = \array_map('urldecode', \explode('=', $cookie, 2)) + array('','');
 
 			$options = array();
 			foreach ($parts as $part) {
-				$part = array_map('urldecode', explode('=', $part, 2)) + array('','');
-				$options[strtolower($part[0])] = $part[1] ?: true;
+				$part = \array_map('urldecode', \explode('=', $part, 2)) + array('','');
+				$options[\strtolower($part[0])] = $part[1] ?: true;
 			}
 			if (isset($options['expires'])) {
-				$options['expires'] = strtotime($options['expires']);
+				$options['expires'] = \strtotime($options['expires']);
 			}
-			$this->cookies($name, compact('value') + $options);
+			$this->cookies($name, \compact('value') + $options);
 		}
 	}
 
@@ -403,12 +403,12 @@ class Response extends \lithium\net\http\Message {
 	 *         unmodified.
 	 */
 	protected function _httpChunkedDecode($body) {
-		if (stripos($this->headers('Transfer-Encoding'), 'chunked') === false) {
+		if (\stripos($this->headers('Transfer-Encoding'), 'chunked') === false) {
 			return $body;
 		}
-		$stream = fopen('data://text/plain;base64,' . base64_encode($body), 'r');
-		stream_filter_append($stream, 'dechunk');
-		return trim(stream_get_contents($stream));
+		$stream = \fopen('data://text/plain;base64,' . \base64_encode($body), 'r');
+		\stream_filter_append($stream, 'dechunk');
+		return \trim(\stream_get_contents($stream));
 	}
 
 	/**
@@ -423,10 +423,10 @@ class Response extends \lithium\net\http\Message {
 		if ($cookies = $this->_cookies()) {
 			$this->headers('Set-Cookie', $cookies);
 		}
-		$body = join("\r\n", (array) $this->body);
-		$headers = join("\r\n", $this->headers());
+		$body = \join("\r\n", (array) $this->body);
+		$headers = \join("\r\n", $this->headers());
 		$response = array($this->status(), $headers, "", $body);
-		return join("\r\n", $response);
+		return \join("\r\n", $response);
 	}
 }
 

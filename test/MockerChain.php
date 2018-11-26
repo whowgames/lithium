@@ -76,11 +76,11 @@ class MockerChain extends \lithium\core\DynamicObject {
 	 * @return object
 	 */
 	public function __call($comparison, $args) {
-		$methodExists = in_array($comparison, array('gt', 'gte', 'lt', 'lte', 'eq'), true);
+		$methodExists = \in_array($comparison, array('gt', 'gte', 'lt', 'lte', 'eq'), true);
 		if (!$this->_data['success'] || !$methodExists) {
 			return $this;
 		}
-		if (count($args) === 0 || !is_int($args[0])) {
+		if (\count($args) === 0 || !\is_int($args[0])) {
 			$this->_data['success'] = false;
 			return $this;
 		}
@@ -90,7 +90,7 @@ class MockerChain extends \lithium\core\DynamicObject {
 		$args = $this->_data['args'];
 		foreach ($this->_data['results'][$method] as $call) {
 			$correctTime = $this->_data['callTime'] <= $call['time'];
-			$correctArgs = !is_array($args) || $args === $call['args'];
+			$correctArgs = !\is_array($args) || $args === $call['args'];
 			if ($correctTime && $correctArgs) {
 				$this->_data['callTime'] = $call['time'];
 				$result++;
@@ -124,7 +124,7 @@ class MockerChain extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function respondsTo($method, $internal = false) {
-		$methodExists = in_array($method, array('gt', 'gte', 'lt', 'lte', 'eq'), true);
+		$methodExists = \in_array($method, array('gt', 'gte', 'lt', 'lte', 'eq'), true);
 		return $methodExists || parent::respondsTo($method, $internal);
 	}
 
@@ -171,7 +171,7 @@ class MockerChain extends \lithium\core\DynamicObject {
 		}
 
 		$method = $this->_data['method'];
-		$this->_data['args'] = $args = func_get_args();
+		$this->_data['args'] = $args = \func_get_args();
 
 		foreach ($this->_data['results'][$method] as $call) {
 			$correctTime = $this->_data['callTime'] <= $call['time'];

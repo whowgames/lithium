@@ -28,11 +28,11 @@ class InspectorTest extends \lithium\test\Unit {
 		$class = 'lithium\analysis\Debugger';
 		$parent = 'lithium\core\StaticObject';
 
-		$expected = array_diff(get_class_methods($class), get_class_methods($parent));
-		$result = array_keys(Inspector::methods($class, 'extents'));
-		$this->assertEqual(array_intersect($result, $expected), $result);
+		$expected = \array_diff(\get_class_methods($class), \get_class_methods($parent));
+		$result = \array_keys(Inspector::methods($class, 'extents'));
+		$this->assertEqual(\array_intersect($result, $expected), $result);
 
-		$result = array_keys(Inspector::methods($class, 'extents', array(
+		$result = \array_keys(Inspector::methods($class, 'extents', array(
 			'self' => true, 'public' => true
 		)));
 		$this->assertEqual($expected, $result);
@@ -124,8 +124,8 @@ class InspectorTest extends \lithium\test\Unit {
 	 */
 	public function testLineIntrospectionWithCRLFLineEndings() {
 		$tmpPath = Libraries::get(true, 'resources') . '/tmp/tests/inspector_crlf';
-		$contents = implode("\r\n", array('one', 'two', 'three', 'four', 'five'));
-		file_put_contents($tmpPath, $contents);
+		$contents = \implode("\r\n", array('one', 'two', 'three', 'four', 'five'));
+		\file_put_contents($tmpPath, $contents);
 
 		$result = Inspector::lines($tmpPath, array(2));
 		$expected = array(2 => 'two');
@@ -145,7 +145,7 @@ class InspectorTest extends \lithium\test\Unit {
 	 */
 	public function testClassParents() {
 		$result = Inspector::parents($this);
-		$this->assertEqual('lithium\test\Unit', current($result));
+		$this->assertEqual('lithium\test\Unit', \current($result));
 
 		$result2 = Inspector::parents(__CLASS__);
 		$this->assertEqual($result2, $result);
@@ -159,7 +159,7 @@ class InspectorTest extends \lithium\test\Unit {
 
 		$result = Inspector::classes(array('file' => __FILE__, 'group' => 'files'));
 		$this->assertCount(1, $result);
-		$this->assertEqual(__FILE__, key($result));
+		$this->assertEqual(__FILE__, \key($result));
 
 		$result = Inspector::classes(array('file' => __FILE__, 'group' => 'foo'));
 		$this->assertEqual(array(), $result);
@@ -199,8 +199,8 @@ class InspectorTest extends \lithium\test\Unit {
 		$this->assertNull(Inspector::info('\lithium\util'));
 
 		$info = Inspector::info('\lithium\analysis\Inspector');
-		$result = str_replace('\\', '/', $info['file']);
-		$this->assertNotEmpty(strpos($result, '/analysis/Inspector.php'));
+		$result = \str_replace('\\', '/', $info['file']);
+		$this->assertNotEmpty(\strpos($result, '/analysis/Inspector.php'));
 		$this->assertEqual('lithium\analysis', $info['namespace']);
 		$this->assertEqual('Inspector', $info['shortName']);
 
@@ -214,7 +214,7 @@ class InspectorTest extends \lithium\test\Unit {
 		$result = Inspector::info('\lithium\analysis\Inspector::info()', array(
 			'modifiers', 'namespace', 'foo'
 		));
-		$this->assertEqual(array('modifiers', 'namespace'), array_keys($result));
+		$this->assertEqual(array('modifiers', 'namespace'), \array_keys($result));
 
 		$this->assertNull(Inspector::info('\lithium\analysis\Inspector::$foo'));
 
@@ -257,14 +257,14 @@ class InspectorTest extends \lithium\test\Unit {
 	 * @return void
 	 */
 	public function testGetClassProperties() {
-		$result = array_map(
+		$result = \array_map(
 			function($property) { return $property['name']; },
 			Inspector::properties(__CLASS__)
 		);
 		$expected = array('test', 'test2');
 		$this->assertEqual($expected, $result);
 
-		$result = array_map(
+		$result = \array_map(
 			function($property) { return $property['name']; },
 			Inspector::properties(__CLASS__, array('public' => false))
 		);
@@ -288,23 +288,23 @@ class InspectorTest extends \lithium\test\Unit {
 		);
 		$this->assertEqual($expected, $result);
 
-		$result = array_map(
+		$result = \array_map(
 			function($property) { return $property['name']; },
 			Inspector::properties('lithium\action\Controller')
 		);
-		$this->assertTrue(in_array('request', $result));
-		$this->assertTrue(in_array('response', $result));
-		$this->assertFalse(in_array('_render', $result));
-		$this->assertFalse(in_array('_classes', $result));
+		$this->assertTrue(\in_array('request', $result));
+		$this->assertTrue(\in_array('response', $result));
+		$this->assertFalse(\in_array('_render', $result));
+		$this->assertFalse(\in_array('_classes', $result));
 
-		$result = array_map(
+		$result = \array_map(
 			function($property) { return $property['name']; },
 			Inspector::properties('lithium\action\Controller', array('public' => false))
 		);
-		$this->assertTrue(in_array('request', $result));
-		$this->assertTrue(in_array('response', $result));
-		$this->assertTrue(in_array('_render', $result));
-		$this->assertTrue(in_array('_classes', $result));
+		$this->assertTrue(\in_array('request', $result));
+		$this->assertTrue(\in_array('response', $result));
+		$this->assertTrue(\in_array('_render', $result));
+		$this->assertTrue(\in_array('_classes', $result));
 
 		$this->assertNull(Inspector::properties('\lithium\core\Foo'));
 	}

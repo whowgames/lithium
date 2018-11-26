@@ -304,16 +304,16 @@ class Inflector {
 
 				foreach ($config as $key => $val) {
 					if ($key[0] !== '/') {
-						$key = '/' . join('|', array_filter(preg_split('//u', $key))) . '/';
+						$key = '/' . \join('|', \array_filter(\preg_split('//u', $key))) . '/';
 					}
 					$_config[$key] = $val;
 				}
-				static::$_transliteration = array_merge(
+				static::$_transliteration = \array_merge(
 					$_config, static::$_transliteration, $_config
 				);
 			break;
 			case 'uninflected':
-				static::$_uninflected = array_merge(static::$_uninflected, (array) $config);
+				static::$_uninflected = \array_merge(static::$_uninflected, (array) $config);
 				static::$_plural['regexUninflected'] = null;
 				static::$_singular['regexUninflected'] = null;
 
@@ -323,17 +323,17 @@ class Inflector {
 			break;
 			case 'singular':
 			case 'plural':
-				if (isset(static::${$var}[key($config)])) {
+				if (isset(static::${$var}[\key($config)])) {
 					foreach ($config as $rType => $set) {
-						static::${$var}[$rType] = array_merge($set, static::${$var}[$rType], $set);
+						static::${$var}[$rType] = \array_merge($set, static::${$var}[$rType], $set);
 
 						if ($rType === 'irregular') {
 							$swap = ($type === 'singular' ? '_plural' : '_singular');
-							static::${$swap}[$rType] = array_flip(static::${$var}[$rType]);
+							static::${$swap}[$rType] = \array_flip(static::${$var}[$rType]);
 						}
 					}
 				} else {
-					static::${$var}['rules'] = array_merge(
+					static::${$var}['rules'] = \array_merge(
 						$config, static::${$var}['rules'], $config
 					);
 				}
@@ -351,23 +351,23 @@ class Inflector {
 		if (isset(static::$_pluralized[$word])) {
 			return static::$_pluralized[$word];
 		}
-		extract(static::$_plural);
+		\extract(static::$_plural);
 
 		if (!isset($regexUninflected) || !isset($regexIrregular)) {
-			$regexUninflected = static::_enclose(join('|', $uninflected + static::$_uninflected));
-			$regexIrregular = static::_enclose(join('|', array_keys($irregular)));
-			static::$_plural += compact('regexUninflected', 'regexIrregular');
+			$regexUninflected = static::_enclose(\join('|', $uninflected + static::$_uninflected));
+			$regexIrregular = static::_enclose(\join('|', \array_keys($irregular)));
+			static::$_plural += \compact('regexUninflected', 'regexIrregular');
 		}
-		if (preg_match('/(' . $regexUninflected . ')$/i', $word, $regs)) {
+		if (\preg_match('/(' . $regexUninflected . ')$/i', $word, $regs)) {
 			return static::$_pluralized[$word] = $word;
 		}
-		if (preg_match('/(.*)\\b(' . $regexIrregular . ')$/i', $word, $regs)) {
-			$plural = substr($word, 0, 1) . substr($irregular[strtolower($regs[2])], 1);
+		if (\preg_match('/(.*)\\b(' . $regexIrregular . ')$/i', $word, $regs)) {
+			$plural = \substr($word, 0, 1) . \substr($irregular[\strtolower($regs[2])], 1);
 			return static::$_pluralized[$word] = $regs[1] . $plural;
 		}
 		foreach ($rules as $rule => $replacement) {
-			if (preg_match($rule, $word)) {
-				return static::$_pluralized[$word] = preg_replace($rule, $replacement, $word);
+			if (\preg_match($rule, $word)) {
+				return static::$_pluralized[$word] = \preg_replace($rule, $replacement, $word);
 			}
 		}
 		return static::$_pluralized[$word] = $word;
@@ -384,25 +384,25 @@ class Inflector {
 			return static::$_singularized[$word];
 		}
 		if (empty(static::$_singular['irregular'])) {
-			static::$_singular['irregular'] = array_flip(static::$_plural['irregular']);
+			static::$_singular['irregular'] = \array_flip(static::$_plural['irregular']);
 		}
-		extract(static::$_singular);
+		\extract(static::$_singular);
 
 		if (!isset($regexUninflected) || !isset($regexIrregular)) {
-			$regexUninflected = static::_enclose(join('|', $uninflected + static::$_uninflected));
-			$regexIrregular = static::_enclose(join('|', array_keys($irregular)));
-			static::$_singular += compact('regexUninflected', 'regexIrregular');
+			$regexUninflected = static::_enclose(\join('|', $uninflected + static::$_uninflected));
+			$regexIrregular = static::_enclose(\join('|', \array_keys($irregular)));
+			static::$_singular += \compact('regexUninflected', 'regexIrregular');
 		}
-		if (preg_match("/(.*)\\b({$regexIrregular})\$/i", $word, $regs)) {
-			$singular = substr($word, 0, 1) . substr($irregular[strtolower($regs[2])], 1);
+		if (\preg_match("/(.*)\\b({$regexIrregular})\$/i", $word, $regs)) {
+			$singular = \substr($word, 0, 1) . \substr($irregular[\strtolower($regs[2])], 1);
 			return static::$_singularized[$word] = $regs[1] . $singular;
 		}
-		if (preg_match('/^(' . $regexUninflected . ')$/i', $word, $regs)) {
+		if (\preg_match('/^(' . $regexUninflected . ')$/i', $word, $regs)) {
 			return static::$_singularized[$word] = $word;
 		}
 		foreach ($rules as $rule => $replacement) {
-			if (preg_match($rule, $word)) {
-				return static::$_singularized[$word] = preg_replace($rule, $replacement, $word);
+			if (\preg_match($rule, $word)) {
+				return static::$_singularized[$word] = \preg_replace($rule, $replacement, $word);
 			}
 		}
 		return static::$_singularized[$word] = $word;
@@ -524,10 +524,10 @@ class Inflector {
 		if (isset(static::$_camelized[$_word]) && $cased) {
 			return static::$_camelized[$_word];
 		}
-		$word = str_replace(" ", "", ucwords(str_replace(array("_", '-'), " ", $word)));
+		$word = \str_replace(" ", "", \ucwords(\str_replace(array("_", '-'), " ", $word)));
 
 		if (!$cased) {
-			return lcfirst($word);
+			return \lcfirst($word);
 		}
 		return static::$_camelized[$_word] = $word;
 	}
@@ -542,7 +542,7 @@ class Inflector {
 		if (isset(static::$_underscored[$word])) {
 			return static::$_underscored[$word];
 		}
-		return static::$_underscored[$word] = strtolower(static::slug($word, '_'));
+		return static::$_underscored[$word] = \strtolower(static::slug($word, '_'));
 	}
 
 	/**
@@ -559,9 +559,9 @@ class Inflector {
 		$map = static::$_transliteration + array(
 			'/[^\w\s]/' => ' ', '/\\s+/' => $replacement,
 			'/(?<=[a-z])([A-Z])/' => $replacement . '\\1',
-			str_replace(':rep', preg_quote($replacement, '/'), '/^[:rep]+|[:rep]+$/') => ''
+			\str_replace(':rep', \preg_quote($replacement, '/'), '/^[:rep]+|[:rep]+$/') => ''
 		);
-		return preg_replace(array_keys($map), array_values($map), $string);
+		return \preg_replace(\array_keys($map), \array_values($map), $string);
 	}
 
 	/**
@@ -576,7 +576,7 @@ class Inflector {
 		if (isset(static::$_humanized[$key = $word . ':' . $separator])) {
 			return static::$_humanized[$key];
 		}
-		return static::$_humanized[$key] = ucwords(str_replace($separator, " ", $word));
+		return static::$_humanized[$key] = \ucwords(\str_replace($separator, " ", $word));
 	}
 
 	/**

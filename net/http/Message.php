@@ -77,15 +77,15 @@ class Message extends \lithium\net\Message {
 		);
 		$config += $defaults;
 
-		foreach (array_intersect_key(array_filter($config), $defaults) as $key => $value) {
+		foreach (\array_intersect_key(\array_filter($config), $defaults) as $key => $value) {
 			$this->{$key} = $value;
 		}
 		parent::__construct($config);
 
-		if (strpos($this->host, '/') !== false) {
-			list($this->host, $this->path) = explode('/', $this->host, 2);
+		if (\strpos($this->host, '/') !== false) {
+			list($this->host, $this->path) = \explode('/', $this->host, 2);
 		}
-		$this->path = str_replace('//', '/', "/{$this->path}");
+		$this->path = \str_replace('//', '/', "/{$this->path}");
 		$this->protocol = $this->protocol ?: "HTTP/{$this->version}";
 	}
 
@@ -102,20 +102,20 @@ class Message extends \lithium\net\Message {
 	 *         `'Key: Value'`.
 	 */
 	public function headers($key = null, $value = null, $replace = true) {
-		if (!is_string($key)) {
+		if (!\is_string($key)) {
 			$replace = ($value === false) ? $value : $replace;
 
 			foreach ((array) $key as $header => $value) {
-				if (is_string($header)) {
+				if (\is_string($header)) {
 					$this->headers($header, $value, $replace);
 					continue;
 				}
 				$this->headers($value, null, $replace);
 			}
 		} elseif ($key) {
-			if (strpos($key, ':') !== false) {
-				if (preg_match('/(.*?):(.+)/', $key, $match)) {
-					$this->headers($match[1], trim($match[2]), $replace);
+			if (\strpos($key, ':') !== false) {
+				if (\preg_match('/(.*?):(.+)/', $key, $match)) {
+					$this->headers($match[1], \trim($match[2]), $replace);
 				}
 			} elseif ($value === null) {
 				return isset($this->headers[$key]) ? $this->headers[$key] : null;
@@ -124,10 +124,10 @@ class Message extends \lithium\net\Message {
 			} elseif (!$replace && isset($this->headers[$key]) && $value != $this->headers[$key]) {
 				$this->headers[$key] = (array) $this->headers[$key];
 
-				if (is_string($value)) {
+				if (\is_string($value)) {
 					$this->headers[$key][] = $value;
 				} else {
-					$this->headers[$key] = array_merge($this->headers[$key], $value);
+					$this->headers[$key] = \array_merge($this->headers[$key], $value);
 				}
 			} else {
 				$this->headers[$key] = $value;
@@ -136,7 +136,7 @@ class Message extends \lithium\net\Message {
 		$headers = array();
 
 		foreach ($this->headers as $key => $value) {
-			if (is_scalar($value)) {
+			if (\is_scalar($value)) {
 				$headers[] = "{$key}: {$value}";
 				continue;
 			}
@@ -177,10 +177,10 @@ class Message extends \lithium\net\Message {
 			$this->headers('Content-Type', $type);
 			return ($this->_type = $type);
 		}
-		if (is_string($data)) {
+		if (\is_string($data)) {
 			$type = $data;
 		} elseif (!empty($data['content'])) {
-			$header = is_string($data['content']) ? $data['content'] : reset($data['content']);
+			$header = \is_string($data['content']) ? $data['content'] : \reset($data['content']);
 		}
 		$this->headers('Content-Type', $header);
 		return ($this->_type = $type);
@@ -202,7 +202,7 @@ class Message extends \lithium\net\Message {
 		$options += $default;
 
 		if (!empty($data)) {
-			$this->body = array_merge((array) $this->body, (array) $data);
+			$this->body = \array_merge((array) $this->body, (array) $data);
 		}
 		$body = $this->body;
 
@@ -212,12 +212,12 @@ class Message extends \lithium\net\Message {
 		if ($options['encode']) {
 			$body = $this->_encode($body);
 		}
-		$body = is_string($body) ? $body : join("\r\n", (array) $body);
+		$body = \is_string($body) ? $body : \join("\r\n", (array) $body);
 
 		if ($options['decode']) {
 			$body = $this->_decode($body);
 		}
-		return ($options['buffer']) ? str_split($body, $options['buffer']) : $body;
+		return ($options['buffer']) ? \str_split($body, $options['buffer']) : $body;
 	}
 
 	/**

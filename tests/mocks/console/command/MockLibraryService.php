@@ -26,35 +26,35 @@ class MockLibraryService extends \lithium\net\http\Service {
 				if ($this->request->username !== $user['username']) {
 					$this->last = (object) array('response' => new Response());
 					$this->last->response->status(401);
-					return json_encode(array(
+					return \json_encode(array(
 						'error' => 'Invalid username/password.'
 					));
 				}
 			}
 			$this->last = (object) array('response' => new Response());
 			$this->last->response->status(201);
-			return json_encode($this->_data('plugins', 1));
+			return \json_encode($this->_data('plugins', 1));
 		}
 		if ($path === 'lab/plugins') {
-			return json_encode($this->_data('plugins'));
+			return \json_encode($this->_data('plugins'));
 		}
 		if ($path === 'lab/extensions') {
-			return json_encode($this->_data('extensions'));
+			return \json_encode($this->_data('extensions'));
 		}
-		if (preg_match("/lab\/plugins/", $path, $match)) {
-			return json_encode($this->_data('plugins'));
+		if (\preg_match("/lab\/plugins/", $path, $match)) {
+			return \json_encode($this->_data('plugins'));
 		}
-		if (preg_match("/lab\/extensions/", $path, $match)) {
-			return json_encode($this->_data('extensions'));
+		if (\preg_match("/lab\/extensions/", $path, $match)) {
+			return \json_encode($this->_data('extensions'));
 		}
-		if (preg_match("/lab\/li3_lab.json/", $path, $match)) {
-			return json_encode($this->_data('plugins', 0));
+		if (\preg_match("/lab\/li3_lab.json/", $path, $match)) {
+			return \json_encode($this->_data('plugins', 0));
 		}
-		if (preg_match("/lab\/library_test_plugin.json/", $path, $match)) {
-			return json_encode($this->_data('plugins', 1));
+		if (\preg_match("/lab\/library_test_plugin.json/", $path, $match)) {
+			return \json_encode($this->_data('plugins', 1));
 		}
-		if (preg_match("/lab\/li3_docs.json/", $path, $match)) {
-			return json_encode($this->_data('plugins', 2));
+		if (\preg_match("/lab\/li3_docs.json/", $path, $match)) {
+			return \json_encode($this->_data('plugins', 2));
 		}
 	}
 
@@ -143,7 +143,7 @@ class MockLibraryService extends \lithium\net\http\Service {
 				'rating' => '9.9', 'downloads' => '1000'
 			)
 		);
-		$data = compact('plugins', 'extensions');
+		$data = \compact('plugins', 'extensions');
 
 		if (isset($data[$type][$key])) {
 			return $data[$type][$key];

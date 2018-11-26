@@ -74,9 +74,9 @@ class File extends \lithium\core\DynamicObject {
 
 		return function($self, $params) use (&$config) {
 			$path = $config['path'] . '/' . $config['file']($params, $config);
-			$params['timestamp'] = date($config['timestamp']);
+			$params['timestamp'] = \date($config['timestamp']);
 			$message = StringDeprecated::insert($config['format'], $params);
-			return file_put_contents($path, $message, FILE_APPEND);
+			return \file_put_contents($path, $message, FILE_APPEND);
 		};
 	}
 }

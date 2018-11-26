@@ -28,8 +28,8 @@ class MockerTest extends \lithium\test\Unit {
 
 	public function testAutoloadRegister() {
 		Mocker::register();
-		$registered = spl_autoload_functions();
-		$this->assertTrue(in_array(array(
+		$registered = \spl_autoload_functions();
+		$this->assertTrue(\in_array(array(
 			'lithium\test\Mocker',
 			'create'
 		), $registered));
@@ -38,7 +38,7 @@ class MockerTest extends \lithium\test\Unit {
 	public function testBasicCreation() {
 		$mockee = 'lithium\console\command\Mock';
 		Mocker::create($mockee);
-		$this->assertTrue(class_exists($mockee));
+		$this->assertTrue(\class_exists($mockee));
 	}
 
 	public function testBasicCreationExtendsCorrectParent() {
@@ -49,7 +49,7 @@ class MockerTest extends \lithium\test\Unit {
 	public function testCanMockNonLithiumClasses() {
 		$mockee = 'stdClass\Mock';
 		Mocker::create($mockee);
-		$this->assertTrue(class_exists($mockee));
+		$this->assertTrue(\class_exists($mockee));
 	}
 
 	public function testNonLithiumInstanceClass() {
@@ -80,7 +80,7 @@ class MockerTest extends \lithium\test\Unit {
 	public function testCannotCreateNonStandardMockClass() {
 		$mockee = 'lithium\console\request\Mocker';
 		Mocker::create($mockee);
-		$this->assertTrue(!class_exists($mockee));
+		$this->assertTrue(!\class_exists($mockee));
 	}
 
 	public function testFilteringNonStaticClass() {
@@ -178,13 +178,13 @@ class MockerTest extends \lithium\test\Unit {
 		$docblock::comment('bar');
 		$docblock::tags('baz', 'foo');
 
-		$this->assertIdentical(2, count($docblock::$staticResults['comment']));
+		$this->assertIdentical(2, \count($docblock::$staticResults['comment']));
 		$this->assertIdentical(array('foobar'), $docblock::$staticResults['comment'][0]['args']);
 		$this->assertFalse($docblock::$staticResults['comment'][0]['result']);
 		$this->assertIdentical(array('bar'), $docblock::$staticResults['comment'][1]['args']);
 		$this->assertFalse($docblock::$staticResults['comment'][1]['result']);
 
-		$this->assertIdentical(1, count($docblock::$staticResults['tags']));
+		$this->assertIdentical(1, \count($docblock::$staticResults['tags']));
 		$this->assertIdentical(array('baz', 'foo'), $docblock::$staticResults['tags'][0]['args']);
 		$this->assertFalse($docblock::$staticResults['tags'][0]['result']);
 	}
@@ -198,13 +198,13 @@ class MockerTest extends \lithium\test\Unit {
 		$debugger->names('bar');
 		$debugger->meta('baz');
 
-		$this->assertIdentical(2, count($debugger->results['names']));
+		$this->assertIdentical(2, \count($debugger->results['names']));
 		$this->assertIdentical(array('foo', 'foobar'), $debugger->results['names'][0]['args']);
 		$this->assertFalse($debugger->results['names'][0]['result']);
 		$this->assertIdentical(array('bar'), $debugger->results['names'][1]['args']);
 		$this->assertFalse($debugger->results['names'][1]['result']);
 
-		$this->assertIdentical(1, count($debugger->results['meta']));
+		$this->assertIdentical(1, \count($debugger->results['meta']));
 		$this->assertIdentical(array('baz'), $debugger->results['meta'][0]['args']);
 		$this->assertFalse($debugger->results['meta'][0]['result']);
 	}

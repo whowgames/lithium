@@ -288,7 +288,7 @@ class Form extends \lithium\core\DynamicObject {
 		$password = function($form, $data) {
 			return Password::check($form, $data);
 		};
-		$config['validators'] = array_filter($config['validators'] + compact('password'));
+		$config['validators'] = \array_filter($config['validators'] + \compact('password'));
 
 		parent::__construct($config + $defaults);
 	}
@@ -302,12 +302,12 @@ class Form extends \lithium\core\DynamicObject {
 		parent::_init();
 
 		foreach ($this->_fields as $key => $val) {
-			if (is_int($key)) {
+			if (\is_int($key)) {
 				unset($this->_fields[$key]);
 				$this->_fields[$val] = $val;
 			}
 		}
-		if (!class_exists($model = Libraries::locate('models', $this->_model))) {
+		if (!\class_exists($model = Libraries::locate('models', $this->_model))) {
 			throw new ClassNotFoundException("Model class '{$this->_model}' not found.");
 		}
 		$this->_model = $model;
@@ -330,9 +330,9 @@ class Form extends \lithium\core\DynamicObject {
 		$query = $this->_query;
 		$data = $this->_filters($credentials->data);
 
-		$validate = array_flip(array_intersect_key($this->_fields, $this->_validators));
-		$conditions = $this->_scope + array_diff_key($data, $validate);
-		$user = $model::$query(compact('conditions') + $options);
+		$validate = \array_flip(\array_intersect_key($this->_fields, $this->_validators));
+		$conditions = $this->_scope + \array_diff_key($data, $validate);
+		$user = $model::$query(\compact('conditions') + $options);
 
 		if (!$user) {
 			return false;
@@ -377,25 +377,25 @@ class Form extends \lithium\core\DynamicObject {
 			$result[$to] = isset($data[$from]) ? $data[$from] : null;
 
 			if (!isset($this->_filters[$from])) {
-				$result[$to] = is_scalar($result[$to]) ? $result[$to] : null;
+				$result[$to] = \is_scalar($result[$to]) ? $result[$to] : null;
 				continue;
 			}
 			if ($this->_filters[$from] === false) {
 				continue;
 			}
-			if (!is_callable($this->_filters[$from])) {
+			if (!\is_callable($this->_filters[$from])) {
 				$message = "Authentication filter for `{$from}` is not callable.";
 				throw new UnexpectedValueException($message);
 			}
-			$result[$to] = call_user_func($this->_filters[$from], $result[$to]);
+			$result[$to] = \call_user_func($this->_filters[$from], $result[$to]);
 		}
 		if (!isset($this->_filters[0])) {
 			return $result;
 		}
-		if (!is_callable($this->_filters[0])) {
+		if (!\is_callable($this->_filters[0])) {
 			throw new UnexpectedValueException("Authentication filter is not callable.");
 		}
-		return call_user_func($this->_filters[0], $result);
+		return \call_user_func($this->_filters[0], $result);
 	}
 
 	/**
@@ -422,7 +422,7 @@ class Form extends \lithium\core\DynamicObject {
 				continue;
 			}
 
-			if (!is_callable($validator)) {
+			if (!\is_callable($validator)) {
 				$message = "Authentication validator for `{$field}` is not callable.";
 				throw new UnexpectedValueException($message);
 			}
@@ -430,7 +430,7 @@ class Form extends \lithium\core\DynamicObject {
 			$field = $this->_fields[$field];
 			$value = isset($data[$field]) ? $data[$field] : null;
 
-			if (!call_user_func($validator, $value, $user->data($field))) {
+			if (!\call_user_func($validator, $value, $user->data($field))) {
 				return false;
 			}
 		}
@@ -439,10 +439,10 @@ class Form extends \lithium\core\DynamicObject {
 		if (!isset($this->_validators[0])) {
 			return $user;
 		}
-		if (!is_callable($this->_validators[0])) {
+		if (!\is_callable($this->_validators[0])) {
 			throw new UnexpectedValueException("Authentication validator is not callable.");
 		}
-		return call_user_func($this->_validators[0], $data, $user) ? $user : false;
+		return \call_user_func($this->_validators[0], $data, $user) ? $user : false;
 	}
 }
 

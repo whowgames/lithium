@@ -89,13 +89,13 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return string Returns the class name of a test case for `$class`, or `null` if none exists.
 	 */
 	public static function get($class) {
-		$parts = explode('\\', $class);
+		$parts = \explode('\\', $class);
 
-		$library = array_shift($parts);
-		$name = array_pop($parts);
-		$type = 'tests.cases.' . implode('.', $parts);
+		$library = \array_shift($parts);
+		$name = \array_pop($parts);
+		$type = 'tests.cases.' . \implode('.', $parts);
 
-		return Libraries::locate($type, $name, compact('library'));
+		return Libraries::locate($type, $name, \compact('library'));
 	}
 
 	/**
@@ -142,7 +142,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 */
 	public function skipIf($condition, $message = false) {
 		if ($condition) {
-			throw new Exception(is_string($message) ? $message : null);
+			throw new Exception(\is_string($message) ? $message : null);
 		}
 	}
 
@@ -152,7 +152,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return string
 	 */
 	public function subject() {
-		return preg_replace('/Test$/', '', str_replace('tests\\cases\\', '', get_class($this)));
+		return \preg_replace('/Test$/', '', \str_replace('tests\\cases\\', '', \get_class($this)));
 	}
 
 	/**
@@ -162,7 +162,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 */
 	public function methods() {
 		static $methods;
-		return $methods ?: $methods = array_values(preg_grep('/^test/', get_class_methods($this)));
+		return $methods ?: $methods = \array_values(\preg_grep('/^test/', \get_class_methods($this)));
 	}
 
 	/**
@@ -189,14 +189,14 @@ class Unit extends \lithium\core\DynamicObject {
 		}
 
 		$h = function($code, $message, $file, $line = 0, $context = array()) use ($self) {
-			$trace = debug_backtrace();
-			$trace = array_slice($trace, 1, count($trace));
+			$trace = \debug_backtrace();
+			$trace = \array_slice($trace, 1, \count($trace));
 			$self->invokeMethod('_reportException', array(
-				compact('code', 'message', 'file', 'line', 'trace', 'context')
+				\compact('code', 'message', 'file', 'line', 'trace', 'context')
 			));
 		};
 		$options['handler'] = $options['handler'] ?: $h;
-		set_error_handler($options['handler']);
+		\set_error_handler($options['handler']);
 
 		$methods = $options['methods'] ?: $this->methods();
 		$this->_reporter = $options['reporter'] ?: $this->_reporter;
@@ -206,7 +206,7 @@ class Unit extends \lithium\core\DynamicObject {
 				break;
 			}
 		}
-		restore_error_handler();
+		\restore_error_handler();
 		return $this->_results;
 	}
 
@@ -220,10 +220,10 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @param array $data
 	 */
 	public function assert($expression, $message = false, $data = array()) {
-		if (!is_string($message)) {
+		if (!\is_string($message)) {
 			$message = '{:message}';
 		}
-		if (strpos($message, "{:message}") !== false) {
+		if (\strpos($message, "{:message}") !== false) {
 			$params = $data;
 			$params['message'] = $this->_message($params);
 			$message = StringDeprecated::insert($message, $params);
@@ -234,16 +234,16 @@ class Unit extends \lithium\core\DynamicObject {
 		$methods = $this->methods();
 		$i = 1;
 
-		while ($i < count($trace)) {
-			if (in_array($trace[$i]['function'], $methods) && $trace[$i - 1]['object'] == $this) {
+		while ($i < \count($trace)) {
+			if (\in_array($trace[$i]['function'], $methods) && $trace[$i - 1]['object'] == $this) {
 				break;
 			}
 			$i++;
 		}
-		$class = isset($trace[$i - 1]['object']) ? get_class($trace[$i - 1]['object']) : null;
+		$class = isset($trace[$i - 1]['object']) ? \get_class($trace[$i - 1]['object']) : null;
 		$method = isset($trace[$i]) ? $trace[$i]['function'] : $trace[$i - 1]['function'];
 
-		$result = compact('class', 'method', 'message', 'data') + array(
+		$result = \compact('class', 'method', 'message', 'data') + array(
 			'file'      => $trace[$i - 1]['file'],
 			'line'      => $trace[$i - 1]['line'],
 			'assertion' => $trace[$i - 1]['function']
@@ -276,9 +276,9 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @param mixed $result
 	 */
 	protected function _normalizeLineEndings($expected, $result) {
-		if (is_string($expected) && is_string($result)) {
-			$expected = preg_replace('/\r\n/', "\n", $expected);
-			$result = preg_replace('/\r\n/', "\n", $result);
+		if (\is_string($expected) && \is_string($result)) {
+			$expected = \preg_replace('/\r\n/', "\n", $expected);
+			$result = \preg_replace('/\r\n/', "\n", $result);
 		}
 		return array($expected, $result);
 	}
@@ -306,7 +306,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 */
 	public function assertNotEqual($expected, $result, $message = '{:message}') {
 		list($expected, $result) = $this->_normalizeLineEndings($expected, $result);
-		return $this->assert($result != $expected, $message, compact('expected', 'result'));
+		return $this->assert($result != $expected, $message, \compact('expected', 'result'));
 	}
 
 	/**
@@ -329,7 +329,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @param string|boolean $message
 	 */
 	public function assertNotIdentical($expected, $result, $message = '{:message}') {
-		return $this->assert($expected !== $result, $message, compact('expected', 'result'));
+		return $this->assert($expected !== $result, $message, \compact('expected', 'result'));
 	}
 
 	/**
@@ -353,7 +353,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 */
 	public function assertTrue($result, $message = '{:message}') {
 		$expected = true;
-		return $this->assert($result === $expected, $message, compact('expected', 'result'));
+		return $this->assert($result === $expected, $message, \compact('expected', 'result'));
 	}
 
 	/**
@@ -379,7 +379,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 */
 	public function assertFalse($result, $message = '{:message}') {
 		$expected = false;
-		return $this->assert($result === $expected, $message, compact('expected', 'result'));
+		return $this->assert($result === $expected, $message, \compact('expected', 'result'));
 	}
 
 	/**
@@ -391,7 +391,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 */
 	public function assertNull($result, $message = '{:message}') {
 		$expected = null;
-		return $this->assert($result === null, $message, compact('expected', 'result'));
+		return $this->assert($result === null, $message, \compact('expected', 'result'));
 	}
 
 	/**
@@ -404,8 +404,8 @@ class Unit extends \lithium\core\DynamicObject {
 	 */
 	public function assertNotPattern($expected, $result, $message = '{:message}') {
 		list($expected, $result) = $this->_normalizeLineEndings($expected, $result);
-		$params = compact('expected', 'result');
-		return $this->assert(!preg_match($expected, $result), $message, $params);
+		$params = \compact('expected', 'result');
+		return $this->assert(!\preg_match($expected, $result), $message, $params);
 	}
 
 	/**
@@ -418,8 +418,8 @@ class Unit extends \lithium\core\DynamicObject {
 	 */
 	public function assertPattern($expected, $result, $message = '{:message}') {
 		list($expected, $result) = $this->_normalizeLineEndings($expected, $result);
-		$params = compact('expected', 'result');
-		return $this->assert(!!preg_match($expected, $result), $message, $params);
+		$params = \compact('expected', 'result');
+		return $this->assert(!!\preg_match($expected, $result), $message, $params);
 	}
 
 	/**
@@ -465,7 +465,7 @@ class Unit extends \lithium\core\DynamicObject {
 		$normalized = array();
 
 		foreach ((array) $expected as $key => $val) {
-			if (!is_numeric($key)) {
+			if (!\is_numeric($key)) {
 				$normalized[] = array($key => $val);
 			} else {
 				$normalized[] = $val;
@@ -475,41 +475,41 @@ class Unit extends \lithium\core\DynamicObject {
 
 		foreach ($normalized as $tags) {
 			$i++;
-			if (is_string($tags) && $tags[0] === '<') {
-				$tags = array(substr($tags, 1) => array());
-			} elseif (is_string($tags)) {
-				$tagsTrimmed = preg_replace('/\s+/m', '', $tags);
+			if (\is_string($tags) && $tags[0] === '<') {
+				$tags = array(\substr($tags, 1) => array());
+			} elseif (\is_string($tags)) {
+				$tagsTrimmed = \preg_replace('/\s+/m', '', $tags);
 
-				if (preg_match('/^\*?\//', $tags, $match) && $tagsTrimmed !== '//') {
+				if (\preg_match('/^\*?\//', $tags, $match) && $tagsTrimmed !== '//') {
 					$prefix = array(null, null);
 
 					if ($match[0] === '*/') {
 						$prefix = array('Anything, ', '.*?');
 					}
 					$regex[] = array(
-						sprintf('%sClose %s tag', $prefix[0], substr($tags, strlen($match[0]))),
-						sprintf('%s<[\s]*\/[\s]*%s[\s]*>[\n\r]*', $prefix[1], substr(
-							$tags, strlen($match[0])
+						\sprintf('%sClose %s tag', $prefix[0], \substr($tags, \strlen($match[0]))),
+						\sprintf('%s<[\s]*\/[\s]*%s[\s]*>[\n\r]*', $prefix[1], \substr(
+							$tags, \strlen($match[0])
 						)),
 						$i
 					);
 					continue;
 				}
 
-				if (!empty($tags) && preg_match('/^regex\:\/(.+)\/$/i', $tags, $matches)) {
+				if (!empty($tags) && \preg_match('/^regex\:\/(.+)\/$/i', $tags, $matches)) {
 					$tags = $matches[1];
 					$type = 'Regex matches';
 				} else {
-					$tags = preg_quote($tags, '/');
+					$tags = \preg_quote($tags, '/');
 					$type = 'Text equals';
 				}
-				$regex[] = array(sprintf('%s "%s"', $type, $tags), $tags, $i);
+				$regex[] = array(\sprintf('%s "%s"', $type, $tags), $tags, $i);
 				continue;
 			}
 			foreach ($tags as $tag => $attributes) {
 				$regex[] = array(
-					sprintf('Open %s tag', $tag),
-					sprintf('[\s]*<%s', preg_quote($tag, '/')),
+					\sprintf('Open %s tag', $tag),
+					\sprintf('[\s]*<%s', \preg_quote($tag, '/')),
 					$i
 				);
 				if ($attributes === true) {
@@ -519,43 +519,43 @@ class Unit extends \lithium\core\DynamicObject {
 				$explanations = array();
 
 				foreach ($attributes as $attr => $val) {
-					if (is_numeric($attr) && preg_match('/^regex\:\/(.+)\/$/i', $val, $matches)) {
+					if (\is_numeric($attr) && \preg_match('/^regex\:\/(.+)\/$/i', $val, $matches)) {
 						$attrs[] = $matches[1];
-						$explanations[] = sprintf('Regex "%s" matches', $matches[1]);
+						$explanations[] = \sprintf('Regex "%s" matches', $matches[1]);
 						continue;
 					} else {
 						$quotes = '"';
 
-						if (is_numeric($attr)) {
+						if (\is_numeric($attr)) {
 							$attr = $val;
 							$val = '.+?';
-							$explanations[] = sprintf('Attribute "%s" present', $attr);
+							$explanations[] = \sprintf('Attribute "%s" present', $attr);
 						} elseif (
-							!empty($val) && preg_match('/^regex\:\/(.+)\/$/i', $val, $matches)
+							!empty($val) && \preg_match('/^regex\:\/(.+)\/$/i', $val, $matches)
 						) {
 							$quotes = '"?';
 							$val = $matches[1];
-							$explanations[] = sprintf('Attribute "%s" matches "%s"', $attr, $val);
+							$explanations[] = \sprintf('Attribute "%s" matches "%s"', $attr, $val);
 						} else {
-							$explanations[] = sprintf('Attribute "%s" == "%s"', $attr, $val);
-							$val = preg_quote($val, '/');
+							$explanations[] = \sprintf('Attribute "%s" == "%s"', $attr, $val);
+							$val = \preg_quote($val, '/');
 						}
-						$attrs[] = '[\s]+' . preg_quote($attr, '/') . "={$quotes}{$val}{$quotes}";
+						$attrs[] = '[\s]+' . \preg_quote($attr, '/') . "={$quotes}{$val}{$quotes}";
 					}
 				}
 				if ($attrs) {
 					$permutations = $this->_arrayPermute($attrs);
 					$permutationTokens = array();
 					foreach ($permutations as $permutation) {
-						$permutationTokens[] = join('', $permutation);
+						$permutationTokens[] = \join('', $permutation);
 					}
 					$regex[] = array(
-						sprintf('%s', join(', ', $explanations)),
+						\sprintf('%s', \join(', ', $explanations)),
 						$permutationTokens,
 						$i
 					);
 				}
-				$regex[] = array(sprintf('End %s tag', $tag), '[\s]*\/?[\s]*>[\n\r]*', $i);
+				$regex[] = array(\sprintf('End %s tag', $tag), '[\s]*\/?[\s]*>[\n\r]*', $i);
 			}
 		}
 
@@ -564,15 +564,15 @@ class Unit extends \lithium\core\DynamicObject {
 			$matches = false;
 
 			foreach ((array) $expressions as $expression) {
-				if (preg_match(sprintf('/^%s/s', $expression), $string, $match)) {
+				if (\preg_match(\sprintf('/^%s/s', $expression), $string, $match)) {
 					$matches = true;
-					$string = substr($string, strlen($match[0]));
+					$string = \substr($string, \strlen($match[0]));
 					break;
 				}
 			}
 
 			if (!$matches) {
-				$this->assert(false, sprintf(
+				$this->assert(false, \sprintf(
 					'- Item #%d / regex #%d failed: %s', $itemNum, $i, $description
 				));
 				return false;
@@ -597,28 +597,28 @@ class Unit extends \lithium\core\DynamicObject {
 	public function assertException($expected, $closure, $message = '{:message}') {
 		try {
 			$closure();
-			$message = sprintf('An exception "%s" was expected but not thrown.', $expected);
-			return $this->assert(false, $message, compact('expected', 'result'));
+			$message = \sprintf('An exception "%s" was expected but not thrown.', $expected);
+			return $this->assert(false, $message, \compact('expected', 'result'));
 		} catch (Exception $e) {
-			$class = get_class($e);
+			$class = \get_class($e);
 			$eMessage = $e->getMessage();
 
-			if (get_class($e) === $expected) {
+			if (\get_class($e) === $expected) {
 				$result = $class;
-				return $this->assert(true, $message, compact('expected', 'result'));
+				return $this->assert(true, $message, \compact('expected', 'result'));
 			}
 			if ($eMessage === $expected) {
 				$result = $eMessage;
-				return $this->assert(true, $message, compact('expected', 'result'));
+				return $this->assert(true, $message, \compact('expected', 'result'));
 			}
-			if (Validator::isRegex($expected) && preg_match($expected, $eMessage)) {
+			if (Validator::isRegex($expected) && \preg_match($expected, $eMessage)) {
 				$result = $eMessage;
-				return $this->assert(true, $message, compact('expected', 'result'));
+				return $this->assert(true, $message, \compact('expected', 'result'));
 			}
 
-			$message = sprintf(
+			$message = \sprintf(
 				'Exception "%s" was expected. Exception "%s" with message "%s" was thrown instead.',
-				$expected, get_class($e), $eMessage
+				$expected, \get_class($e), $eMessage
 			);
 			return $this->assert(false, $message);
 		}
@@ -641,23 +641,23 @@ class Unit extends \lithium\core\DynamicObject {
 		try {
 			$closure();
 		} catch (Exception $e) {
-			$class = get_class($e);
+			$class = \get_class($e);
 			$eMessage = $e->getMessage();
-			if (is_a($e, $expected)) {
+			if (\is_a($e, $expected)) {
 				$result = $class;
-				return $this->assert(false, $message, compact('expected', 'result'));
+				return $this->assert(false, $message, \compact('expected', 'result'));
 			}
 			if ($eMessage === $expected) {
 				$result = $eMessage;
-				return $this->assert(false, $message, compact('expected', 'result'));
+				return $this->assert(false, $message, \compact('expected', 'result'));
 			}
-			if (Validator::isRegex($expected) && preg_match($expected, $eMessage)) {
+			if (Validator::isRegex($expected) && \preg_match($expected, $eMessage)) {
 				$result = $eMessage;
-				return $this->assert(false, $message, compact('expected', 'result'));
+				return $this->assert(false, $message, \compact('expected', 'result'));
 			}
 		}
-		$message = sprintf('Exception "%s" was not expected.', $expected);
-		return $this->assert(true, $message, compact('expected', 'result'));
+		$message = \sprintf('Exception "%s" was not expected.', $expected);
+		return $this->assert(true, $message, \compact('expected', 'result'));
 	}
 
 	/**
@@ -678,8 +678,8 @@ class Unit extends \lithium\core\DynamicObject {
 	public function assertCookie($expected, $headers = null) {
 		$matched = $this->_cookieMatch($expected, $headers);
 		if (!$matched['match']) {
-			$message = sprintf('%s - Cookie not found in headers.', $matched['pattern']);
-			return $this->assert(false, $message, compact('expected', 'result'));
+			$message = \sprintf('%s - Cookie not found in headers.', $matched['pattern']);
+			return $this->assert(false, $message, \compact('expected', 'result'));
 		}
 		return $this->assert(true, '%s');
 	}
@@ -702,8 +702,8 @@ class Unit extends \lithium\core\DynamicObject {
 	public function assertNoCookie($expected, $headers = null) {
 		$matched = $this->_cookieMatch($expected, $headers);
 		if ($matched['match']) {
-			$message = sprintf('%s - Cookie found in headers.', $matched['pattern']);
-			return $this->assert(false, $message, compact('expected', 'result'));
+			$message = \sprintf('%s - Cookie found in headers.', $matched['pattern']);
+			return $this->assert(false, $message, \compact('expected', 'result'));
 		}
 		return $this->assert(true, '%s');
 	}
@@ -720,31 +720,31 @@ class Unit extends \lithium\core\DynamicObject {
 		$defaults = array('path' => '/', 'name' => '[\w.-]+');
 		$expected += $defaults;
 
-		$headers = ($headers) ?: headers_list();
-		$value = preg_quote(urlencode($expected['value']), '/');
+		$headers = ($headers) ?: \headers_list();
+		$value = \preg_quote(\urlencode($expected['value']), '/');
 
-		$key = explode('.', $expected['key']);
-		$key = (count($key) === 1) ? '[' . current($key) . ']' : ('[' . join('][', $key) . ']');
-		$key = preg_quote($key, '/');
+		$key = \explode('.', $expected['key']);
+		$key = (\count($key) === 1) ? '[' . \current($key) . ']' : ('[' . \join('][', $key) . ']');
+		$key = \preg_quote($key, '/');
 
 		if (isset($expected['expires'])) {
-			$date = gmdate('D, d-M-Y H:i:s \G\M\T', strtotime($expected['expires']));
-			$expires = preg_quote($date, '/');
+			$date = \gmdate('D, d-M-Y H:i:s \G\M\T', \strtotime($expected['expires']));
+			$expires = \preg_quote($date, '/');
 		} else {
 			$expires = '(?:.+?)';
 		}
-		$path = preg_quote($expected['path'], '/');
+		$path = \preg_quote($expected['path'], '/');
 		$pattern  = "/^Set\-Cookie:\s{$expected['name']}$key=$value;";
 		$pattern .= "\sexpires=$expires;\spath=$path/";
 		$match = false;
 
 		foreach ($headers as $header) {
-			if (preg_match($pattern, $header)) {
+			if (\preg_match($pattern, $header)) {
 				$match = true;
 				continue;
 			}
 		}
-		return compact('match', 'pattern');
+		return \compact('match', 'pattern');
 	}
 
 	/**
@@ -778,7 +778,7 @@ class Unit extends \lithium\core\DynamicObject {
 		$options += $defaults;
 		if ($this->_reporter) {
 			$filtered = $this->_reporter->__invoke($info);
-			$info = is_array($filtered) ? $filtered : $info;
+			$info = \is_array($filtered) ? $filtered : $info;
 		}
 		$this->_results[] = $info;
 	}
@@ -798,7 +798,7 @@ class Unit extends \lithium\core\DynamicObject {
 			$this->_handleException($e, __LINE__ - 2);
 			return $this->_results;
 		}
-		$params = compact('options', 'method');
+		$params = \compact('options', 'method');
 
 		$passed = $this->_filter(__CLASS__ . '::run', $params, function($self, $params, $chain) {
 			try {
@@ -811,8 +811,8 @@ class Unit extends \lithium\core\DynamicObject {
 		});
 
 		foreach ($this->_expected as $expected) {
-			$this->_result('fail', compact('method') + array(
-				'class' => get_class($this),
+			$this->_result('fail', \compact('method') + array(
+				'class' => \get_class($this),
 				'message' => "Expected exception matching `{$expected}` uncaught.",
 				'data' => array(),
 				'file' => null,
@@ -849,11 +849,11 @@ class Unit extends \lithium\core\DynamicObject {
 	protected function _handleException($exception, $lineFlag = null) {
 		$data = $exception;
 
-		if (is_object($exception)) {
+		if (\is_object($exception)) {
 			$data = array();
 
 			foreach (array('message', 'file', 'line', 'trace') as $key) {
-				$method = 'get' . ucfirst($key);
+				$method = 'get' . \ucfirst($key);
 				$data[$key] = $exception->{$method}();
 			}
 			$ref = $exception->getTrace();
@@ -878,31 +878,31 @@ class Unit extends \lithium\core\DynamicObject {
 	protected function _reportException($exception, $lineFlag = null) {
 		$message = $exception['message'];
 
-		$isExpected = (($exp = end($this->_expected)) && ($exp === true || $exp === $message || (
-			Validator::isRegex($exp) && preg_match($exp, $message)
+		$isExpected = (($exp = \end($this->_expected)) && ($exp === true || $exp === $message || (
+			Validator::isRegex($exp) && \preg_match($exp, $message)
 		)));
 		if ($isExpected) {
-			return array_pop($this->_expected);
+			return \array_pop($this->_expected);
 		}
-		$initFrame = current($exception['trace']) + array('class' => '-', 'function' => '-');
+		$initFrame = \current($exception['trace']) + array('class' => '-', 'function' => '-');
 
 		foreach ($exception['trace'] as $frame) {
 			if (isset($scopedFrame)) {
 				break;
 			}
-			if (!class_exists('lithium\analysis\Inspector')) {
+			if (!\class_exists('lithium\analysis\Inspector')) {
 				continue;
 			}
-			if (isset($frame['class']) && in_array($frame['class'], Inspector::parents($this))) {
+			if (isset($frame['class']) && \in_array($frame['class'], Inspector::parents($this))) {
 				$scopedFrame = $frame;
 			}
 		}
-		if (class_exists('lithium\analysis\Debugger')) {
+		if (\class_exists('lithium\analysis\Debugger')) {
 			$exception['trace'] = Debugger::trace(array(
 				'trace'        => $exception['trace'],
 				'format'       => '{:functionRef}, line {:line}',
 				'includeScope' => false,
-				'scope'        => array_filter(array(
+				'scope'        => \array_filter(array(
 					'functionRef' => __NAMESPACE__ . '\{closure}',
 					'line'        => $lineFlag
 				))
@@ -927,12 +927,12 @@ class Unit extends \lithium\core\DynamicObject {
 	 */
 	protected function _compare($type, $expected, $result = null, $trace = null) {
 		$compareTypes = function($expected, $result, $trace) {
-			$types = array('expected' => gettype($expected), 'result' => gettype($result));
+			$types = array('expected' => \gettype($expected), 'result' => \gettype($result));
 
 			if ($types['expected'] !== $types['result']) {
-				$expected = trim("({$types['expected']}) " . print_r($expected, true));
-				$result = trim("({$types['result']}) " . print_r($result, true));
-				return compact('trace', 'expected', 'result');
+				$expected = \trim("({$types['expected']}) " . \print_r($expected, true));
+				$result = \trim("({$types['result']}) " . \print_r($result, true));
+				return \compact('trace', 'expected', 'result');
 			}
 		};
 		if ($types = $compareTypes($expected, $result, $trace)) {
@@ -940,21 +940,21 @@ class Unit extends \lithium\core\DynamicObject {
 		}
 		$data = array();
 
-		if (!is_scalar($expected)) {
+		if (!\is_scalar($expected)) {
 			foreach ($expected as $key => $value) {
 				$newTrace = "{$trace}[{$key}]";
 				$isObject = false;
 
-				if (is_object($expected)) {
+				if (\is_object($expected)) {
 					$isObject = true;
 					$expected = (array) $expected;
 					$result = (array) $result;
 				}
-				if (!array_key_exists($key, $result)) {
+				if (!\array_key_exists($key, $result)) {
 					$trace = (!$key) ? null : $newTrace;
 					$expected = (!$key) ? $expected : $value;
 					$result = ($key) ? null : $result;
-					return compact('trace', 'expected', 'result');
+					return \compact('trace', 'expected', 'result');
 				}
 				$check = $result[$key];
 
@@ -972,13 +972,13 @@ class Unit extends \lithium\core\DynamicObject {
 					}
 					if ($check === array()) {
 						$trace = $newTrace;
-						return compact('trace', 'expected', 'result');
+						return \compact('trace', 'expected', 'result');
 					}
-					if (is_string($check)) {
+					if (\is_string($check)) {
 						$trace = $newTrace;
 						$expected = $value;
 						$result = $check;
-						return compact('trace', 'expected', 'result');
+						return \compact('trace', 'expected', 'result');
 					}
 				} else {
 					if ($value == $check) {
@@ -987,9 +987,9 @@ class Unit extends \lithium\core\DynamicObject {
 						}
 						continue;
 					}
-					if (!is_array($value)) {
+					if (!\is_array($value)) {
 						$trace = $newTrace;
-						return compact('trace', 'expected', 'result');
+						return \compact('trace', 'expected', 'result');
 					}
 				}
 				$compare = $this->_compare($type, $value, $check, $newTrace);
@@ -1001,7 +1001,7 @@ class Unit extends \lithium\core\DynamicObject {
 			if (!empty($data)) {
 				return $data;
 			}
-		} elseif (!is_scalar($result)) {
+		} elseif (!\is_scalar($result)) {
 			$data = $this->_compare($type, $result, $expected);
 
 			if (!empty($data)) {
@@ -1018,7 +1018,7 @@ class Unit extends \lithium\core\DynamicObject {
 			}
 			return true;
 		}
-		return compact('trace', 'expected', 'result');
+		return \compact('trace', 'expected', 'result');
 	}
 
 	/**
@@ -1044,17 +1044,17 @@ class Unit extends \lithium\core\DynamicObject {
 
 		$message = null;
 		if (!empty($data['trace'])) {
-			$message = sprintf("trace: %s\n", $data['trace']);
+			$message = \sprintf("trace: %s\n", $data['trace']);
 		}
-		if (is_object($data['expected'])) {
-			$data['expected'] = get_object_vars($data['expected']);
+		if (\is_object($data['expected'])) {
+			$data['expected'] = \get_object_vars($data['expected']);
 		}
-		if (is_object($data['result'])) {
-			$data['result'] = get_object_vars($data['result']);
+		if (\is_object($data['result'])) {
+			$data['result'] = \get_object_vars($data['result']);
 		}
-		return $message . sprintf("expected: %s\nresult: %s\n",
-			var_export($data['expected'], true),
-			var_export($data['result'], true)
+		return $message . \sprintf("expected: %s\nresult: %s\n",
+			\var_export($data['expected'], true),
+			\var_export($data['result'], true)
 		);
 	}
 
@@ -1076,13 +1076,13 @@ class Unit extends \lithium\core\DynamicObject {
 			$permuted[] = $perms;
 			return;
 		}
-		$numItems = count($items) - 1;
+		$numItems = \count($items) - 1;
 
 		for ($i = $numItems; $i >= 0; --$i) {
 			$newItems = $items;
 			$newPerms = $perms;
-			list($tmp) = array_splice($newItems, $i, 1);
-			array_unshift($newPerms, $tmp);
+			list($tmp) = \array_splice($newItems, $i, 1);
+			\array_unshift($newPerms, $tmp);
 			$this->_arrayPermute($newItems, $newPerms);
 		}
 		return $permuted;
@@ -1108,9 +1108,9 @@ class Unit extends \lithium\core\DynamicObject {
 	protected function _cleanUp($path = null) {
 		$resources = Libraries::get(true, 'resources');
 		$path = $path ?: $resources . '/tmp/tests';
-		$path = preg_match('/^\w:|^\//', $path) ? $path : $resources . '/tmp/' . $path;
+		$path = \preg_match('/^\w:|^\//', $path) ? $path : $resources . '/tmp/' . $path;
 
-		if (!is_dir($path)) {
+		if (!\is_dir($path)) {
 			return;
 		}
 		$dirs = new RecursiveDirectoryIterator($path);
@@ -1123,13 +1123,13 @@ class Unit extends \lithium\core\DynamicObject {
 				continue;
 			}
 			if ($item->isDir()) {
-				rmdir($item->getPathname());
+				\rmdir($item->getPathname());
 				continue;
 			}
 			if (!$item->isWritable()) {
-				chmod($item->getPathname(), 0777);
+				\chmod($item->getPathname(), 0777);
 			}
-			unlink($item->getPathname());
+			\unlink($item->getPathname());
 		}
 	}
 
@@ -1159,7 +1159,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertCount($expected, $array, $message = '{:message}') {
-		return $this->assert($expected === ($result = count($array)), $message, array(
+		return $this->assert($expected === ($result = \count($array)), $message, array(
 			'expected' => $expected,
 			'result' => $result,
 		));
@@ -1182,7 +1182,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertNotCount($expected, $array, $message = '{:message}') {
-		return $this->assert($expected !== ($result = count($array)), $message, array(
+		return $this->assert($expected !== ($result = \count($array)), $message, array(
 			'expected' => $expected,
 			'result' => $result,
 		));
@@ -1205,10 +1205,10 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertArrayHasKey($key, $array, $message = '{:message}') {
-		if (is_object($array) && $array instanceof \ArrayAccess) {
+		if (\is_object($array) && $array instanceof \ArrayAccess) {
 			$result = isset($array[$key]);
 		} else {
-			$result = array_key_exists($key, $array);
+			$result = \array_key_exists($key, $array);
 		}
 
 		return $this->assert($result, $message, array(
@@ -1234,10 +1234,10 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertArrayNotHasKey($key, $array, $message = '{:message}') {
-		if (is_object($array) && $array instanceof \ArrayAccess) {
+		if (\is_object($array) && $array instanceof \ArrayAccess) {
 			$result = isset($array[$key]);
 		} else {
-			$result = array_key_exists($key, $array);
+			$result = \array_key_exists($key, $array);
 		}
 
 		return $this->assert(!$result, $message, array(
@@ -1266,7 +1266,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertClassHasAttribute($attributeName, $class, $message = '{:message}') {
-		if (!is_string($class)) {
+		if (!\is_string($class)) {
 			throw new InvalidArgumentException('Argument $class must be a string');
 		}
 		$object = new ReflectionClass($class);
@@ -1296,7 +1296,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertClassNotHasAttribute($attributeName, $class, $message = '{:message}') {
-		if (!is_string($class)) {
+		if (!\is_string($class)) {
 			throw new InvalidArgumentException('Argument $class must be a string.');
 		}
 		$object = new ReflectionClass($class);
@@ -1387,8 +1387,8 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertContains($needle, $haystack, $message = '{:message}') {
-		if (is_string($haystack)) {
-			return $this->assert(strpos($haystack, $needle) !== false, $message, array(
+		if (\is_string($haystack)) {
+			return $this->assert(\strpos($haystack, $needle) !== false, $message, array(
 				'expected' => $needle,
 				'result' => $haystack
 			));
@@ -1424,8 +1424,8 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertNotContains($needle, $haystack, $message = '{:message}') {
-		if (is_string($haystack)) {
-			return $this->assert(strpos($haystack, $needle) === false, $message, array(
+		if (\is_string($haystack)) {
+			return $this->assert(\strpos($haystack, $needle) === false, $message, array(
 				'expected' => $needle,
 				'result' => $haystack
 			));
@@ -1527,7 +1527,7 @@ class Unit extends \lithium\core\DynamicObject {
 	public function assertContainsOnlyInstancesOf($class, $haystack, $message = '{:message}') {
 		$result = array();
 		foreach ($haystack as $key => &$value) {
-			if (!is_a($value, $class)) {
+			if (!\is_a($value, $class)) {
 				$result[$key] =& $value;
 				break;
 			}
@@ -1604,9 +1604,9 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertFileEquals($expected, $actual, $message = '{:message}') {
-		$expected = md5_file($expected);
-		$result = md5_file($actual);
-		return $this->assert($expected === $result, $message, compact('expected', 'result'));
+		$expected = \md5_file($expected);
+		$result = \md5_file($actual);
+		return $this->assert($expected === $result, $message, \compact('expected', 'result'));
 	}
 
 	/**
@@ -1631,9 +1631,9 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertFileNotEquals($expected, $actual, $message = '{:message}') {
-		$expected = md5_file($expected);
-		$result = md5_file($actual);
-		return $this->assert($expected !== $result, $message, compact('expected', 'result'));
+		$expected = \md5_file($expected);
+		$result = \md5_file($actual);
+		return $this->assert($expected !== $result, $message, \compact('expected', 'result'));
 	}
 
 	/**
@@ -1652,9 +1652,9 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertFileExists($actual, $message = '{:message}') {
-		return $this->assert(file_exists($actual), $message, array(
+		return $this->assert(\file_exists($actual), $message, array(
 			'expected' => $actual,
-			'result' => file_exists($actual)
+			'result' => \file_exists($actual)
 		));
 	}
 
@@ -1674,9 +1674,9 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertFileNotExists($actual, $message = '{:message}') {
-		return $this->assert(!file_exists($actual), $message, array(
+		return $this->assert(!\file_exists($actual), $message, array(
 			'expected' => $actual,
-			'result' => !file_exists($actual)
+			'result' => !\file_exists($actual)
 		));
 	}
 
@@ -1789,9 +1789,9 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertInstanceOf($expected, $actual, $message = '{:message}') {
-		return $this->assert(is_a($actual, $expected), $message, array(
+		return $this->assert(\is_a($actual, $expected), $message, array(
 			'expected' => $expected,
-			'result' => get_class($actual)
+			'result' => \get_class($actual)
 		));
 	}
 
@@ -1812,9 +1812,9 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertNotInstanceOf($expected, $actual, $message = '{:message}') {
-		return $this->assert(!is_a($actual, $expected), $message, array(
+		return $this->assert(!\is_a($actual, $expected), $message, array(
 			'expected' => $expected,
-			'result' => is_object($actual) ? get_class($actual) : gettype($actual),
+			'result' => \is_object($actual) ? \get_class($actual) : \gettype($actual),
 		));
 	}
 
@@ -1838,7 +1838,7 @@ class Unit extends \lithium\core\DynamicObject {
 		$method = self::$_internalTypes[$expected];
 		return $this->assert($method($actual), $message, array(
 			'expected' => $expected,
-			'result' => gettype($actual)
+			'result' => \gettype($actual)
 		));
 	}
 
@@ -1862,7 +1862,7 @@ class Unit extends \lithium\core\DynamicObject {
 		$method = self::$_internalTypes[$expected];
 		return $this->assert(!$method($actual), $message, array(
 			'expected' => $expected,
-			'result' => gettype($actual)
+			'result' => \gettype($actual)
 		));
 	}
 
@@ -1882,9 +1882,9 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertNotNull($actual, $message = '{:message}') {
-		return $this->assert(!is_null($actual), $message, array(
+		return $this->assert(!\is_null($actual), $message, array(
 			'expected' => null,
-			'actual' => gettype($actual)
+			'actual' => \gettype($actual)
 		));
 	}
 
@@ -1907,7 +1907,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertObjectHasAttribute($attributeName, $object, $message = '{:message}') {
-		if (!is_object($object)) {
+		if (!\is_object($object)) {
 			throw new InvalidArgumentException('Second argument $object must be an object.');
 		}
 		$object = new ReflectionClass($object);
@@ -1936,7 +1936,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertObjectNotHasAttribute($attributeName, $object, $message = '{:message}') {
-		if (!is_object($object)) {
+		if (!\is_object($object)) {
 			throw new InvalidArgumentException('Second argument $object must be an object');
 		}
 		$object = new ReflectionClass($object);
@@ -1965,8 +1965,8 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertStringMatchesFormat($expected, $actual, $message = '{:message}') {
-		$result = sscanf($actual, $expected);
-		return $this->assert($result[0] == $actual, $message, compact('expected', 'result'));
+		$result = \sscanf($actual, $expected);
+		return $this->assert($result[0] == $actual, $message, \compact('expected', 'result'));
 	}
 
 	/**
@@ -1988,8 +1988,8 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertStringNotMatchesFormat($expected, $actual, $message = '{:message}') {
-		$result = sscanf($actual, $expected);
-		return $this->assert($result[0] != $actual, $message, compact('expected', 'result'));
+		$result = \sscanf($actual, $expected);
+		return $this->assert($result[0] != $actual, $message, \compact('expected', 'result'));
 	}
 
 	/**
@@ -2009,7 +2009,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertStringEndsWith($expected, $actual, $message = '{:message}') {
-		return $this->assert(preg_match("/$expected$/", $actual, $matches) === 1, $message, array(
+		return $this->assert(\preg_match("/$expected$/", $actual, $matches) === 1, $message, array(
 			'expected' => $expected,
 			'result' => $actual
 		));
@@ -2032,7 +2032,7 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function assertStringStartsWith($expected, $actual, $message = '{:message}') {
-		return $this->assert(preg_match("/^$expected/", $actual, $matches) === 1, $message, array(
+		return $this->assert(\preg_match("/^$expected/", $actual, $matches) === 1, $message, array(
 			'expected' => $expected,
 			'result' => $actual
 		));

@@ -458,7 +458,7 @@ class Mocker {
 	 * @return void
 	 */
 	public static function register() {
-		spl_autoload_register(array(__CLASS__, 'create'));
+		\spl_autoload_register(array(__CLASS__, 'create'));
 	}
 
 	/**
@@ -473,7 +473,7 @@ class Mocker {
 		}
 
 		$mocker = self::_mocker($mockee);
-		$isStatic = is_subclass_of($mocker, 'lithium\core\StaticObject');
+		$isStatic = \is_subclass_of($mocker, 'lithium\core\StaticObject');
 
 		$tokens = array(
 			'namespace' => self::_namespace($mockee),
@@ -490,14 +490,14 @@ class Mocker {
 		$staticApplyFilter = true;
 		$constructor = false;
 		foreach ($reflecedMethods as $methodId => $method) {
-			if (!in_array($method->name, self::$_blackList)) {
+			if (!\in_array($method->name, self::$_blackList)) {
 				$key = $method->isStatic() ? 'staticMethod' : 'method';
 				if ($method->name === '__construct') {
 					$key = 'constructor';
 					$constructor = true;
 				}
 				$docs = ReflectionMethod::export($mocker, $method->name, true);
-				if (preg_match('/&' . $method->name . '/', $docs) === 1) {
+				if (\preg_match('/&' . $method->name . '/', $docs) === 1) {
 					continue;
 				}
 				$tokens = array(
@@ -512,7 +512,7 @@ class Mocker {
 				$mock .= self::_dynamicCode('mock', $key, $tokens);
 			} elseif ($method->name === '__get') {
 				$docs = ReflectionMethod::export($mocker, '__get', true);
-				$getByReference = preg_match('/&__get/', $docs) === 1;
+				$getByReference = \preg_match('/&__get/', $docs) === 1;
 			} elseif ($method->name === 'applyFilter') {
 				$staticApplyFilter = $method->isStatic();
 			}
@@ -557,8 +557,8 @@ class Mocker {
 	protected static function _methodModifiers(ReflectionMethod $method) {
 		$modifierKey = $method->getModifiers();
 		$modifierArray = Reflection::getModifierNames($modifierKey);
-		$modifiers = implode(' ', $modifierArray);
-		return str_replace(array('private', 'protected'), 'public', $modifiers);
+		$modifiers = \implode(' ', $modifierArray);
+		return \str_replace(array('private', 'protected'), 'public', $modifiers);
 	}
 
 	/**
@@ -575,9 +575,9 @@ class Mocker {
 			'from' => array(' Array', 'or NULL'),
 			'to' => array(' array()', ''),
 		);
-		preg_match_all($pattern, $method, $matches);
-		$params = implode(', ', $matches[1]);
-		return str_replace($replace['from'], $replace['to'], $params);
+		\preg_match_all($pattern, $method, $matches);
+		$params = \implode(', ', $matches[1]);
+		return \str_replace($replace['from'], $replace['to'], $params);
 	}
 
 	/**
@@ -588,9 +588,9 @@ class Mocker {
 	 */
 	protected static function _stringMethodParams(ReflectionFunctionAbstract $method) {
 		$pattern = '/Parameter [^$]+\$([^ ]+)/';
-		preg_match_all($pattern, $method, $matches);
-		$params = implode("', '", $matches[1]);
-		return strlen($params) > 0 ? "'{$params}'" : 'array()';
+		\preg_match_all($pattern, $method, $matches);
+		$params = \implode("', '", $matches[1]);
+		return \strlen($params) > 0 ? "'{$params}'" : 'array()';
 	}
 
 	/**
@@ -609,7 +609,7 @@ class Mocker {
 		);
 		$tokens += $defaults;
 		$name = '_' . $type . 'Ingredients';
-		$code = implode("\n", self::${$name}[$key]);
+		$code = \implode("\n", self::${$name}[$key]);
 		return StringDeprecated::insert($code, $tokens) . "\n";
 	}
 
@@ -620,10 +620,10 @@ class Mocker {
 	 * @return array
 	 */
 	protected static function _mocker($mockee) {
-		$sections = explode('\\', $mockee);
-		array_pop($sections);
-		$sections[] = ucfirst(array_pop($sections));
-		return implode('\\', $sections);
+		$sections = \explode('\\', $mockee);
+		\array_pop($sections);
+		$sections[] = \ucfirst(\array_pop($sections));
+		return \implode('\\', $sections);
 	}
 
 	/**
@@ -634,7 +634,7 @@ class Mocker {
 	 */
 	protected static function _namespace($mockee) {
 		$matches = array();
-		preg_match_all('/^(.*)\\\\Mock$/', $mockee, $matches);
+		\preg_match_all('/^(.*)\\\\Mock$/', $mockee, $matches);
 		return isset($matches[1][0]) ? $matches[1][0] : null;
 	}
 
@@ -648,7 +648,7 @@ class Mocker {
 	 * @return bool
 	 */
 	protected static function _validateMockee($mockee) {
-		return preg_match('/\\\\Mock$/', $mockee) === 1;
+		return \preg_match('/\\\\Mock$/', $mockee) === 1;
 	}
 
 	/**
@@ -659,12 +659,12 @@ class Mocker {
 	 */
 	public static function chain($mock) {
 		$results = array();
-		$string = is_string($mock);
-		if (is_object($mock) && isset($mock->results)) {
+		$string = \is_string($mock);
+		if (\is_object($mock) && isset($mock->results)) {
 			$results = static::mergeResults($mock->results, $mock::$staticResults);
-		} elseif ($string && class_exists($mock) && isset($mock::$staticResults)) {
+		} elseif ($string && \class_exists($mock) && isset($mock::$staticResults)) {
 			$results = $mock::$staticResults;
-		} elseif ($string && function_exists($mock) && isset(static::$_functionResults[$mock])) {
+		} elseif ($string && \function_exists($mock) && isset(static::$_functionResults[$mock])) {
 			$results = array($mock => static::$_functionResults[$mock]);
 		}
 		return new MockerChain($results);
@@ -680,9 +680,9 @@ class Mocker {
 	public static function mergeResults($results, $secondary) {
 		foreach ($results as $method => $calls) {
 			if (isset($secondary[$method])) {
-				$results['method1'] = array_merge($results['method1'], $secondary['method1']);
-				usort($results['method1'], function($el1, $el2) {
-					return strcmp($el1['time'], $el2['time']);
+				$results['method1'] = \array_merge($results['method1'], $secondary['method1']);
+				\usort($results['method1'], function($el1, $el2) {
+					return \strcmp($el1['time'], $el2['time']);
 				});
 				unset($secondary['method1']);
 			}
@@ -743,8 +743,8 @@ class Mocker {
 			static::$_methodFilters += array($class => array());
 			static::$_methodFilters[$class][$method] = array();
 		}
-		$data = array_merge(static::$_methodFilters[$class][$method], $filters, array($callback));
-		return Filters::run($class, $params, compact('data', 'class', 'method'));
+		$data = \array_merge(static::$_methodFilters[$class][$method], $filters, array($callback));
+		return Filters::run($class, $params, \compact('data', 'class', 'method'));
 	}
 
 	/**
@@ -756,7 +756,7 @@ class Mocker {
 	 * @return mixed Returns the result of the method call.
 	 */
 	public static function invokeMethod($method, $params = array()) {
-		return forward_static_call_array(array(get_called_class(), $method), $params);
+		return \forward_static_call_array(array(\get_called_class(), $method), $params);
 	}
 
 	/**
@@ -776,15 +776,15 @@ class Mocker {
 			return static::$_functionCallbacks[$name] = false;
 		}
 		static::$_functionCallbacks[$name] = $callback;
-		if (function_exists($name)) {
+		if (\function_exists($name)) {
 			return;
 		}
 
 		$function = new ReflectionFunction($callback);
-		$pos = strrpos($name, '\\');
+		$pos = \strrpos($name, '\\');
 		eval(self::_dynamicCode('mockFunction', 'function', array(
-			'namespace' => substr($name, 0, $pos),
-			'function' => substr($name, $pos + 1),
+			'namespace' => \substr($name, 0, $pos),
+			'function' => \substr($name, $pos + 1),
 			'args' => static::_methodParams($function),
 			'stringArgs' => static::_stringMethodParams($function),
 		)));
@@ -803,19 +803,19 @@ class Mocker {
 	 * @return mixed
 	 */
 	public static function callFunction($name, array &$params = array()) {
-		$function = substr($name, strrpos($name, '\\'));
+		$function = \substr($name, \strrpos($name, '\\'));
 		$exists = isset(static::$_functionCallbacks[$name]);
-		if ($exists && is_callable(static::$_functionCallbacks[$name])) {
+		if ($exists && \is_callable(static::$_functionCallbacks[$name])) {
 			$function = static::$_functionCallbacks[$name];
 		}
-		$result = call_user_func_array($function, $params);
+		$result = \call_user_func_array($function, $params);
 		if (!isset(static::$_functionResults[$name])) {
 			static::$_functionResults[$name] = array();
 		}
 		static::$_functionResults[$name][] = array(
 			'args' => $params,
 			'result' => $result,
-			'time' => microtime(true),
+			'time' => \microtime(true),
 		);
 		return $result;
 	}

@@ -12,7 +12,7 @@ class MockStaticMethodFiltering extends \lithium\core\StaticObject {
 
 	public static function method($data) {
 		$data[] = 'Starting outer method call';
-		$result = static::_filter(__FUNCTION__, compact('data'), function($self, $params, $chain) {
+		$result = static::_filter(__FUNCTION__, \compact('data'), function($self, $params, $chain) {
 			$params['data'][] = 'Inside method implementation of ' . $self;
 			return $params['data'];
 		});
@@ -42,7 +42,7 @@ class MockStaticMethodFiltering extends \lithium\core\StaticObject {
 	}
 
 	public static function foo() {
-		$args = func_get_args();
+		$args = \func_get_args();
 		return $args;
 	}
 

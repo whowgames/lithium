@@ -76,7 +76,7 @@ class HttpTest extends \lithium\test\Unit {
 	public function testCreate() {
 		$http = new Http($this->_testConfig);
 		$result = $http->create(null);
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'POST / HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -92,7 +92,7 @@ class HttpTest extends \lithium\test\Unit {
 	public function testRead() {
 		$http = new Http($this->_testConfig);
 		$result = $http->read(null);
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET / HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -106,7 +106,7 @@ class HttpTest extends \lithium\test\Unit {
 	public function testUpdate() {
 		$http = new Http($this->_testConfig);
 		$result = $http->update(null);
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'PUT / HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -122,7 +122,7 @@ class HttpTest extends \lithium\test\Unit {
 	public function testDelete() {
 		$http = new Http($this->_testConfig);
 		$result = $http->delete(null);
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'DELETE / HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -137,10 +137,10 @@ class HttpTest extends \lithium\test\Unit {
 		$model = $this->_model;
 		$model::config(array('meta' => array('key' => 'id')));
 		$http = new Http($this->_testConfig);
-		$query = new Query(compact('model') + array('data' => array('title' => 'Test Title')));
+		$query = new Query(\compact('model') + array('data' => array('title' => 'Test Title')));
 		$result = $http->create($query);
 
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'POST /posts HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -158,7 +158,7 @@ class HttpTest extends \lithium\test\Unit {
 		$query = new Query(array('model' => $this->_model));
 
 		$result = $http->read($query);
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET /posts HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -177,7 +177,7 @@ class HttpTest extends \lithium\test\Unit {
 		));
 
 		$result = $http->read($query);
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET /posts?page=2 HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -196,7 +196,7 @@ class HttpTest extends \lithium\test\Unit {
 		));
 
 		$result = $http->update($query);
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'PUT /posts/1 HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -214,7 +214,7 @@ class HttpTest extends \lithium\test\Unit {
 		$query = new Query(array('model' => $this->_model, 'data' => array('id' => '1')));
 
 		$result = $http->delete($query);
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'DELETE /posts/1 HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -229,7 +229,7 @@ class HttpTest extends \lithium\test\Unit {
 		$http = new Http($this->_testConfig);
 
 		$result = $http->something();
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET /something HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -247,7 +247,7 @@ class HttpTest extends \lithium\test\Unit {
 		$http = new Http($config);
 
 		$result = $http->something();
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET /something HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -266,7 +266,7 @@ class HttpTest extends \lithium\test\Unit {
 		$query = new Query(array('model' => $this->_model));
 
 		$result = $http->something($query);
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET /something HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -284,7 +284,7 @@ class HttpTest extends \lithium\test\Unit {
 		$http = new Http($config);
 
 		$result = $http->do(array('title' => 'sup'));
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'POST /do HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -305,7 +305,7 @@ class HttpTest extends \lithium\test\Unit {
 		$query = new Query(array('model' => $this->_model, 'data' => array('title' => 'sup')));
 
 		$result = $http->do($query);
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'POST /do HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -327,7 +327,7 @@ class HttpTest extends \lithium\test\Unit {
 			'path' => '/some/resource/path'
 		));
 		$result = $http->send($query);
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'POST /some/resource/path HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',

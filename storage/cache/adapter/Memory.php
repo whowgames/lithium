@@ -58,9 +58,9 @@ class Memory extends \lithium\core\DynamicObject {
 		$cache =& $this->_cache;
 
 		return function($self, $params) use (&$cache) {
-			extract($params);
+			\extract($params);
 
-			if (is_array($key)) {
+			if (\is_array($key)) {
 				$results = array();
 
 				foreach ($key as $k) {
@@ -89,9 +89,9 @@ class Memory extends \lithium\core\DynamicObject {
 		$cache =& $this->_cache;
 
 		return function($self, $params) use (&$cache) {
-			extract($params);
+			\extract($params);
 
-			if (is_array($key)) {
+			if (\is_array($key)) {
 				foreach ($key as $k => &$v) {
 					$cache[$k] = $v;
 				}
@@ -111,7 +111,7 @@ class Memory extends \lithium\core\DynamicObject {
 		$cache =& $this->_cache;
 
 		return function($self, $params) use (&$cache) {
-			extract($params);
+			\extract($params);
 			if (isset($cache[$key])) {
 				unset($cache[$key]);
 				return true;
@@ -133,7 +133,7 @@ class Memory extends \lithium\core\DynamicObject {
 		$cache =& $this->_cache;
 
 		return function($self, $params) use (&$cache, $offset) {
-			extract($params);
+			\extract($params);
 			return $cache[$key] -= 1;
 		};
 	}
@@ -150,7 +150,7 @@ class Memory extends \lithium\core\DynamicObject {
 		$cache =& $this->_cache;
 
 		return function($self, $params) use (&$cache, $offset) {
-			extract($params);
+			\extract($params);
 			return $cache[$key] += 1;
 		};
 	}

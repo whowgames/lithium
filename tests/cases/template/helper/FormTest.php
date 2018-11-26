@@ -49,7 +49,7 @@ class FormTest extends \lithium\test\Unit {
 		$request->params = array('controller' => 'posts', 'action' => 'index');
 		$request->persist = array('controller');
 
-		$this->context = new MockFormRenderer(compact('request'));
+		$this->context = new MockFormRenderer(\compact('request'));
 		$this->form = new Form(array('context' => $this->context));
 
 		$this->base = $this->context->request()->env('base') . '/';
@@ -275,7 +275,7 @@ class FormTest extends \lithium\test\Unit {
 		$this->assertTags($result, $tag);
 
 		$value = new Document(array('model' => $this->_model));
-		$result = $this->form->file('upload', compact('value'));
+		$result = $this->form->file('upload', \compact('value'));
 		$tag['input']['value'] = '';
 		$this->assertTags($result, $tag);
 	}
@@ -902,8 +902,8 @@ class FormTest extends \lithium\test\Unit {
 	public function testFormCreateWithMoreParams() {
 		$request = new Request();
 		$request->params = array('controller' => 'mock', 'action' => 'test', 'args' => array('1'));
-		$context = new MockFormRenderer(compact('request'));
-		$form = new Form(compact('context'));
+		$context = new MockFormRenderer(\compact('request'));
+		$form = new Form(\compact('context'));
 
 		$result = $form->create();
 		$this->assertTags($result, array('form' => array(
@@ -916,8 +916,8 @@ class FormTest extends \lithium\test\Unit {
 		$request = new Request();
 		$request->params = array('controller' => 'mock', 'action' => 'test', 'args' => array('1'));
 		$request->persist = array('controller');
-		$context = new MockFormRenderer(compact('request'));
-		$form = new Form(compact('context'));
+		$context = new MockFormRenderer(\compact('request'));
+		$form = new Form(\compact('context'));
 
 		$result = $form->create(null, array('action' => 'radness'));
 		$this->assertTags($result, array('form' => array(
@@ -950,7 +950,7 @@ class FormTest extends \lithium\test\Unit {
 			'<input type="checkbox" name="name" id="Name" value="1" />',
 			'<label for="Name">Name</label></div>'
 		);
-		$this->assertEqual(join('', $expected), $result);
+		$this->assertEqual(\join('', $expected), $result);
 	}
 
 	public function testFormFieldWithCustomConfig() {
@@ -1440,7 +1440,7 @@ class FormTest extends \lithium\test\Unit {
 		$record1->errors(array('title' => 'Not a cool title'));
 		$record2->errors(array('section' => 'Not a cool section'));
 
-		$this->form->create(compact('record1', 'record2'));
+		$this->form->create(\compact('record1', 'record2'));
 
 		$result = $this->form->error('title');
 		$this->assertTags($result, array(
@@ -1472,7 +1472,7 @@ class FormTest extends \lithium\test\Unit {
 			'notes' => 'New post notes'
 		)));
 
-		$this->form->create(compact('post', 'info'));
+		$this->form->create(\compact('post', 'info'));
 		$this->assertEqual($post, $this->form->binding('post'));
 		$this->assertEqual($info, $this->form->binding('info'));
 	}

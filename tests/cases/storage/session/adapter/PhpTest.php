@@ -21,28 +21,28 @@ class PhpTest extends \lithium\test\Unit {
 		$this->php = new Php();
 		$this->_destroySession();
 
-		$this->_gc_divisor = ini_get('session.gc_divisor');
-		ini_set('session.gc_divisor', '1');
+		$this->_gc_divisor = \ini_get('session.gc_divisor');
+		\ini_set('session.gc_divisor', '1');
 	}
 
 	public function tearDown() {
 		$this->_destroySession();
 
-		ini_set('session.gc_divisor', $this->_gc_divisor);
+		\ini_set('session.gc_divisor', $this->_gc_divisor);
 		$_SESSION = $this->_session;
 	}
 
 	protected function _destroySession($name = null) {
 		if (!$name) {
-			$name = session_name();
+			$name = \session_name();
 		}
-		$settings = session_get_cookie_params();
-		setcookie(
-			$name, '', time() - 1000, $settings['path'], $settings['domain'],
+		$settings = \session_get_cookie_params();
+		\setcookie(
+			$name, '', \time() - 1000, $settings['path'], $settings['domain'],
 			$settings['secure'], $settings['httponly']
 		);
-		if (session_id()) {
-			session_destroy();
+		if (\session_id()) {
+			\session_destroy();
 		}
 		$_SESSION = array();
 	}
@@ -50,21 +50,21 @@ class PhpTest extends \lithium\test\Unit {
 	public function testEnabled() {
 		$php = $this->php;
 		/* Is PHP Session support enabled? */
-		$sessionsSupported = in_array('session', get_loaded_extensions());
+		$sessionsSupported = \in_array('session', \get_loaded_extensions());
 		$this->assertEqual($sessionsSupported, $php::enabled());
 	}
 
 	public function testInit() {
-		$id = session_id();
+		$id = \session_id();
 		$this->assertEmpty($id);
 
-		$result = ini_get('session.name');
-		$this->assertEqual(basename(Libraries::get(true, 'path')), $result);
+		$result = \ini_get('session.name');
+		$this->assertEqual(\basename(Libraries::get(true, 'path')), $result);
 
-		$result = ini_get('session.cookie_lifetime');
+		$result = \ini_get('session.cookie_lifetime');
 		$this->assertEqual(0, (integer) $result);
 
-		$result = ini_get('session.cookie_httponly');
+		$result = \ini_get('session.cookie_httponly');
 		$this->assertNotEmpty((integer) $result);
 
 		$name = 'this-is-a-custom-name';
@@ -82,25 +82,25 @@ class PhpTest extends \lithium\test\Unit {
 
 		$adapter = new Php($config);
 
-		$result = ini_get('session.name');
+		$result = \ini_get('session.name');
 		$this->assertEqual($config['session.name'], $result);
 
-		$result = ini_get('session.cookie_lifetime');
+		$result = \ini_get('session.cookie_lifetime');
 		$this->assertEqual($config['session.cookie_lifetime'], (integer) $result);
 
-		$result = ini_get('session.cookie_domain');
+		$result = \ini_get('session.cookie_domain');
 		$this->assertEqual($config['session.cookie_domain'], $result);
 
-		$result = ini_get('session.cookie_secure');
+		$result = \ini_get('session.cookie_secure');
 		$this->assertEmpty($result);
 
-		$result = ini_get('session.cookie_httponly');
+		$result = \ini_get('session.cookie_httponly');
 		$this->assertNotEmpty($result);
 
-		$result = ini_get('session.save_path');
+		$result = \ini_get('session.save_path');
 		$this->assertEqual($config['session.save_path'], $result);
 
-		$result = ini_get('somebad.configuration');
+		$result = \ini_get('somebad.configuration');
 		$this->assertFalse($result);
 	}
 
@@ -113,13 +113,13 @@ class PhpTest extends \lithium\test\Unit {
 		$result = $this->php->isStarted();
 		$this->assertTrue($result);
 
-		$this->_destroySession(session_name());
+		$this->_destroySession(\session_name());
 		$result = $this->php->isStarted();
 		$this->assertFalse($result);
 	}
 
 	public function testIsStartedNoInit() {
-		$this->_destroySession(session_name());
+		$this->_destroySession(\session_name());
 
 		$php = new Php(array('init' => false));
 		$result = $php->isStarted();
@@ -133,9 +133,9 @@ class PhpTest extends \lithium\test\Unit {
 
 	public function testKey() {
 		$result = $this->php->key();
-		$this->assertEqual(session_id(), $result);
+		$this->assertEqual(\session_id(), $result);
 
-		$this->_destroySession(session_name());
+		$this->_destroySession(\session_name());
 		$result = $this->php->key();
 		$this->assertNull($result);
 	}
@@ -147,7 +147,7 @@ class PhpTest extends \lithium\test\Unit {
 		$closure = $this->php->write($key, $value);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'value');
+		$params = \compact('key', 'value');
 		$result = $closure($this->php, $params, null);
 
 		$this->assertEqual($_SESSION[$key], $value);
@@ -164,7 +164,7 @@ class PhpTest extends \lithium\test\Unit {
 		$closure = $this->php->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->php, $params, null);
 
 		$this->assertIdentical($value, $result);
@@ -173,7 +173,7 @@ class PhpTest extends \lithium\test\Unit {
 		$closure = $this->php->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->php, $params, null);
 		$this->assertNull($result);
 
@@ -195,7 +195,7 @@ class PhpTest extends \lithium\test\Unit {
 		$closure = $this->php->check($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->php, $params, null);
 		$this->assertTrue($result);
 
@@ -203,7 +203,7 @@ class PhpTest extends \lithium\test\Unit {
 		$closure = $this->php->check($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->php, $params, null);
 		$this->assertFalse($result);
 	}
@@ -219,7 +219,7 @@ class PhpTest extends \lithium\test\Unit {
 		$closure = $this->php->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->php, $params, null);
 		$this->assertTrue($result);
 
@@ -227,7 +227,7 @@ class PhpTest extends \lithium\test\Unit {
 		$closure = $this->php->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->php, $params, null);
 		$this->assertTrue($result);
 	}
@@ -279,7 +279,7 @@ class PhpTest extends \lithium\test\Unit {
 		$closure = $this->php->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->php, $params, null);
 
 		$this->assertIdentical($value, $result);
@@ -297,7 +297,7 @@ class PhpTest extends \lithium\test\Unit {
 		$closure = $this->php->write($key, $value);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'value');
+		$params = \compact('key', 'value');
 		$result = $closure($this->php, $params, null);
 
 		$this->assertEqual($_SESSION['dot']['syntax'], $value);

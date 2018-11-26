@@ -22,23 +22,23 @@ class ControllerTest extends \lithium\test\Unit {
 
 	public function skip() {
 		$this->_testPath = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($this->_testPath), "Path `{$this->_testPath}` is not writable.");
+		$this->skipIf(!\is_writable($this->_testPath), "Path `{$this->_testPath}` is not writable.");
 	}
 
 	public function setUp() {
 		$this->classes = array('response' => 'lithium\tests\mocks\console\MockResponse');
-		$this->_backup['cwd'] = getcwd();
+		$this->_backup['cwd'] = \getcwd();
 		$this->_backup['_SERVER'] = $_SERVER;
 		$_SERVER['argv'] = array();
 
 		Libraries::add('create_test', array('path' => $this->_testPath . '/create_test'));
-		$this->request = new Request(array('input' => fopen('php://temp', 'w+')));
+		$this->request = new Request(array('input' => \fopen('php://temp', 'w+')));
 		$this->request->params = array('library' => 'create_test');
 	}
 
 	public function tearDown() {
 		$_SERVER = $this->_backup['_SERVER'];
-		chdir($this->_backup['cwd']);
+		\chdir($this->_backup['cwd']);
 		$this->_cleanUp();
 	}
 
@@ -136,8 +136,8 @@ class PostsController extends \lithium\action\Controller {
 
 test;
 		$replace = array("<?php", "?>");
-		$result = str_replace($replace, '',
-			file_get_contents($this->_testPath . '/create_test/controllers/PostsController.php')
+		$result = \str_replace($replace, '',
+			\file_get_contents($this->_testPath . '/create_test/controllers/PostsController.php')
 		);
 		$this->assertEqual($expected, $result);
 	}

@@ -76,21 +76,21 @@ class Group extends \lithium\util\Collection {
 			switch (true) {
 				case !$test:
 					return array();
-				case is_object($test) && $test instanceof Unit:
-					return array(get_class($test));
-				case is_string($test) && !file_exists(Libraries::path($test)):
+				case \is_object($test) && $test instanceof Unit:
+					return array(\get_class($test));
+				case \is_string($test) && !\file_exists(Libraries::path($test)):
 					return $self->invokeMethod('_resolve', array($test));
 				default:
 					return (array) $test;
 			}
 		};
-		if (is_array($test)) {
+		if (\is_array($test)) {
 			foreach ($test as $t) {
-				$this->_data = array_filter(array_merge($this->_data, $resolve($this, $t)));
+				$this->_data = \array_filter(\array_merge($this->_data, $resolve($this, $t)));
 			}
 			return $this->_data;
 		}
-		return $this->_data = array_merge($this->_data, $resolve($this, $test));
+		return $this->_data = \array_merge($this->_data, $resolve($this, $test));
 	}
 
 	/**
@@ -104,7 +104,7 @@ class Group extends \lithium\util\Collection {
 		$tests = new Collection();
 
 		foreach ($this->_data as $test) {
-			if (!class_exists($test)) {
+			if (!\class_exists($test)) {
 				throw new Exception("Test case `{$test}` not found.");
 			}
 			$tests[] = new $test;
@@ -121,23 +121,23 @@ class Group extends \lithium\util\Collection {
 	 *               unit tests.
 	 */
 	protected function _resolve($test) {
-		if (strpos($test, '\\') === false && Libraries::get($test)) {
+		if (\strpos($test, '\\') === false && Libraries::get($test)) {
 			return (array) Libraries::find($test, array(
 				'recursive' => true,
 				'filter' => '/(cases|integration|functional)\\\.*Test$/',
 				'exclude' => '/tests\\\mocks/'
 			));
 		}
-		if (!$test = trim($test, '\\')) {
+		if (!$test = \trim($test, '\\')) {
 			return array();
 		}
-		list($library, $path) = explode('\\', $test, 2) + array($test, null);
+		list($library, $path) = \explode('\\', $test, 2) + array($test, null);
 
 		return (array) Libraries::find($library, array(
 			'recursive' => true,
-			'path' => '/' . str_replace('\\', '/', $path),
+			'path' => '/' . \str_replace('\\', '/', $path),
 			'filter' => '/(cases|integration|functional)\\\.*Test$/',
-			'exclude' => strstr($test, 'tests\mocks') ? '' : '/tests\\\mocks/'
+			'exclude' => \strstr($test, 'tests\mocks') ? '' : '/tests\\\mocks/'
 		));
 	}
 }

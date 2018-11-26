@@ -20,7 +20,7 @@ class LoggerTest extends \lithium\test\Integration {
 	public function testWriteFilter() {
 
 		$base = Libraries::get(true, 'resources') . '/tmp/logs';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
 
 		Filters::apply('lithium\analysis\Logger', 'write', function($self, $params, $chain) {
 			$params['message'] = 'Filtered Message';
@@ -36,11 +36,11 @@ class LoggerTest extends \lithium\test\Integration {
 		$this->assertFileExists($base . '/info.log');
 
 		$expected = "Filtered Message\n";
-		$result = file_get_contents($base . '/info.log');
+		$result = \file_get_contents($base . '/info.log');
 		$this->assertEqual($expected, $result);
 
 		Filters::apply('lithium\analysis\Logger', 'write', false);
-		unlink($base . '/info.log');
+		\unlink($base . '/info.log');
 	}
 }
 

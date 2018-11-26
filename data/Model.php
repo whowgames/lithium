@@ -356,7 +356,7 @@ class Model extends \lithium\core\StaticObject {
 	 *        - `classes`: Classes used by this model.
 	 */
 	public static function config(array $config = array()) {
-		if (($class = get_called_class()) === __CLASS__) {
+		if (($class = \get_called_class()) === __CLASS__) {
 			return;
 		}
 
@@ -369,7 +369,7 @@ class Model extends \lithium\core\StaticObject {
 			if (isset($config[$key])) {
 				$_key = "_{$key}";
 				$val = $config[$key];
-				$self->$_key = is_array($val) ? $val + $self->$_key : $val;
+				$self->$_key = \is_array($val) ? $val + $self->$_key : $val;
 			}
 		}
 
@@ -407,23 +407,23 @@ class Model extends \lithium\core\StaticObject {
 		}
 
 		$self->_classes += $source['classes'];
-		$self->_meta = compact('class') + $self->_meta + $source['meta'];
+		$self->_meta = \compact('class') + $self->_meta + $source['meta'];
 
 		$self->_initializers += array(
 			'name' => function($self) {
-				return basename(str_replace('\\', '/', $self));
+				return \basename(\str_replace('\\', '/', $self));
 			},
 			'source' => function($self) {
 				return Inflector::tableize($self::meta('name'));
 			},
 			'title' => function($self) {
 				$titleKeys = array('title', 'name');
-				$titleKeys = array_merge($titleKeys, (array) $self::meta('key'));
+				$titleKeys = \array_merge($titleKeys, (array) $self::meta('key'));
 				return $self::hasField($titleKeys);
 			}
 		);
 
-		if (is_object($self->_schema)) {
+		if (\is_object($self->_schema)) {
 			$self->_schema->append($source['schema']);
 		} else {
 			$self->_schema += $source['schema'];
@@ -446,15 +446,15 @@ class Model extends \lithium\core\StaticObject {
 	 */
 	protected function _inherit() {
 
-		$inherited = array_fill_keys($this->_inherited(), array());
+		$inherited = \array_fill_keys($this->_inherited(), array());
 
 		foreach (static::_parents() as $parent) {
-			$parentConfig = get_class_vars($parent);
+			$parentConfig = \get_class_vars($parent);
 
 			foreach ($inherited as $key => $value) {
 				if (isset($parentConfig["{$key}"])) {
 					$val = $parentConfig["{$key}"];
-					if (is_array($val)) {
+					if (\is_array($val)) {
 						$inherited[$key] += $val;
 					}
 				}
@@ -466,7 +466,7 @@ class Model extends \lithium\core\StaticObject {
 		}
 
 		foreach ($inherited as $key => $value) {
-			if (is_array($this->{$key})) {
+			if (\is_array($this->{$key})) {
 				$this->{$key} += $value;
 			}
 		}
@@ -478,7 +478,7 @@ class Model extends \lithium\core\StaticObject {
 	 * @param array
 	 */
 	protected function _inherited() {
-		return array_merge($this->_inherits, array(
+		return \array_merge($this->_inherits, array(
 			'validates',
 			'belongsTo',
 			'hasMany',
@@ -502,7 +502,7 @@ class Model extends \lithium\core\StaticObject {
 	 */
 	protected static function _instance($name, array $options = array()) {
 		$self = static::_object();
-		if (is_string($name) && isset($self->_classes[$name])) {
+		if (\is_string($name) && isset($self->_classes[$name])) {
 			$name = $self->_classes[$name];
 		}
 		return Libraries::instance(null, $name, $options);
@@ -523,30 +523,30 @@ class Model extends \lithium\core\StaticObject {
 		$self = static::_object();
 		$isFinder = isset($self->_finders[$method]);
 
-		if ($isFinder && count($params) === 2 && is_array($params[1])) {
+		if ($isFinder && \count($params) === 2 && \is_array($params[1])) {
 			$params = array($params[1] + array($method => $params[0]));
 		}
 
 		if ($method === 'all' || $isFinder) {
-			if ($params && !is_array($params[0])) {
+			if ($params && !\is_array($params[0])) {
 				$params[0] = array('conditions' => static::key($params[0]));
 			}
 			return $self::find($method, $params ? $params[0] : array());
 		}
-		preg_match('/^findBy(?P<field>\w+)$|^find(?P<type>\w+)By(?P<fields>\w+)$/', $method, $args);
+		\preg_match('/^findBy(?P<field>\w+)$|^find(?P<type>\w+)By(?P<fields>\w+)$/', $method, $args);
 
 		if (!$args) {
 			$message = "Method `%s` not defined or handled in class `%s`.";
-			throw new BadMethodCallException(sprintf($message, $method, get_class($self)));
+			throw new BadMethodCallException(\sprintf($message, $method, \get_class($self)));
 		}
 
 		$field = Inflector::underscore($args['field'] ? $args['field'] : $args['fields']);
 		$type = isset($args['type']) ? $args['type'] : 'first';
-		$type[0] = strtolower($type[0]);
+		$type[0] = \strtolower($type[0]);
 
-		$conditions = array($field => array_shift($params));
-		$params = (isset($params[0]) && count($params) === 1) ? $params[0] : $params;
-		return $self::find($type, compact('conditions') + $params);
+		$conditions = array($field => \array_shift($params));
+		$params = (isset($params[0]) && \count($params) === 1) ? $params[0] : $params;
+		return $self::find($type, \compact('conditions') + $params);
 	}
 
 	/**
@@ -560,8 +560,8 @@ class Model extends \lithium\core\StaticObject {
 	 */
 	public function __call($method, $params) {
 		$methods = static::instanceMethods();
-		if (isset($methods[$method]) && is_callable($methods[$method])) {
-			return call_user_func_array($methods[$method], $params);
+		if (isset($methods[$method]) && \is_callable($methods[$method])) {
+			return \call_user_func_array($methods[$method], $params);
 		}
 		$message = "Unhandled method call `{$method}`.";
 		throw new BadMethodCallException($message);
@@ -578,7 +578,7 @@ class Model extends \lithium\core\StaticObject {
 		$self = static::_object();
 		$methods = static::instanceMethods();
 		$isFinder = isset($self->_finders[$method]);
-		preg_match('/^findBy(?P<field>\w+)$|^find(?P<type>\w+)By(?P<fields>\w+)$/', $method, $args);
+		\preg_match('/^findBy(?P<field>\w+)$|^find(?P<type>\w+)By(?P<fields>\w+)$/', $method, $args);
 		$staticRepondsTo = $isFinder || $method === 'all' || !!$args;
 		$instanceRespondsTo = isset($methods[$method]);
 		return $instanceRespondsTo || $staticRepondsTo || parent::respondsTo($method, $internal);
@@ -619,28 +619,28 @@ class Model extends \lithium\core\StaticObject {
 		if ($type === null) {
 			return null;
 		}
-		$isFinder = is_string($type) && isset($self->_finders[$type]);
+		$isFinder = \is_string($type) && isset($self->_finders[$type]);
 
-		if ($type !== 'all' && !is_array($type) && !$isFinder) {
+		if ($type !== 'all' && !\is_array($type) && !$isFinder) {
 			$options['conditions'] = static::key($type);
 			$type = 'first';
 		}
 
-		if ($isFinder && is_array($self->_finders[$type])) {
+		if ($isFinder && \is_array($self->_finders[$type])) {
 			$options = Set::merge($self->_finders[$type], $options);
 		}
 
 		$options = (array) $options + (array) $self->_query;
-		$meta = array('meta' => $self->_meta, 'name' => get_called_class());
-		$params = compact('type', 'options');
+		$meta = array('meta' => $self->_meta, 'name' => \get_called_class());
+		$params = \compact('type', 'options');
 
 		$filter = function($self, $params) use ($meta) {
 			$options = $params['options'] + array('type' => 'read', 'model' => $meta['name']);
 			$query = $self::invokeMethod('_instance', array('query', $options));
 			return $self::connection()->read($query, $options);
 		};
-		if (is_string($type) && isset($self->_finders[$type])) {
-			$finder = is_callable($self->_finders[$type]) ? array($self->_finders[$type]) : array();
+		if (\is_string($type) && isset($self->_finders[$type])) {
+			$finder = \is_callable($self->_finders[$type]) ? array($self->_finders[$type]) : array();
 		}
 		return static::_filter(__FUNCTION__, $params, $filter, $finder);
 	}
@@ -695,7 +695,7 @@ class Model extends \lithium\core\StaticObject {
 	 */
 	public static function meta($key = null, $value = null) {
 		$self = static::_object();
-		$isArray = is_array($key);
+		$isArray = \is_array($key);
 
 		if ($value || $isArray) {
 			$value ? $self->_meta[$key] = $value : $self->_meta = $key + $self->_meta;
@@ -713,9 +713,9 @@ class Model extends \lithium\core\StaticObject {
 	 */
 	protected function _getMetaKey($key = null) {
 		if (!$key) {
-			$all = array_keys($this->_initializers);
+			$all = \array_keys($this->_initializers);
 			$call = array(&$this, '_getMetaKey');
-			return $all ? array_combine($all, array_map($call, $all)) + $this->_meta : $this->_meta;
+			return $all ? \array_combine($all, \array_map($call, $all)) + $this->_meta : $this->_meta;
 		}
 
 		if (isset($this->_meta[$key])) {
@@ -723,7 +723,7 @@ class Model extends \lithium\core\StaticObject {
 		}
 		if (isset($this->_initializers[$key]) && $initializer = $this->_initializers[$key]) {
 			unset($this->_initializers[$key]);
-			return ($this->_meta[$key] = $initializer(get_called_class()));
+			return ($this->_meta[$key] = $initializer(\get_called_class()));
 		}
 	}
 
@@ -762,13 +762,13 @@ class Model extends \lithium\core\StaticObject {
 
 		$self = static::_object();
 		$entity = $self->_classes['entity'];
-		if (is_object($values) && is_string($key)) {
+		if (\is_object($values) && \is_string($key)) {
 			return static::_key($key, $values, $entity);
 		} elseif ($values instanceof $entity) {
 			$values = $values->to('array');
 		}
 
-		if (!is_array($values) && !is_array($key)) {
+		if (!\is_array($values) && !\is_array($key)) {
 			return array($key => $values);
 		}
 
@@ -828,8 +828,8 @@ class Model extends \lithium\core\StaticObject {
 			return static::_relations(null, $type);
 		}
 
-		if (in_array($type, $self->_relationTypes, true)) {
-			return array_keys(static::_relations($type));
+		if (\in_array($type, $self->_relationTypes, true)) {
+			return \array_keys(static::_relations($type));
 		}
 		return null;
 	}
@@ -866,7 +866,7 @@ class Model extends \lithium\core\StaticObject {
 				unset($self->_relationsToLoad[$name]);
 			}
 		}
-		return array_filter($self->_relations, function($i) use ($type) {
+		return \array_filter($self->_relations, function($i) use ($type) {
 			return $i->data('type') === $type;
 		});
 	}
@@ -890,11 +890,11 @@ class Model extends \lithium\core\StaticObject {
 			$config['fieldName'] = $self->_relationFieldName($type, $name);
 		}
 
-		if (!in_array($type, $self->_relationTypes)) {
+		if (!\in_array($type, $self->_relationTypes)) {
 			throw new ConfigException("Invalid relationship type `{$type}` specified.");
 		}
 		$self->_relationFieldNames[$config['fieldName']] = $name;
-		$rel = static::connection()->relationship(get_called_class(), $type, $name, $config);
+		$rel = static::connection()->relationship(\get_called_class(), $type, $name, $config);
 		return $self->_relations[$name] = $rel;
 	}
 
@@ -911,24 +911,24 @@ class Model extends \lithium\core\StaticObject {
 	public static function schema($field = null) {
 		$self = static::_object();
 
-		if (!is_object($self->_schema)) {
+		if (!\is_object($self->_schema)) {
 			$self->_schema = static::connection()->describe(
 				$self::meta('source'), $self->_schema, $self->_meta
 			);
-			if (!is_object($self->_schema)) {
-				$class = get_called_class();
+			if (!\is_object($self->_schema)) {
+				$class = \get_called_class();
 				throw new ConfigException("Could not load schema object for model `{$class}`.");
 			}
 			$key = (array) $self::meta('key');
 			if ($self->_schema && $self->_schema->fields() && !$self->_schema->has($key)) {
-				$key = implode('`, `', $key);
+				$key = \implode('`, `', $key);
 				throw new ConfigException("Missing key `{$key}` from schema.");
 			}
 		}
 		if ($field === false) {
 			return $self->_schema->reset();
 		}
-		if (is_array($field)) {
+		if (\is_array($field)) {
 			return $self->_schema->append($field);
 		}
 		return $field ? $self->_schema->fields($field) : $self->_schema;
@@ -945,7 +945,7 @@ class Model extends \lithium\core\StaticObject {
 	 *         the fields in the list are found.
 	 */
 	public static function hasField($field) {
-		if (!is_array($field)) {
+		if (!\is_array($field)) {
 			return static::schema()->fields($field);
 		}
 		foreach ($field as $f) {
@@ -991,7 +991,7 @@ class Model extends \lithium\core\StaticObject {
 	public static function create(array $data = array(), array $options = array()) {
 		$defaults = array('defaults' => true, 'class' => 'entity');
 		$options += $defaults;
-		return static::_filter(__FUNCTION__, compact('data', 'options'), function($self, $params) {
+		return static::_filter(__FUNCTION__, \compact('data', 'options'), function($self, $params) {
 			$class = $params['options']['class'];
 			unset($params['options']['class']);
 			if ($class === 'entity' && $params['options']['defaults']) {
@@ -1020,7 +1020,7 @@ class Model extends \lithium\core\StaticObject {
 	 * @return array
 	 */
 	public static function instanceMethods(array $methods = null) {
-		$class = get_called_class();
+		$class = \get_called_class();
 
 		if (!isset(static::$_instanceMethods[$class])) {
 			static::$_instanceMethods[$class] = array();
@@ -1028,7 +1028,7 @@ class Model extends \lithium\core\StaticObject {
 		if ($methods === array()) {
 			return static::$_instanceMethods[$class] = array();
 		}
-		if (!is_null($methods)) {
+		if (!\is_null($methods)) {
 			static::$_instanceMethods[$class] = $methods + static::$_instanceMethods[$class];
 		}
 		return static::$_instanceMethods[$class];
@@ -1097,7 +1097,7 @@ class Model extends \lithium\core\StaticObject {
 	 */
 	public function save($entity, $data = null, array $options = array()) {
 		$self = static::_object();
-		$_meta = array('model' => get_called_class()) + $self->_meta;
+		$_meta = array('model' => \get_called_class()) + $self->_meta;
 		$_schema = $self->schema();
 
 		$defaults = array(
@@ -1108,7 +1108,7 @@ class Model extends \lithium\core\StaticObject {
 			'locked' => $self->_meta['locked']
 		);
 		$options += $defaults;
-		$params = compact('entity', 'data', 'options');
+		$params = \compact('entity', 'data', 'options');
 
 		$filter = function($self, $params) use ($_meta, $_schema) {
 			$entity = $params['entity'];
@@ -1119,24 +1119,24 @@ class Model extends \lithium\core\StaticObject {
 			}
 			if ($rules = $options['validate']) {
 				$events = $options['events'];
-				$validateOpts = is_array($rules) ? compact('rules','events') : compact('events');
+				$validateOpts = \is_array($rules) ? \compact('rules','events') : \compact('events');
 
 				if (!$entity->validates($validateOpts)) {
 					return false;
 				}
 			}
 			if (($whitelist = $options['whitelist']) || $options['locked']) {
-				$whitelist = $whitelist ?: array_keys($_schema->fields());
+				$whitelist = $whitelist ?: \array_keys($_schema->fields());
 			}
 
 			$type = $entity->exists() ? 'update' : 'create';
-			$queryOpts = compact('type', 'whitelist', 'entity') + $options + $_meta;
+			$queryOpts = \compact('type', 'whitelist', 'entity') + $options + $_meta;
 			$query = $self::invokeMethod('_instance', array('query', $queryOpts));
 			return $self::connection()->{$type}($query, $options);
 		};
 
 		if (!$options['callbacks']) {
-			return $filter(get_called_class(), $params);
+			return $filter(\get_called_class(), $params);
 		}
 		return static::_filter(__FUNCTION__, $params, $filter);
 	}
@@ -1188,13 +1188,13 @@ class Model extends \lithium\core\StaticObject {
 		$defaults = array(
 			'rules' => $this->validates,
 			'events' => $entity->exists() ? 'update' : 'create',
-			'model' => get_called_class()
+			'model' => \get_called_class()
 		);
 		$options += $defaults;
 		$self = static::_object();
 		$validator = $self->_classes['validator'];
 		$entity->errors(false);
-		$params = compact('entity', 'options');
+		$params = \compact('entity', 'options');
 
 		$filter = function($parent, $params) use ($validator) {
 			$entity = $params['entity'];
@@ -1219,7 +1219,7 @@ class Model extends \lithium\core\StaticObject {
 	 * @filter
 	 */
 	public function delete($entity, array $options = array()) {
-		$params = compact('entity', 'options');
+		$params = \compact('entity', 'options');
 
 		return static::_filter(__FUNCTION__, $params, function($self, $params) {
 			$options = $params + $params['options'] + array('model' => $self, 'type' => 'delete');
@@ -1246,7 +1246,7 @@ class Model extends \lithium\core\StaticObject {
 	 * @filter
 	 */
 	public static function update($data, $conditions = array(), array $options = array()) {
-		$params = compact('data', 'conditions', 'options');
+		$params = \compact('data', 'conditions', 'options');
 
 		return static::_filter(__FUNCTION__, $params, function($self, $params) {
 			$options = $params + $params['options'] + array('model' => $self, 'type' => 'update');
@@ -1272,7 +1272,7 @@ class Model extends \lithium\core\StaticObject {
 	 * @filter
 	 */
 	public static function remove($conditions = array(), array $options = array()) {
-		$params = compact('conditions', 'options');
+		$params = \compact('conditions', 'options');
 
 		return static::_filter(__FUNCTION__, $params, function($self, $params) {
 			$options = $params['options'] + $params + array('model' => $self, 'type' => 'delete');
@@ -1298,7 +1298,7 @@ class Model extends \lithium\core\StaticObject {
 		if ($conn = $connections::get($name)) {
 			return $conn;
 		}
-		$class = get_called_class();
+		$class = \get_called_class();
 		$msg = "The data connection `{$name}` is not configured for model `{$class}`.";
 		throw new ConfigException($msg);
 	}
@@ -1340,20 +1340,20 @@ class Model extends \lithium\core\StaticObject {
 	 * @return object
 	 */
 	protected static function _filter($method, $params, $callback, $filters = array()) {
-		if (!strpos($method, '::')) {
-			$method = get_called_class() . '::' . $method;
+		if (!\strpos($method, '::')) {
+			$method = \get_called_class() . '::' . $method;
 		}
-		list($class, $method) = explode('::', $method, 2);
+		list($class, $method) = \explode('::', $method, 2);
 		$instance = static::_object();
 
 		if (isset($instance->_instanceFilters[$method])) {
-			$filters = array_merge($instance->_instanceFilters[$method], $filters);
+			$filters = \array_merge($instance->_instanceFilters[$method], $filters);
 		}
 		return parent::_filter($method, $params, $callback, $filters);
 	}
 
 	protected static function &_object() {
-		$class = get_called_class();
+		$class = \get_called_class();
 
 		if (!isset(static::$_instances[$class])) {
 			static::$_instances[$class] = new $class();
@@ -1418,9 +1418,9 @@ class Model extends \lithium\core\StaticObject {
 				$data = $chain->next($self, $params, $chain);
 
 				if (isset($options['return']) && $options['return'] === 'array') {
-					$data = is_array($data) ? reset($data) : $data;
+					$data = \is_array($data) ? \reset($data) : $data;
 				} else {
-					$data = is_object($data) ? $data->rewind() : $data;
+					$data = \is_object($data) ? $data->rewind() : $data;
 				}
 
 				return $data ?: null;
@@ -1432,21 +1432,21 @@ class Model extends \lithium\core\StaticObject {
 
 				foreach ($chain->next($self, $params, $chain) as $entity) {
 					$key = $entity->{$name};
-					$result[is_scalar($key) ? $key : (string) $key] = $entity->title();
+					$result[\is_scalar($key) ? $key : (string) $key] = $entity->title();
 				}
 				return $result;
 			},
 			'count' => function($self, $params) use ($_query) {
 				$model = $self;
 				$type = $params['type'];
-				$options = array_diff_key($params['options'], $_query);
+				$options = \array_diff_key($params['options'], $_query);
 
 				if ($options && !isset($params['options']['conditions'])) {
 					$options = array('conditions' => $options);
 				} else {
 					$options = $params['options'];
 				}
-				$options += array('type' => 'read') + compact('model');
+				$options += array('type' => 'read') + \compact('model');
 				$query = $self::invokeMethod('_instance', array('query', $options));
 				return $self::connection()->calculation('count', $query, $options);
 			}
@@ -1457,7 +1457,7 @@ class Model extends \lithium\core\StaticObject {
 	 * Reseting the model
 	 */
 	public static function reset() {
-		$class = get_called_class();
+		$class = \get_called_class();
 		unset(static::$_instances[$class]);
 	}
 }

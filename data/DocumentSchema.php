@@ -36,7 +36,7 @@ class DocumentSchema extends \lithium\data\Schema {
 		$model = (!$options['model'] && $object) ? $object->model() : $options['model'];
 		$classes = $this->_classes;
 
-		$fieldName = is_int($key) ? null : $key;
+		$fieldName = \is_int($key) ? null : $key;
 		$pathKey = $basePathKey;
 
 		if ($fieldName) {
@@ -46,7 +46,7 @@ class DocumentSchema extends \lithium\data\Schema {
 		if ($data instanceof $classes['set'] || $data instanceof $classes['entity']) {
 			return $data;
 		}
-		if (is_object($data) && !$this->is('array', $pathKey)) {
+		if (\is_object($data) && !$this->is('array', $pathKey)) {
 			return $data;
 		}
 		return $this->_castArray($object, $data, $pathKey, $options, $defaults);
@@ -55,7 +55,7 @@ class DocumentSchema extends \lithium\data\Schema {
 	protected function _castArray($object, $val, $pathKey, $options, $defaults) {
 		$isArray = $this->is('array', $pathKey) && (!$object instanceof $this->_classes['set']);
 		$isObject = ($this->type($pathKey) === 'object');
-		$valIsArray = is_array($val);
+		$valIsArray = \is_array($val);
 		$numericArray = false;
 		$class = 'entity';
 
@@ -64,7 +64,7 @@ class DocumentSchema extends \lithium\data\Schema {
 		}
 
 		if ($valIsArray) {
-			$numericArray = !$val || array_keys($val) === range(0, count($val) - 1);
+			$numericArray = !$val || \array_keys($val) === \range(0, \count($val) - 1);
 		}
 
 		if ($isArray || ($numericArray && !$isObject)) {
@@ -78,10 +78,10 @@ class DocumentSchema extends \lithium\data\Schema {
 				'model' => $options['model'],
 				'schema' => $this
 			);
-			$config += compact('pathKey') + array_diff_key($options, $defaults);
+			$config += \compact('pathKey') + \array_diff_key($options, $defaults);
 
 			if (!$pathKey && $model = $options['model']) {
-				$exists = is_object($object) ? $object->exists() : false;
+				$exists = \is_object($object) ? $object->exists() : false;
 				$config += array('class' => $class, 'exists' => $exists, 'defaults' => false);
 				$val = $model::create($val, $config);
 			} else {
@@ -112,7 +112,7 @@ class DocumentSchema extends \lithium\data\Schema {
 		if ($this->is('null', $field) && ($value === null || $value === "")) {
 			return null;
 		}
-		if (!is_scalar($value)) {
+		if (!\is_scalar($value)) {
 			return $value;
 		}
 		$type = $this->type($field);

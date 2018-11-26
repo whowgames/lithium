@@ -12,7 +12,7 @@ class MockCollectionStringCast {
 	protected $_data = array(1 => 2, 2 => 3);
 
 	public function __toString() {
-		return json_encode($this->_data);
+		return \json_encode($this->_data);
 	}
 }
 

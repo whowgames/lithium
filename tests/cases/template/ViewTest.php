@@ -55,21 +55,21 @@ class ViewTest extends \lithium\test\Unit {
 	 */
 	public function testEscapeOutputFilterWithInjectedEncoding() {
 		$message = "Multibyte string support must be enabled to test character encodings.";
-		$this->skipIf(!function_exists('mb_convert_encoding'), $message);
+		$this->skipIf(!\function_exists('mb_convert_encoding'), $message);
 
 		$string = "Joël";
 
 		$response = new Response();
 		$response->encoding = 'UTF-8';
-		$view = new View(compact('response'));
+		$view = new View(\compact('response'));
 		$handler = $view->outputFilters['h'];
-		$this->assertTrue(mb_check_encoding($handler($string), "UTF-8"));
+		$this->assertTrue(\mb_check_encoding($handler($string), "UTF-8"));
 
 		$response = new Response();
 		$response->encoding = 'ISO-8859-1';
-		$view = new View(compact('response'));
+		$view = new View(\compact('response'));
 		$handler = $view->outputFilters['h'];
-		$this->assertTrue(mb_check_encoding($handler($string), "ISO-8859-1"));
+		$this->assertTrue(\mb_check_encoding($handler($string), "ISO-8859-1"));
 	}
 
 	public function testBasicRenderModes() {
@@ -174,18 +174,18 @@ class ViewTest extends \lithium\test\Unit {
 	}
 
 	public function testElementRenderingOptions() {
-		$tmpDir = realpath(Libraries::get(true, 'resources') . '/tmp');
-		$this->skipIf(!is_writable($tmpDir), "Can't write to resources directory.");
+		$tmpDir = \realpath(Libraries::get(true, 'resources') . '/tmp');
+		$this->skipIf(!\is_writable($tmpDir), "Can't write to resources directory.");
 
 		$testApp = $tmpDir . '/tests/test_app';
 		$viewDir = $testApp . '/views';
-		mkdir($viewDir, 0777, true);
+		\mkdir($viewDir, 0777, true);
 		Libraries::add('test_app', array('path' => $testApp));
 
 		$body = '<?php echo isset($this->_options[$option]) ? $this->_options[$option] : ""; ?>';
 		$template = $viewDir . '/template.html.php';
 
-		file_put_contents($template, $body);
+		\file_put_contents($template, $body);
 
 		$view = new View(array(
 			'paths' => array(
@@ -218,17 +218,17 @@ class ViewTest extends \lithium\test\Unit {
 	}
 
 	public function testContextWithElementRenderingOptions() {
-		$tmpDir = realpath(Libraries::get(true, 'resources') . '/tmp');
-		$this->skipIf(!is_writable($tmpDir), "Can't write to resources directory.");
+		$tmpDir = \realpath(Libraries::get(true, 'resources') . '/tmp');
+		$this->skipIf(!\is_writable($tmpDir), "Can't write to resources directory.");
 
 		$testApp = $tmpDir . '/tests/test_app';
 		$viewDir = $testApp . '/views';
-		mkdir($viewDir . '/elements', 0777, true);
+		\mkdir($viewDir . '/elements', 0777, true);
 		Libraries::add('test_app', array('path' => $testApp));
 
 		$testApp2 = $tmpDir . '/tests/test_app2';
 		$viewDir2 = $testApp2 . '/views';
-		mkdir($viewDir2 . '/elements', 0777, true);
+		\mkdir($viewDir2 . '/elements', 0777, true);
 		Libraries::add('test_app2', array('path' => $testApp2));
 
 		$body = "<?php ";
@@ -237,9 +237,9 @@ class ViewTest extends \lithium\test\Unit {
 		$body .= "echo \$this->_render('element', 'element1');";
 		$body .= "?>";
 
-		file_put_contents($viewDir . '/template.html.php', $body);
-		file_put_contents($viewDir . '/elements/element1.html.php', 'element1');
-		file_put_contents($viewDir2 . '/elements/element2.html.php', 'element2');
+		\file_put_contents($viewDir . '/template.html.php', $body);
+		\file_put_contents($viewDir . '/elements/element1.html.php', 'element1');
+		\file_put_contents($viewDir2 . '/elements/element2.html.php', 'element2');
 
 		$view = new View(array(
 			'compile' => false,
@@ -264,7 +264,7 @@ class ViewTest extends \lithium\test\Unit {
 		$body .= "array('library' => 'test_app2'));";
 		$body .= "?>";
 
-		file_put_contents($viewDir . '/template.html.php', $body);
+		\file_put_contents($viewDir . '/template.html.php', $body);
 
 		$result = $view->render('all', array(), $options);
 		$this->assertIdentical('element1element2', $result);

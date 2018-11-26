@@ -108,7 +108,7 @@ class Locale extends \lithium\core\StaticObject {
 			}
 		}
 		if ($result) {
-			return implode('_', $result);
+			return \implode('_', $result);
 		}
 	}
 
@@ -125,10 +125,10 @@ class Locale extends \lithium\core\StaticObject {
 		$regex .= '(?:[_-](?P<territory>[a-z]{2}))?';
 		$regex .= '(?:[_-](?P<variant>[a-z]{5,}))?';
 
-		if (!preg_match("/^{$regex}$/i", $locale, $matches)) {
+		if (!\preg_match("/^{$regex}$/i", $locale, $matches)) {
 			throw new InvalidArgumentException("Locale `{$locale}` could not be parsed.");
 		}
-		return array_filter(array_intersect_key($matches, static::$_tags));
+		return \array_filter(\array_intersect_key($matches, static::$_tags));
 	}
 
 	/**
@@ -172,8 +172,8 @@ class Locale extends \lithium\core\StaticObject {
 		}
 		$tags = static::decompose($locale);
 
-		while (count($tags) > 1) {
-			array_pop($tags);
+		while (\count($tags) > 1) {
+			\array_pop($tags);
 			$locales[] = static::compose($tags);
 		}
 		$locales[] = 'root';
@@ -202,22 +202,22 @@ class Locale extends \lithium\core\StaticObject {
 	 */
 	public static function lookup($locales, $locale) {
 		$tags = static::decompose($locale);
-		$count = count($tags);
+		$count = \count($tags);
 		while ($count > 0) {
-			if (($key = array_search(static::compose($tags), $locales)) !== false) {
+			if (($key = \array_search(static::compose($tags), $locales)) !== false) {
 				return $locales[$key];
 			} elseif ($count === 1) {
 				foreach ($locales as $currentLocale) {
-					if (strpos($currentLocale, current($tags) . '_') === 0) {
+					if (\strpos($currentLocale, \current($tags) . '_') === 0) {
 						return $currentLocale;
 					}
 				}
 			}
-			if (($key = array_search(static::compose($tags), $locales)) !== false) {
+			if (($key = \array_search(static::compose($tags), $locales)) !== false) {
 				return $locales[$key];
 			}
-			array_pop($tags);
-			$count = count($tags);
+			\array_pop($tags);
+			$count = \count($tags);
 		}
 	}
 
@@ -234,7 +234,7 @@ class Locale extends \lithium\core\StaticObject {
 	 * @todo Rewrite this to remove hard-coded class names.
 	 */
 	public static function preferred($request, $available = null) {
-		if (is_array($request)) {
+		if (\is_array($request)) {
 			$result = $request;
 		} elseif ($request instanceof ActionRequest) {
 			$result = static::_preferredAction($request);
@@ -244,7 +244,7 @@ class Locale extends \lithium\core\StaticObject {
 			return null;
 		}
 		if (!$available) {
-			return array_shift($result);
+			return \array_shift($result);
 		}
 		foreach ((array) $result as $locale) {
 			if ($match = static::lookup($available, $locale)) {
@@ -265,19 +265,19 @@ class Locale extends \lithium\core\StaticObject {
 		$result = array();
 		$regex  = "/^\s*(?P<locale>\w\w(?:[-]\w\w)?)(?:;q=(?P<quality>(0|1|0\.\d+)))?\s*$/";
 
-		foreach (explode(',', $request->env('HTTP_ACCEPT_LANGUAGE')) as $part) {
-			if (preg_match($regex, $part, $matches)) {
+		foreach (\explode(',', $request->env('HTTP_ACCEPT_LANGUAGE')) as $part) {
+			if (\preg_match($regex, $part, $matches)) {
 				$locale = static::canonicalize($matches['locale']);
 				$quality = isset($matches['quality']) ? $matches['quality'] : 1;
 				$result[$quality][] = $locale;
 			}
 		}
 
-		krsort($result);
+		\krsort($result);
 		$return = array();
 
 		foreach ($result as $locales) {
-			$return = array_merge($return, array_values($locales));
+			$return = \array_merge($return, \array_values($locales));
 		}
 		return $return;
 	}
@@ -302,7 +302,7 @@ class Locale extends \lithium\core\StaticObject {
 		$result = array();
 
 		if ($value = $request->env('LANGUAGE')) {
-			return explode(':', $value);
+			return \explode(':', $value);
 		}
 		foreach (array('LC_ALL', 'LANG') as $variable) {
 			$value = $request->env($variable);
@@ -310,7 +310,7 @@ class Locale extends \lithium\core\StaticObject {
 			if (!$value || $value === 'C' || $value === 'POSIX') {
 				continue;
 			}
-			if (preg_match("/{$regex}/", $value, $matches)) {
+			if (\preg_match("/{$regex}/", $value, $matches)) {
 				return (array) $matches['locale'];
 			}
 		}

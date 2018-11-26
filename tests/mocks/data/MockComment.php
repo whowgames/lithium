@@ -23,18 +23,18 @@ class MockComment extends \lithium\data\Model {
 			'conditions' => null, 'fields' => null, 'order' => null, 'limit' => null, 'page' => 1
 		);
 		$options += $defaults;
-		$params = compact('type', 'options');
+		$params = \compact('type', 'options');
 		$self = static::_object();
 
 		$filter = function($self, $params) {
-			extract($params);
+			\extract($params);
 			$query = new Query(array('type' => 'read') + $options);
 
 			return new RecordSet(array(
 				'query'    => $query,
-				'data'    => array_map(
+				'data'    => \array_map(
 					function($data) {
-						return new Record(compact('data') + array('model' => __CLASS__));
+						return new Record(\compact('data') + array('model' => __CLASS__));
 					},
 					array(
 						array('comment_id' => 1, 'author_id' => 123, 'text' => 'First comment'),

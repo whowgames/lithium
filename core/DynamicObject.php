@@ -170,7 +170,7 @@ class DynamicObject {
 	 * @return mixed  Returns the result of the method call
 	 */
 	public function invokeMethod($method, $params = array()) {
-		switch (count($params)) {
+		switch (\count($params)) {
 			case 0:
 				return $this->{$method}();
 			case 1:
@@ -184,7 +184,7 @@ class DynamicObject {
 			case 5:
 				return $this->{$method}($params[0], $params[1], $params[2], $params[3], $params[4]);
 			default:
-				return call_user_func_array(array(&$this, $method), $params);
+				return \call_user_func_array(array(&$this, $method), $params);
 		}
 	}
 
@@ -198,7 +198,7 @@ class DynamicObject {
 	 * @return object Returns an instance of the requested object with the given properties set.
 	 */
 	public static function __set_state($data) {
-		$class = get_called_class();
+		$class = \get_called_class();
 		$object = new $class();
 
 		foreach ($data as $property => $value) {
@@ -228,7 +228,7 @@ class DynamicObject {
 	 * @return object
 	 */
 	protected function _instance($name, array $options = array()) {
-		if (is_string($name) && isset($this->_classes[$name])) {
+		if (\is_string($name) && isset($this->_classes[$name])) {
 			$name = $this->_classes[$name];
 		}
 		return Libraries::instance(null, $name, $options);
@@ -253,15 +253,15 @@ class DynamicObject {
 	 *         `$filters` or applied with `applyFilter()`.
 	 */
 	protected function _filter($method, $params, $callback, $filters = array()) {
-		list($class, $method) = explode('::', $method);
+		list($class, $method) = \explode('::', $method);
 
 		if (empty($this->_methodFilters[$method]) && empty($filters)) {
 			return $callback($this, $params, null);
 		}
 
 		$f = isset($this->_methodFilters[$method]) ? $this->_methodFilters[$method] : array();
-		$data = array_merge($f, $filters, array($callback));
-		return Filters::run($this, $params, compact('data', 'class', 'method'));
+		$data = \array_merge($f, $filters, array($callback));
+		return Filters::run($this, $params, \compact('data', 'class', 'method'));
 	}
 
 	/**
@@ -270,10 +270,10 @@ class DynamicObject {
 	 * @return array Returns an array of parent classes for the current class.
 	 */
 	protected static function _parents() {
-		$class = get_called_class();
+		$class = \get_called_class();
 
 		if (!isset(self::$_parents[$class])) {
-			self::$_parents[$class] = class_parents($class);
+			self::$_parents[$class] = \class_parents($class);
 		}
 		return self::$_parents[$class];
 	}

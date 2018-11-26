@@ -77,9 +77,9 @@ class RequestTest extends \lithium\test\Unit {
 
 	public function setUp() {
 		$resources = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($resources), "Can't write to resources directory.");
+		$this->skipIf(!\is_writable($resources), "Can't write to resources directory.");
 		$app = $resources . '/www/lithium/app';
-		mkdir($app, 0777, true);
+		\mkdir($app, 0777, true);
 
 		$this->_library = Libraries::get(true);
 		Libraries::remove($this->_library['name']);
@@ -1080,10 +1080,10 @@ class RequestTest extends \lithium\test\Unit {
 
 	public function testAutomaticContentDecoding() {
 		foreach (array('POST', 'PUT', 'PATCH') as $method) {
-			$stream = fopen('php://temp', 'r+');
-			fwrite($stream, '{ "foo": "bar" }');
-			rewind($stream);
-			$request = new Request(compact('stream') + array('env' => array(
+			$stream = \fopen('php://temp', 'r+');
+			\fwrite($stream, '{ "foo": "bar" }');
+			\rewind($stream);
+			$request = new Request(\compact('stream') + array('env' => array(
 				'CONTENT_TYPE' => 'application/json; charset=UTF-8',
 				'REQUEST_METHOD' => $method
 			)));
@@ -1091,10 +1091,10 @@ class RequestTest extends \lithium\test\Unit {
 		}
 
 		foreach (array('GET', 'HEAD', 'OPTIONS', 'DELETE') as $method) {
-			$stream = fopen('php://temp', 'r+');
-			fwrite($stream, '{ "foo": "bar" }');
-			rewind($stream);
-			$request = new Request(compact('stream') + array('env' => array(
+			$stream = \fopen('php://temp', 'r+');
+			\fwrite($stream, '{ "foo": "bar" }');
+			\rewind($stream);
+			$request = new Request(\compact('stream') + array('env' => array(
 				'CONTENT_TYPE' => 'application/json; charset=UTF-8',
 				'REQUEST_METHOD' => $method
 			)));
@@ -1189,26 +1189,26 @@ class RequestTest extends \lithium\test\Unit {
 			'*/*;q=0.5',
 			'application/youtube-client'
 		);
-		$request = new Request(array('env' => array('HTTP_ACCEPT' => join(',', $chrome))));
+		$request = new Request(array('env' => array('HTTP_ACCEPT' => \join(',', $chrome))));
 		$this->assertEqual('html', $request->accepts());
-		$this->assertNotEmpty(array_search('text/plain', $request->accepts(true)), 4);
+		$this->assertNotEmpty(\array_search('text/plain', $request->accepts(true)), 4);
 
-		$request = new Request(array('env' => array('HTTP_ACCEPT' => join(',', $safari))));
-		$this->assertEqual('html', $request->accepts());
-
-		$request = new Request(array('env' => array('HTTP_ACCEPT' => join(',', $firefox))));
+		$request = new Request(array('env' => array('HTTP_ACCEPT' => \join(',', $safari))));
 		$this->assertEqual('html', $request->accepts());
 
-		$request = new Request(array('env' => array('HTTP_ACCEPT' => join(',', $opera))));
+		$request = new Request(array('env' => array('HTTP_ACCEPT' => \join(',', $firefox))));
 		$this->assertEqual('html', $request->accepts());
 
-		$request = new Request(array('env' => array('HTTP_ACCEPT' => join(',', $chrome))));
+		$request = new Request(array('env' => array('HTTP_ACCEPT' => \join(',', $opera))));
+		$this->assertEqual('html', $request->accepts());
+
+		$request = new Request(array('env' => array('HTTP_ACCEPT' => \join(',', $chrome))));
 		$request->params['type'] = 'txt';
 
 		$result = $request->accepts(true);
 		$this->assertEqual('text/plain', $result[0]);
 
-		$request = new Request(array('env' => array('HTTP_ACCEPT' => join(',', $android))));
+		$request = new Request(array('env' => array('HTTP_ACCEPT' => \join(',', $android))));
 		$this->assertEqual('html', $request->accepts());
 	}
 
@@ -1299,7 +1299,7 @@ class RequestTest extends \lithium\test\Unit {
 			'query' => array('some' => 'query', 'parameter' => 'values')
 		));
 
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET /the/base/path/posts?some=query&parameter=values HTTP/1.1',
 			'Host: foo.com',
 			'Connection: Close',
@@ -1322,7 +1322,7 @@ class RequestTest extends \lithium\test\Unit {
 			'data' => array('some' => 'body', 'parameter' => 'values')
 		));
 
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET /posts HTTP/1.1',
 			'Host: lithify.me',
 			'Connection: Close',
@@ -1335,7 +1335,7 @@ class RequestTest extends \lithium\test\Unit {
 	}
 
 	public function testConvertToStringWithJson() {
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'GET /posts HTTP/1.1',
 			'Host: lithify.me',
 			'Connection: Close',

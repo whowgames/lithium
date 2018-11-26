@@ -71,10 +71,10 @@ class Apc extends \lithium\core\DynamicObject {
 		$expiry = ($expiry) ?: $this->_config['expiry'];
 
 		return function($self, $params) use ($expiry) {
-			$cachetime = (is_int($expiry) ? $expiry : strtotime($expiry)) - time();
+			$cachetime = (\is_int($expiry) ? $expiry : \strtotime($expiry)) - \time();
 			$key = $params['key'];
 
-			if (is_array($key)) {
+			if (\is_array($key)) {
 				return apc_store($key, $cachetime);
 			}
 			return apc_store($params['key'], $params['data'], $cachetime);
@@ -163,9 +163,9 @@ class Apc extends \lithium\core\DynamicObject {
 	 * @return boolean `true` if enabled, `false` otherwise
 	 */
 	public static function enabled() {
-		$loaded = extension_loaded('apc');
-		$isCli = (php_sapi_name() === 'cli');
-		$enabled = (!$isCli && ini_get('apc.enabled')) || ($isCli && ini_get('apc.enable_cli'));
+		$loaded = \extension_loaded('apc');
+		$isCli = (\php_sapi_name() === 'cli');
+		$enabled = (!$isCli && \ini_get('apc.enabled')) || ($isCli && \ini_get('apc.enable_cli'));
 		return ($loaded && $enabled);
 	}
 }

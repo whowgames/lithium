@@ -15,7 +15,7 @@ class MockModel extends \lithium\data\Model {
 	protected $_meta = array('connection' => false);
 
 	public static function &connection($records = null) {
-		$mock = new MockAdapter(compact('records') + array(
+		$mock = new MockAdapter(\compact('records') + array(
 			'columns' => array(
 				'lithium\tests\mocks\data\MockModel' => array('id', 'data')
 			),

@@ -153,7 +153,7 @@ class AdaptableTest extends \lithium\test\Unit {
 
 		$result = $strategy::strategies('default');
 		$this->assertInstanceOf('SplDoublyLinkedList', $result);
-		$this->assertEqual(count($result), 1);
+		$this->assertEqual(\count($result), 1);
 		$this->assertInstanceOf($mockConfigurizer, $result->top());
 	}
 
@@ -184,7 +184,7 @@ class AdaptableTest extends \lithium\test\Unit {
 
 		$data = array('some' => 'data');
 		$result = $strategy::applyStrategies('write', 'default', $data);
-		$this->assertEqual(serialize($data), $result);
+		$this->assertEqual(\serialize($data), $result);
 	}
 
 	public function testApplySingleStrategyWithConfiguration() {
@@ -222,7 +222,7 @@ class AdaptableTest extends \lithium\test\Unit {
 
 		$data = array('some' => 'data');
 		$result = $strategy::applyStrategies('write', 'default', $data);
-		$transformed = base64_encode(serialize($data));
+		$transformed = \base64_encode(\serialize($data));
 		$this->assertEqual($transformed, $result);
 
 		$options = array('mode' => 'LIFO');

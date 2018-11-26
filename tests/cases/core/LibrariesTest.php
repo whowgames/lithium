@@ -36,14 +36,14 @@ class LibrariesTest extends \lithium\test\Unit {
 		$invalidDS = $ds === '/' ? '\\' : '/';
 
 		$result = Libraries::path('\lithium\core\Libraries');
-		$this->assertNotEmpty(strpos($result, "${ds}lithium${ds}core${ds}Libraries.php"));
+		$this->assertNotEmpty(\strpos($result, "${ds}lithium${ds}core${ds}Libraries.php"));
 		$this->assertFileExists($result);
-		$this->assertFalse(strpos($result, $invalidDS));
+		$this->assertFalse(\strpos($result, $invalidDS));
 
 		$result = Libraries::path('lithium\core\Libraries');
-		$this->assertNotEmpty(strpos($result, "${ds}lithium${ds}core${ds}Libraries.php"));
+		$this->assertNotEmpty(\strpos($result, "${ds}lithium${ds}core${ds}Libraries.php"));
 		$this->assertFileExists($result);
-		$this->assertFalse(strpos($result, $invalidDS));
+		$this->assertFalse(\strpos($result, $invalidDS));
 	}
 
 	public function testPathTemplate() {
@@ -88,7 +88,7 @@ class LibrariesTest extends \lithium\test\Unit {
 		$result = Libraries::path('Library_Class_Separated_By_Underscore', array(
 			'prefix' => 'Library_',
 			'transform' => function ($class, $options) {
-				return str_replace('_', '/', $class);
+				return \str_replace('_', '/', $class);
 			}
 		));
 		$this->assertEqual($expected, $result);
@@ -103,11 +103,11 @@ class LibrariesTest extends \lithium\test\Unit {
 
 	public function testPathFiltering() {
 		$tests = Libraries::find('lithium', array('recursive' => true, 'path' => '/tests/cases'));
-		$result = preg_grep('/^lithium\\\\tests\\\\cases\\\\/', $tests);
+		$result = \preg_grep('/^lithium\\\\tests\\\\cases\\\\/', $tests);
 		$this->assertIdentical($tests, $result);
 
 		$all = Libraries::find('lithium', array('recursive' => true));
-		$result = array_values(preg_grep('/^lithium\\\\tests\\\\cases\\\\/', $all));
+		$result = \array_values(\preg_grep('/^lithium\\\\tests\\\\cases\\\\/', $all));
 		$this->assertIdentical($tests, $result);
 
 		if ($this->hasApp) {
@@ -115,8 +115,8 @@ class LibrariesTest extends \lithium\test\Unit {
 			$tests = Libraries::find($config['name'], array(
 				'recursive' => true, 'path' => '/tests/cases')
 			);
-			$prefix = preg_quote($config['prefix']);
-			$result = preg_grep('/^' . $prefix . 'tests\\\\cases\\\\/', $tests);
+			$prefix = \preg_quote($config['prefix']);
+			$result = \preg_grep('/^' . $prefix . 'tests\\\\cases\\\\/', $tests);
 			$this->assertIdentical($tests, $result);
 		}
 	}
@@ -128,7 +128,7 @@ class LibrariesTest extends \lithium\test\Unit {
 		$config = Libraries::get('lithium'); // => ['path' => '/path/to/lithium', ...]
 		$expected = array(
 			'name' => 'lithium',
-			'path' => str_replace('\\', '/', realpath(Libraries::get('lithium', 'path'))),
+			'path' => \str_replace('\\', '/', \realpath(Libraries::get('lithium', 'path'))),
 			'prefix' => 'lithium\\',
 			'suffix' => '.php',
 			'loader' => 'lithium\\core\\Libraries::load',
@@ -140,7 +140,7 @@ class LibrariesTest extends \lithium\test\Unit {
 		);
 
 		if (!$this->hasApp) {
-			$expected['resources'] = sys_get_temp_dir();
+			$expected['resources'] = \sys_get_temp_dir();
 			$expected['default'] = true;
 		}
 
@@ -156,7 +156,7 @@ class LibrariesTest extends \lithium\test\Unit {
 		}
 
 		$configs = Libraries::get(array('lithium')); // => ['lithium' => ['path' => '...', ...]]
-		$this->assertEqual(array('lithium'), array_keys($configs));
+		$this->assertEqual(array('lithium'), \array_keys($configs));
 		$this->assertEqual($expected, $configs['lithium']);
 
 		$prefixes = Libraries::get(array('lithium'), 'prefix'); // => ['lithium' => 'lithium\\']
@@ -164,10 +164,10 @@ class LibrariesTest extends \lithium\test\Unit {
 
 		$allPre = Libraries::get(null, 'prefix'); // => ['my' => 'my\\', 'lithium' => 'lithium\\']
 		$this->assertNotEmpty($allPre);
-		$this->assertEqual(array_keys(Libraries::get()), array_keys($allPre));
+		$this->assertEqual(\array_keys(Libraries::get()), \array_keys($allPre));
 
 		foreach ($allPre as $prefix) {
-			$this->assertTrue(is_string($prefix) || is_bool($prefix));
+			$this->assertTrue(\is_string($prefix) || \is_bool($prefix));
 		}
 
 		$library = Libraries::get('lithium\core\Libraries'); // 'lithium'
@@ -223,14 +223,14 @@ class LibrariesTest extends \lithium\test\Unit {
 	 * Tests that non-prefixed (poorly named or structured) libraries can still be added.
 	 */
 	public function testAddNonPrefixedLibrary() {
-		$tmpDir = realpath(Libraries::get(true, 'resources') . '/tmp');
-		$this->skipIf(!is_writable($tmpDir), "Can't write to resources directory.");
+		$tmpDir = \realpath(Libraries::get(true, 'resources') . '/tmp');
+		$this->skipIf(!\is_writable($tmpDir), "Can't write to resources directory.");
 
 		$fakeDir = $tmpDir . '/fake';
 		$fake = "<?php class Fake {} ?>";
 		$fakeFilename = $fakeDir . '/fake.php';
-		mkdir($fakeDir, 0777, true);
-		file_put_contents($fakeFilename, $fake);
+		\mkdir($fakeDir, 0777, true);
+		\file_put_contents($fakeFilename, $fake);
 
 		Libraries::add('bad', array(
 			'prefix' => false,
@@ -247,10 +247,10 @@ class LibrariesTest extends \lithium\test\Unit {
 			}
 		));
 
-		$this->assertFalse(class_exists('Fake', false));
-		$this->assertTrue(class_exists('Fake'));
-		unlink($fakeFilename);
-		rmdir($fakeDir);
+		$this->assertFalse(\class_exists('Fake', false));
+		$this->assertTrue(\class_exists('Fake'));
+		\unlink($fakeFilename);
+		\rmdir($fakeDir);
 		Libraries::remove('fake');
 	}
 
@@ -264,12 +264,12 @@ class LibrariesTest extends \lithium\test\Unit {
 
 		$result = Libraries::find('lithium', array('namespaces' => true));
 
-		$this->assertTrue(in_array('lithium\action', $result));
-		$this->assertTrue(in_array('lithium\core', $result));
-		$this->assertTrue(in_array('lithium\util', $result));
+		$this->assertTrue(\in_array('lithium\action', $result));
+		$this->assertTrue(\in_array('lithium\core', $result));
+		$this->assertTrue(\in_array('lithium\util', $result));
 
-		$this->assertFalse(in_array('lithium\LICENSE.txt', $result));
-		$this->assertFalse(in_array('lithium\readme.wiki', $result));
+		$this->assertFalse(\in_array('lithium\LICENSE.txt', $result));
+		$this->assertFalse(\in_array('lithium\readme.wiki', $result));
 
 		$this->assertEmpty(Libraries::find('lithium'));
 		$result = Libraries::find('lithium', array('path' => '/test/filter/reporter/template'));
@@ -296,10 +296,10 @@ class LibrariesTest extends \lithium\test\Unit {
 	public function testPathCaching() {
 		$this->assertEmpty(Libraries::cache(false));
 		$path = Libraries::path(__CLASS__);
-		$this->assertEqual(__FILE__, realpath($path));
+		$this->assertEqual(__FILE__, \realpath($path));
 
 		$result = Libraries::cache();
-		$this->assertEqual(realpath($result[__CLASS__]), __FILE__);
+		$this->assertEqual(\realpath($result[__CLASS__]), __FILE__);
 	}
 
 	public function testCacheControl() {
@@ -332,7 +332,7 @@ class LibrariesTest extends \lithium\test\Unit {
 		$this->assertIdentical(array(__CLASS__), $result);
 
 		$testApp = Libraries::get(true, 'resources') . '/tmp/tests/test_app';
-		mkdir($testApp . '/tests/cases/models', 0777, true);
+		\mkdir($testApp . '/tests/cases/models', 0777, true);
 		Libraries::add('test_app', array('path' => $testApp));
 
 		$body = <<<EOD
@@ -347,7 +347,7 @@ class UserTest extends \\lithium\\test\\Unit {
 EOD;
 
 		$filepath = $testApp . '/tests/cases/models/UserTest.php';
-		file_put_contents($filepath, $body);
+		\file_put_contents($filepath, $body);
 
 		$count = Libraries::find('lithium', array('recursive' => true));
 		$count2 = Libraries::find(true, array('recursive' => true));
@@ -359,11 +359,11 @@ EOD;
 
 	public function testFindingClassesAndNamespaces() {
 		$result = Libraries::find('lithium', array('namespaces' => true));
-		$this->assertTrue(in_array('lithium\net', $result));
-		$this->assertTrue(in_array('lithium\test', $result));
-		$this->assertTrue(in_array('lithium\util', $result));
-		$this->assertFalse(in_array('lithium\readme', $result));
-		$this->assertFalse(in_array('lithium\readme.wiki', $result));
+		$this->assertTrue(\in_array('lithium\net', $result));
+		$this->assertTrue(\in_array('lithium\test', $result));
+		$this->assertTrue(\in_array('lithium\util', $result));
+		$this->assertFalse(\in_array('lithium\readme', $result));
+		$this->assertFalse(\in_array('lithium\readme.wiki', $result));
 	}
 
 	public function testFindingClassesWithExclude() {
@@ -374,24 +374,24 @@ EOD;
 		);
 		$classes = Libraries::find('lithium', $options);
 
-		$this->assertTrue(in_array('lithium\util\Set', $classes));
-		$this->assertTrue(in_array('lithium\util\Collection', $classes));
-		$this->assertTrue(in_array('lithium\core\Libraries', $classes));
-		$this->assertTrue(in_array('lithium\action\Dispatcher', $classes));
+		$this->assertTrue(\in_array('lithium\util\Set', $classes));
+		$this->assertTrue(\in_array('lithium\util\Collection', $classes));
+		$this->assertTrue(\in_array('lithium\core\Libraries', $classes));
+		$this->assertTrue(\in_array('lithium\action\Dispatcher', $classes));
 
-		$this->assertFalse(in_array('lithium\tests\integration\data\SourceTest', $classes));
-		$this->assertEmpty(preg_grep('/\w+Test$/', $classes));
+		$this->assertFalse(\in_array('lithium\tests\integration\data\SourceTest', $classes));
+		$this->assertEmpty(\preg_grep('/\w+Test$/', $classes));
 
 		$expected = Libraries::find('lithium', array(
 			'filter' => '/\w+Test$/', 'recursive' => true
 		));
-		$result = preg_grep('/\w+Test/', $expected);
+		$result = \preg_grep('/\w+Test/', $expected);
 		$this->assertEqual($expected, $result);
 	}
 
 	public function testServiceLocateAll() {
 		$result = Libraries::locate('tests');
-		$this->assertTrue(count($result) > 30);
+		$this->assertTrue(\count($result) > 30);
 
 		$expected = array(
 			'lithium\template\view\adapter\File',
@@ -401,11 +401,11 @@ EOD;
 		$this->assertEqual($expected, $result);
 
 		$result = Libraries::locate('test.filter');
-		$this->assertTrue(count($result) >= 4);
-		$this->assertTrue(in_array('lithium\test\filter\Affected', $result));
-		$this->assertTrue(in_array('lithium\test\filter\Complexity', $result));
-		$this->assertTrue(in_array('lithium\test\filter\Coverage', $result));
-		$this->assertTrue(in_array('lithium\test\filter\Profiler', $result));
+		$this->assertTrue(\count($result) >= 4);
+		$this->assertTrue(\in_array('lithium\test\filter\Affected', $result));
+		$this->assertTrue(\in_array('lithium\test\filter\Complexity', $result));
+		$this->assertTrue(\in_array('lithium\test\filter\Coverage', $result));
+		$this->assertTrue(\in_array('lithium\test\filter\Profiler', $result));
 	}
 
 	public function testServiceLocateInstantiation() {
@@ -417,7 +417,7 @@ EOD;
 
 	public function testServiceLocateAllCommands() {
 		$result = Libraries::locate('command');
-		$this->assertTrue(count($result) > 7);
+		$this->assertTrue(\count($result) > 7);
 
 		$expected = array('lithium\console\command\g11n\Extract');
 		$result = Libraries::locate('command.g11n');
@@ -459,10 +459,10 @@ EOD;
 
 	public function testServiceLocateApp() {
 		$testApp = Libraries::get(true, 'resources') . '/tmp/tests/test_app';
-		mkdir($testApp, 0777, true);
+		\mkdir($testApp, 0777, true);
 		Libraries::add('test_app', array('path' => $testApp));
 
-		mkdir($testApp . '/controllers', 0777, true);
+		\mkdir($testApp . '/controllers', 0777, true);
 		$body = <<<EOD
 <?php
 namespace test_app\\controllers;
@@ -472,7 +472,7 @@ class HelloWorldCustomTestController extends \\lithium\\action\\Controller {
 ?>
 EOD;
 		$filepath = $testApp . '/controllers/HelloWorldCustomTestController.php';
-		file_put_contents($filepath, $body);
+		\file_put_contents($filepath, $body);
 		Libraries::cache(false);
 
 		$result = Libraries::locate('controllers', 'HelloWorldCustomTest');
@@ -494,7 +494,7 @@ EOD;
 		$library = Libraries::get('lithium');
 		$base = $library['path'] . '/';
 
-		$expected = realpath($base . 'template/View.php');
+		$expected = \realpath($base . 'template/View.php');
 
 		$result = Libraries::path('\lithium\template\View');
 		$this->assertEqual($expected, $result);
@@ -502,7 +502,7 @@ EOD;
 		$result = Libraries::path('lithium\template\View');
 		$this->assertEqual($expected, $result);
 
-		$expected = realpath($base . 'template/view');
+		$expected = \realpath($base . 'template/view');
 
 		$result = Libraries::path('\lithium\template\view', array('dirs' => true));
 		$this->assertEqual($expected, $result);
@@ -516,7 +516,7 @@ EOD;
 		$base = $library['path'] . '/';
 
 		$result = Libraries::path('lithium\template\View', array('dirs' => true));
-		$expected = realpath($base . 'template/View.php');
+		$expected = \realpath($base . 'template/View.php');
 		$this->assertEqual($expected, $result);
 
 		$result = Libraries::path('lithium\template\views', array('dirs' => true));
@@ -563,13 +563,13 @@ EOD;
 			'filter' => false,
 			'exclude' => false,
 			'format' => function ($file, $config) {
-				return basename($file);
+				return \basename($file);
 			}
 		));
-		$this->assertTrue(count($result) > 3);
-		$this->assertNotIdentical(array_search('controller.txt.php', $result), false);
-		$this->assertNotIdentical(array_search('model.txt.php', $result), false);
-		$this->assertNotIdentical(array_search('plugin.phar.gz', $result), false);
+		$this->assertTrue(\count($result) > 3);
+		$this->assertNotIdentical(\array_search('controller.txt.php', $result), false);
+		$this->assertNotIdentical(\array_search('model.txt.php', $result), false);
+		$this->assertNotIdentical(\array_search('plugin.phar.gz', $result), false);
 	}
 
 	public function testLocateWithDotSyntax() {
@@ -633,10 +633,10 @@ EOD;
 
 	public function testLocateWithTestAppLibrary() {
 		$testApp = Libraries::get(true, 'resources') . '/tmp/tests/test_app';
-		mkdir($testApp, 0777, true);
+		\mkdir($testApp, 0777, true);
 		Libraries::add('test_app', array('path' => $testApp));
 
-		mkdir($testApp . '/tests/cases/models', 0777, true);
+		\mkdir($testApp . '/tests/cases/models', 0777, true);
 		$body = <<<EOD
 <?php
 namespace test_app\\tests\\cases\\models;
@@ -648,7 +648,7 @@ class UserTest extends \\lithium\\test\\Unit {
 ?>
 EOD;
 		$filepath = $testApp . '/tests/cases/models/UserTest.php';
-		file_put_contents($filepath, $body);
+		\file_put_contents($filepath, $body);
 		Libraries::cache(false);
 
 		$expected = array('test_app\tests\cases\models\UserTest');
@@ -661,7 +661,7 @@ EOD;
 	 */
 	public function testPathsInPharArchives() {
 		$base = Libraries::get('lithium', 'path');
-		$path = realpath("{$base}/console/command/create/template/app.phar.gz");
+		$path = \realpath("{$base}/console/command/create/template/app.phar.gz");
 
 		$expected = "phar://{$path}/controllers/HelloWorldController.php";
 		$result = Libraries::realPath($expected);
@@ -670,12 +670,12 @@ EOD;
 
 	public function testClassInstanceWithSubnamespace() {
 		$testApp = Libraries::get(true, 'resources') . '/tmp/tests/test_app';
-		mkdir($testApp);
+		\mkdir($testApp);
 		$paths = array("/controllers", "/controllers/admin");
 
 		foreach ($paths as $path) {
-			$namespace = str_replace('/', '\\', $path);
-			$dotsyntax = str_replace('/', '.', trim($path, '/'));
+			$namespace = \str_replace('/', '\\', $path);
+			$dotsyntax = \str_replace('/', '.', \trim($path, '/'));
 			$class = 'Posts';
 
 			Libraries::add('test_app', array('path' => $testApp));
@@ -690,14 +690,14 @@ class {$class}Controller extends \\lithium\\action\\Controller {
 }
 ?>
 EOD;
-			mkdir($testApp . $path, 0777, true);
+			\mkdir($testApp . $path, 0777, true);
 			$filepath = $testApp . $path . "/{$class}Controller.php";
-			file_put_contents($filepath, $body);
+			\file_put_contents($filepath, $body);
 			Libraries::cache(false);
 
 			$expected = "test_app{$namespace}\\{$class}Controller";
 			$instance = Libraries::instance($dotsyntax, "Posts", array('library' => 'test_app'));
-			$result = get_class($instance);
+			$result = \get_class($instance);
 			$this->assertEqual($expected, $result, "{$path} did not work");
 		}
 	}
@@ -708,11 +708,11 @@ EOD;
 	 */
 	public function testMapUnmap() {
 		$testApp = Libraries::get(true, 'resources') . '/tmp/tests/test_app';
-		mkdir($testApp, 0777, true);
+		\mkdir($testApp, 0777, true);
 		Libraries::add('test_app', array('path' => $testApp));
 
-		mkdir($testApp . '/lib', 0777);
-		mkdir($testApp . '/_patch', 0777);
+		\mkdir($testApp . '/lib', 0777);
+		\mkdir($testApp . '/_patch', 0777);
 
 		$lib = <<<EOD
 <?php
@@ -724,7 +724,7 @@ class LibTest {
 }
 ?>
 EOD;
-		file_put_contents($testApp . '/lib/LibTest.php', $lib);
+		\file_put_contents($testApp . '/lib/LibTest.php', $lib);
 
 		$patch = <<<EOD
 <?php
@@ -736,7 +736,7 @@ class LibTest {
 }
 ?>
 EOD;
-		file_put_contents($testApp . '/_patch/PatchedLibTest.php', $patch);
+		\file_put_contents($testApp . '/_patch/PatchedLibTest.php', $patch);
 
 		$expected = $result = Libraries::realPath($testApp . '/lib/LibTest.php');
 		$result = Libraries::path('test_app\lib\LibTest');

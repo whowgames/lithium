@@ -29,7 +29,7 @@ class SecurityTest extends \lithium\test\Unit {
 	}
 
 	public function setUp() {
-		$this->context = new MockFormRenderer(compact('request'));
+		$this->context = new MockFormRenderer(\compact('request'));
 		$this->subject = new Security(array('context' => $this->context));
 	}
 
@@ -37,17 +37,17 @@ class SecurityTest extends \lithium\test\Unit {
 	 * Tests that the helper correctly generates a security token field.
 	 */
 	public function testRequestToken() {
-		$result = explode(' ', $this->subject->requestToken());
+		$result = \explode(' ', $this->subject->requestToken());
 
 		$this->assertEqual('<input', $result[0]);
 		$this->assertEqual('type="hidden"', $result[1]);
 		$this->assertEqual('name="security[token]"', $result[2]);
 		$this->assertEqual('/>', $result[4]);
 
-		$result = explode('=', $result[3]);
+		$result = \explode('=', $result[3]);
 		$this->assertEqual('value', $result[0]);
 
-		$result = trim($result[1], '"');
+		$result = \trim($result[1], '"');
 		$this->assertPattern('/^\$\d\w\$\d{2}\$[A-Za-z0-9\.\/]{53}$/', $result);
 	}
 
@@ -70,7 +70,7 @@ class SecurityTest extends \lithium\test\Unit {
 		$form = new Form(array('context' => $this->context));
 		$this->subject->sign($form);
 
-		ob_start();
+		\ob_start();
 		$content = array(
 			$form->create(null, array('url' => 'http:///')),
 			$form->text('email', array('value' => 'foo@bar')),
@@ -78,8 +78,8 @@ class SecurityTest extends \lithium\test\Unit {
 			$form->hidden('active', array('value' => 'true')),
 			$form->end()
 		);
-		$signature = ob_get_clean();
-		preg_match('/value="([^"]+)"/', $signature, $match);
+		$signature = \ob_get_clean();
+		\preg_match('/value="([^"]+)"/', $signature, $match);
 		list(, $signature) = $match;
 
 		$expected = array(
@@ -87,13 +87,13 @@ class SecurityTest extends \lithium\test\Unit {
 			'a%3A0%3A%7B%7D',
 			'$2a$10$NuNTOeXv4OHpPJtbdAmfReFiSmFw5hmc6sSy8qwns6/DWNSSOjR1y'
 		);
-		$this->assertEqual(join('::', $expected), $signature);
+		$this->assertEqual(\join('::', $expected), $signature);
 
 		$request = new Request(array('data' => array(
 			'email' => 'foo@baz',
 			'pass' => 'whatever',
 			'active' => 'true',
-			'security' => compact('signature')
+			'security' => \compact('signature')
 		)));
 		$this->assertTrue(FormSignature::check($request));
 	}

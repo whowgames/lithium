@@ -42,14 +42,14 @@ class Controller extends \lithium\core\DynamicObject {
 		$dispatchParams += $dispatchParamsDefaults;
 		$defaults = array('format' => 'html', 'timeout' => 0);
 		$options += (array) $request->query + $defaults;
-		$params = compact('request', 'dispatchParams', 'options');
+		$params = \compact('request', 'dispatchParams', 'options');
 
 		return $this->_filter(__METHOD__, $params, function($self, $params) {
 			$request = $params['request'];
 			$options = $params['options'];
 			$params = $params['dispatchParams'];
-			set_time_limit((integer) $options['timeout']);
-			$group = join('\\', (array) $params['args']);
+			\set_time_limit((integer) $options['timeout']);
+			$group = \join('\\', (array) $params['args']);
 
 			if ($group === "all") {
 				$group = Group::all();
@@ -65,9 +65,9 @@ class Controller extends \lithium\core\DynamicObject {
 				'filter' => '/cases|integration|functional/',
 				'exclude' => '/mocks/'
 			));
-			sort($menu);
-			$menu = Set::expand(array_combine($menu, $menu), array('separator' => "\\"));
-			$result = compact('request', 'report', 'filters', 'menu');
+			\sort($menu);
+			$menu = Set::expand(\array_combine($menu, $menu), array('separator' => "\\"));
+			$result = \compact('request', 'report', 'filters', 'menu');
 			return $report->render('layout', $result);
 		});
 	}

@@ -29,7 +29,7 @@ class StreamTest extends \lithium\test\Unit {
 	public function setUp() {
 		$base = 'lithium\net\socket';
 		Mocker::overwriteFunction("{$base}\\stream_socket_client", function() {
-			return fopen("php://memory", "rw");
+			return \fopen("php://memory", "rw");
 		});
 		Mocker::overwriteFunction("{$base}\\feof", function($resource) {
 			return true;

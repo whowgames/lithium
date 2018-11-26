@@ -123,7 +123,7 @@ class MySql extends \lithium\data\source\Database {
 	 */
 	public static function enabled($feature = null) {
 		if (!$feature) {
-			return extension_loaded('pdo_mysql');
+			return \extension_loaded('pdo_mysql');
 		}
 		$features = array(
 			'arrays' => false,
@@ -145,9 +145,9 @@ class MySql extends \lithium\data\source\Database {
 	public function connect() {
 		if (!$this->_config['dsn']) {
 			$host = $this->_config['host'];
-			list($host, $port) = explode(':', $host) + array(1 => "3306");
+			list($host, $port) = \explode(':', $host) + array(1 => "3306");
 			$dsn = "mysql:host=%s;port=%s;dbname=%s";
-			$this->_config['dsn'] = sprintf($dsn, $host, $port, $this->_config['database']);
+			$this->_config['dsn'] = \sprintf($dsn, $host, $port, $this->_config['database']);
 		}
 
 		if (!parent::connect()) {
@@ -155,7 +155,7 @@ class MySql extends \lithium\data\source\Database {
 		}
 
 		$info = $this->connection->getAttribute(PDO::ATTR_SERVER_VERSION);
-		$this->_useAlias = (boolean) version_compare($info, "4.1", ">=");
+		$this->_useAlias = (boolean) \version_compare($info, "4.1", ">=");
 		return true;
 	}
 
@@ -168,7 +168,7 @@ class MySql extends \lithium\data\source\Database {
 	 */
 	public function sources($model = null) {
 		$_config = $this->_config;
-		$params = compact('model');
+		$params = \compact('model');
 
 		return $this->_filter(__METHOD__, $params, function($self, $params) use ($_config) {
 			$name = $self->name($_config['database']);
@@ -179,7 +179,7 @@ class MySql extends \lithium\data\source\Database {
 			$sources = array();
 
 			while ($data = $result->next()) {
-				$sources[] = array_shift($data);
+				$sources[] = \array_shift($data);
 			}
 			return $sources;
 		});
@@ -200,12 +200,12 @@ class MySql extends \lithium\data\source\Database {
 	 * @filter This method can be filtered.
 	 */
 	public function describe($entity,  $fields = array(), array $meta = array()) {
-		$params = compact('entity', 'meta', 'fields');
+		$params = \compact('entity', 'meta', 'fields');
 		return $this->_filter(__METHOD__, $params, function($self, $params) {
-			extract($params);
+			\extract($params);
 
 			if ($fields) {
-				return $self->invokeMethod('_instance', array('schema', compact('fields')));
+				return $self->invokeMethod('_instance', array('schema', \compact('fields')));
 			}
 			$name = $self->invokeMethod('_entityName', array($entity, array('quoted' => true)));
 			$columns = $self->read("DESCRIBE {$name}", array('return' => 'array', 'schema' => array(
@@ -227,7 +227,7 @@ class MySql extends \lithium\data\source\Database {
 					'default'  => $default
 				);
 			}
-			return $self->invokeMethod('_instance', array('schema', compact('fields')));
+			return $self->invokeMethod('_instance', array('schema', \compact('fields')));
 		});
 	}
 
@@ -244,7 +244,7 @@ class MySql extends \lithium\data\source\Database {
 		if (empty($encoding)) {
 			$query = $this->connection->query("SHOW VARIABLES LIKE 'character_set_client'");
 			$encoding = $query->fetchColumn(1);
-			return ($key = array_search($encoding, $encodingMap)) ? $key : $encoding;
+			return ($key = \array_search($encoding, $encodingMap)) ? $key : $encoding;
 		}
 		$encoding = isset($encodingMap[$encoding]) ? $encodingMap[$encoding] : $encoding;
 
@@ -320,7 +320,7 @@ class MySql extends \lithium\data\source\Database {
 
 		$conn = $this->connection;
 
-		$params = compact('sql', 'options');
+		$params = \compact('sql', 'options');
 
 		return $this->_filter(__METHOD__, $params, function($self, $params) use ($conn) {
 			$sql = $params['sql'];
@@ -332,7 +332,7 @@ class MySql extends \lithium\data\source\Database {
 			} catch(PDOException $e) {
 				$self->invokeMethod('_error', array($sql));
 			};
-			return $self->invokeMethod('_instance', array('result', compact('resource')));
+			return $self->invokeMethod('_instance', array('result', \compact('resource')));
 		});
 	}
 
@@ -356,41 +356,41 @@ class MySql extends \lithium\data\source\Database {
 	 * @return array Column type (i.e. "string") plus 'length' when appropriate.
 	 */
 	protected function _column($real) {
-		if (is_array($real)) {
+		if (\is_array($real)) {
 			return $real['type'] . (isset($real['length']) ? "({$real['length']})" : '');
 		}
 
-		if (!preg_match('/(?P<type>\w+)(?:\((?P<length>[\d,]+)\))?/', $real, $column)) {
+		if (!\preg_match('/(?P<type>\w+)(?:\((?P<length>[\d,]+)\))?/', $real, $column)) {
 			return $real;
 		}
-		$column = array_intersect_key($column, array('type' => null, 'length' => null));
+		$column = \array_intersect_key($column, array('type' => null, 'length' => null));
 
 		if (isset($column['length']) && $column['length']) {
-			$length = explode(',', $column['length']) + array(null, null);
-			$column['length'] = $length[0] ? intval($length[0]) : null;
-			$length[1] ? $column['precision'] = intval($length[1]) : null;
+			$length = \explode(',', $column['length']) + array(null, null);
+			$column['length'] = $length[0] ? \intval($length[0]) : null;
+			$length[1] ? $column['precision'] = \intval($length[1]) : null;
 		}
 
 		switch (true) {
-			case in_array($column['type'], array('date', 'time', 'datetime', 'timestamp')):
+			case \in_array($column['type'], array('date', 'time', 'datetime', 'timestamp')):
 				return $column;
 			case ($column['type'] === 'tinyint' && $column['length'] == '1'):
 			case ($column['type'] === 'boolean'):
 				return array('type' => 'boolean');
 			break;
-			case (strpos($column['type'], 'int') !== false):
+			case (\strpos($column['type'], 'int') !== false):
 				$column['type'] = 'integer';
 			break;
-			case (strpos($column['type'], 'char') !== false || $column['type'] === 'tinytext'):
+			case (\strpos($column['type'], 'char') !== false || $column['type'] === 'tinytext'):
 				$column['type'] = 'string';
 			break;
-			case (strpos($column['type'], 'text') !== false):
+			case (\strpos($column['type'], 'text') !== false):
 				$column['type'] = 'text';
 			break;
-			case (strpos($column['type'], 'blob') !== false || $column['type'] === 'binary'):
+			case (\strpos($column['type'], 'blob') !== false || $column['type'] === 'binary'):
 				$column['type'] = 'binary';
 			break;
-			case preg_match('/float|double|decimal/', $column['type']):
+			case \preg_match('/float|double|decimal/', $column['type']):
 				$column['type'] = 'float';
 			break;
 			default:
@@ -407,17 +407,17 @@ class MySql extends \lithium\data\source\Database {
 	 * @return string The SQL column string
 	 */
 	protected function _buildColumn($field) {
-		extract($field);
+		\extract($field);
 		if ($type === 'float' && $precision) {
 			$use = 'decimal';
 		}
 
 		$out = $this->name($name) . ' ' . $use;
 
-		$allowPrecision = preg_match('/^(decimal|float|double|real|numeric)$/',$use);
+		$allowPrecision = \preg_match('/^(decimal|float|double|real|numeric)$/',$use);
 		$precision = ($precision && $allowPrecision) ? ",{$precision}" : '';
 
-		if ($length && ($allowPrecision || preg_match('/(char|binary|int|year)/',$use))) {
+		if ($length && ($allowPrecision || \preg_match('/(char|binary|int|year)/',$use))) {
 			$out .= "({$length}{$precision})";
 		}
 
@@ -426,7 +426,7 @@ class MySql extends \lithium\data\source\Database {
 		if (isset($increment) && $increment) {
 			$out .= ' NOT NULL AUTO_INCREMENT';
 		} else {
-			$out .= is_bool($null) ? ($null ? ' NULL' : ' NOT NULL') : '' ;
+			$out .= \is_bool($null) ? ($null ? ' NULL' : ' NOT NULL') : '' ;
 			$out .= $default ? ' DEFAULT ' . $this->value($default, $field) : '';
 		}
 

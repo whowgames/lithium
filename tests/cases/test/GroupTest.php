@@ -31,7 +31,7 @@ class GroupTest extends \lithium\test\Unit {
 
 	public function testAddCaseThroughConstructor() {
 		$data = (array) 'lithium\tests\mocks\test';
-		$group = new Group(compact('data'));
+		$group = new Group(\compact('data'));
 
 		$expected = new Collection(array('data' => array(
 			new MockErrorHandlingTest(),
@@ -139,8 +139,8 @@ class GroupTest extends \lithium\test\Unit {
 		$result = $results[0][0]['class'];
 		$this->assertEqual($expected, $result);
 
-		$expected = str_replace('\\', '/', LITHIUM_LIBRARY_PATH);
-		$expected = realpath($expected . '/lithium/tests/mocks/test/MockUnitTest.php');
+		$expected = \str_replace('\\', '/', LITHIUM_LIBRARY_PATH);
+		$expected = \realpath($expected . '/lithium/tests/mocks/test/MockUnitTest.php');
 		$result = $results[0][0]['file'];
 		$this->assertEqual($expected, $result);
 	}
@@ -148,16 +148,16 @@ class GroupTest extends \lithium\test\Unit {
 	public function testGroupAllForLithium() {
 		Libraries::cache(false);
 		$result = Group::all(array('library' => 'lithium'));
-		$this->assertTrue(count($result) >= 60);
+		$this->assertTrue(\count($result) >= 60);
 	}
 
 	public function testAddTestAppGroup() {
 		$testApp = Libraries::get(true, 'resources') . '/tmp/tests/test_app';
-		mkdir($testApp, 0777, true);
+		\mkdir($testApp, 0777, true);
 		Libraries::add('test_app', array('path' => $testApp));
 
-		mkdir($testApp . '/tests/cases/models', 0777, true);
-		file_put_contents($testApp . '/tests/cases/models/UserTest.php',
+		\mkdir($testApp . '/tests/cases/models', 0777, true);
+		\file_put_contents($testApp . '/tests/cases/models/UserTest.php',
 			"<?php namespace test_app\\tests\\cases\\models;\n
 			class UserTest extends \\lithium\\test\\Unit { public function testMe() {
 				\$this->assertTrue(true);
@@ -183,11 +183,11 @@ class GroupTest extends \lithium\test\Unit {
 
 	public function testRunGroupAllForTestApp() {
 		$testApp = Libraries::get(true, 'resources') . '/tmp/tests/test_app';
-		mkdir($testApp);
+		\mkdir($testApp);
 		Libraries::add('test_app', array('path' => $testApp));
 
-		mkdir($testApp . '/tests/cases/models', 0777, true);
-		file_put_contents($testApp . '/tests/cases/models/UserTest.php',
+		\mkdir($testApp . '/tests/cases/models', 0777, true);
+		\file_put_contents($testApp . '/tests/cases/models/UserTest.php',
 			"<?php namespace test_app\\tests\\cases\\models;\n
 			class UserTest extends \\lithium\\test\\Unit { public function testMe() {
 				\$this->assertTrue(true);
@@ -205,11 +205,11 @@ class GroupTest extends \lithium\test\Unit {
 
 	public function testRunGroupForTestAppModel() {
 		$testApp = Libraries::get(true, 'resources') . '/tmp/tests/test_app';
-		mkdir($testApp);
+		\mkdir($testApp);
 		Libraries::add('test_app', array('path' => $testApp));
 
-		mkdir($testApp . '/tests/cases/models', 0777, true);
-		file_put_contents($testApp . '/tests/cases/models/UserTest.php',
+		\mkdir($testApp . '/tests/cases/models', 0777, true);
+		\file_put_contents($testApp . '/tests/cases/models/UserTest.php',
 			"<?php namespace test_app\\tests\\cases\\models;\n
 			class UserTest extends \\lithium\\test\\Unit { public function testMe() {
 				\$this->assertTrue(true);

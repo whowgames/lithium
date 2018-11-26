@@ -191,7 +191,7 @@ class Route extends \lithium\core\DynamicObject {
 	protected function _init() {
 		parent::_init();
 
-		if (!$this->_config['continue'] && !preg_match('@{:action:.*?}@', $this->_template)) {
+		if (!$this->_config['continue'] && !\preg_match('@{:action:.*?}@', $this->_template)) {
 			$this->_params += array('action' => 'index');
 		}
 		if (!$this->_config['pattern']) {
@@ -217,16 +217,16 @@ class Route extends \lithium\core\DynamicObject {
 	public function parse($request, array $options = array()) {
 		$defaults = array('url' => $request->url);
 		$options += $defaults;
-		$url = '/' . trim($options['url'], '/');
+		$url = '/' . \trim($options['url'], '/');
 		$pattern = $this->_pattern;
 
-		if (!preg_match($pattern, $url, $match)) {
+		if (!\preg_match($pattern, $url, $match)) {
 			return false;
 		}
 		foreach ($this->_meta as $key => $compare) {
 			$value = $request->get($key);
 
-			if (!($compare == $value || (is_array($compare) && in_array($value, $compare)))) {
+			if (!($compare == $value || (\is_array($compare) && \in_array($value, $compare)))) {
 				return false;
 			}
 		}
@@ -236,7 +236,7 @@ class Route extends \lithium\core\DynamicObject {
 			}
 		}
 
-		$result = array_intersect_key($match + array('args' => array()), $this->_keys);
+		$result = \array_intersect_key($match + array('args' => array()), $this->_keys);
 		foreach ($result as $key => $value) {
 			if ($value === '') {
 				unset($result[$key]);
@@ -244,7 +244,7 @@ class Route extends \lithium\core\DynamicObject {
 		}
 		$result += $this->_params + $this->_defaults;
 		$request->params = $result + (array) $request->params;
-		$request->persist = array_unique(array_merge($request->persist, $this->_persist));
+		$request->persist = \array_unique(\array_merge($request->persist, $this->_persist));
 
 		if ($this->_handler) {
 			$handler = $this->_handler;
@@ -270,7 +270,7 @@ class Route extends \lithium\core\DynamicObject {
 
 			if (isset($options['?'])) {
 				$query = $options['?'];
-				$query = '?' . (is_array($query) ? http_build_query($query) : $query);
+				$query = '?' . (\is_array($query) ? \http_build_query($query) : $query);
 				unset($options['?']);
 			}
 		}
@@ -281,7 +281,7 @@ class Route extends \lithium\core\DynamicObject {
 			return false;
 		}
 		foreach ($this->_subPatterns as $key => $pattern) {
-			if (isset($options[$key]) && !preg_match("/^{$pattern}$/", $options[$key])) {
+			if (isset($options[$key]) && !\preg_match("/^{$pattern}$/", $options[$key])) {
 				return false;
 			}
 		}
@@ -336,23 +336,23 @@ class Route extends \lithium\core\DynamicObject {
 	protected function _matchKeys($options) {
 		$args = array('args' => 'args');
 
-		if (array_intersect_key($options, $this->_match) != $this->_match) {
+		if (\array_intersect_key($options, $this->_match) != $this->_match) {
 			return false;
 		}
 		if ($this->_config['continue']) {
-			if (array_intersect_key($this->_keys, $options + $args) != $this->_keys) {
+			if (\array_intersect_key($this->_keys, $options + $args) != $this->_keys) {
 				return false;
 			}
 		} else {
-			if (array_diff_key(array_diff_key($options, $this->_match), $this->_keys) !== array()) {
+			if (\array_diff_key(\array_diff_key($options, $this->_match), $this->_keys) !== array()) {
 				return false;
 			}
 		}
 		$options += $this->_defaults;
 		$base = $this->_keys + $args;
-		$match = array_intersect_key($this->_keys, $options) + $args;
-		sort($base);
-		sort($match);
+		$match = \array_intersect_key($this->_keys, $options) + $args;
+		\sort($base);
+		\sort($match);
 
 		if ($base !== $match) {
 			return false;
@@ -373,15 +373,15 @@ class Route extends \lithium\core\DynamicObject {
 		$trimmed = true;
 		$options += array('args' => '');
 
-		foreach (array_reverse($this->_keys, true) as $key) {
+		foreach (\array_reverse($this->_keys, true) as $key) {
 			$value =& $options[$key];
 			$pattern = isset($this->_subPatterns[$key]) ? ":{$this->_subPatterns[$key]}" : '';
 			$rpl = "{:{$key}{$pattern}}";
-			$len = strlen($rpl) * -1;
+			$len = \strlen($rpl) * -1;
 
 			if ($trimmed && isset($defaults[$key]) && $value == $defaults[$key]) {
-				if (substr($template, $len) == $rpl) {
-					$template = rtrim(substr($template, 0, $len), '/');
+				if (\substr($template, $len) == $rpl) {
+					$template = \rtrim(\substr($template, 0, $len), '/');
 					continue;
 				}
 			}
@@ -389,13 +389,13 @@ class Route extends \lithium\core\DynamicObject {
 				$value = $this->_config['formatters'][$key]($value);
 			}
 			if ($value === null) {
-				$template = str_replace("/{$rpl}", '', $template);
+				$template = \str_replace("/{$rpl}", '', $template);
 				continue;
 			}
 			if ($key !== 'args') {
 				$trimmed = false;
 			}
-			$template = str_replace($rpl, $value, $template);
+			$template = \str_replace($rpl, $value, $template);
 		}
 		return $template ?: '/';
 	}
@@ -428,7 +428,7 @@ class Route extends \lithium\core\DynamicObject {
 	public function compile() {
 
 		foreach ($this->_params as $key => $value) {
-			if (!strpos($key, ':')) {
+			if (!\strpos($key, ':')) {
 				continue;
 			}
 			unset($this->_params[$key]);
@@ -447,7 +447,7 @@ class Route extends \lithium\core\DynamicObject {
 		if ($this->_config['unicode']) {
 			$this->_pattern .= 'u';
 		}
-		preg_match_all($match, $this->_pattern, $m);
+		\preg_match_all($match, $this->_pattern, $m);
 
 		if (!$tokens = $m[0]) {
 			return;
@@ -462,8 +462,8 @@ class Route extends \lithium\core\DynamicObject {
 			$this->_keys[$param] = $param;
 			$this->_pattern = $this->_regex($regexs[$i], $param, $tokens[$i], $slashes[$i]);
 		}
-		$this->_defaults = array_intersect_key($this->_params, $this->_keys);
-		$this->_match = array_diff_key($this->_params, $this->_defaults);
+		$this->_defaults = \array_intersect_key($this->_params, $this->_keys);
+		$this->_match = \array_diff_key($this->_params, $this->_defaults);
 	}
 
 	/**
@@ -490,7 +490,7 @@ class Route extends \lithium\core\DynamicObject {
 			$regex = '[^\/]+';
 		}
 
-		$req = $param === 'args' || array_key_exists($param, $this->_params) ? '?' : '';
+		$req = $param === 'args' || \array_key_exists($param, $this->_params) ? '?' : '';
 
 		if ($prefix === '/') {
 			$pattern = "(?:/(?P<{$param}>{$regex}){$req}){$req}";
@@ -499,7 +499,7 @@ class Route extends \lithium\core\DynamicObject {
 		} else {
 			$pattern = "(?P<{$param}>{$regex}){$req}";
 		}
-		return str_replace($token, $pattern, $this->_pattern);
+		return \str_replace($token, $pattern, $this->_pattern);
 	}
 }
 

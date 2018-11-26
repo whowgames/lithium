@@ -20,15 +20,15 @@ class LoggerTest extends \lithium\test\Unit {
 	public function skip() {
 		$path = Libraries::get(true, 'resources');
 
-		if (is_writable($path)) {
+		if (\is_writable($path)) {
 			foreach (array("{$path}/tmp/tests", "{$path}/tmp/logs") as $dir) {
-				if (!is_dir($dir)) {
-					mkdir($dir, 0777, true);
+				if (!\is_dir($dir)) {
+					\mkdir($dir, 0777, true);
 				}
 			}
 		}
 		$this->_testPath = "{$path}/tmp/tests";
-		$this->skipIf(!is_writable($this->_testPath), "Path `{$this->_testPath}` is not writable.");
+		$this->skipIf(!\is_writable($this->_testPath), "Path `{$this->_testPath}` is not writable.");
 	}
 
 	public function setUp() {
@@ -74,7 +74,7 @@ class LoggerTest extends \lithium\test\Unit {
 
 	public function testIntegrationWriteFile() {
 		$base = Libraries::get(true, 'resources') . '/tmp/logs';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
 
 		$config = array('default' => array(
 			'adapter' => 'File', 'timestamp' => false, 'format' => "{:message}\n"
@@ -85,17 +85,17 @@ class LoggerTest extends \lithium\test\Unit {
 		$this->assertFileExists($base . '/info.log');
 
 		$expected = "Message line 1\n";
-		$result = file_get_contents($base . '/info.log');
+		$result = \file_get_contents($base . '/info.log');
 		$this->assertEqual($expected, $result);
 
 		$result = Logger::write('info', 'Message line 2');
 		$this->assertNotEmpty($result);
 
 		$expected = "Message line 1\nMessage line 2\n";
-		$result = file_get_contents($base . '/info.log');
+		$result = \file_get_contents($base . '/info.log');
 		$this->assertEqual($expected, $result);
 
-		unlink($base . '/info.log');
+		\unlink($base . '/info.log');
 	}
 
 	public function testWriteWithInvalidPriority() {
@@ -105,7 +105,7 @@ class LoggerTest extends \lithium\test\Unit {
 
 	public function testWriteByName() {
 		$base = Libraries::get(true, 'resources') . '/tmp/logs';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
 
 		Logger::config(array('default' => array(
 			'adapter' => 'File',
@@ -122,15 +122,15 @@ class LoggerTest extends \lithium\test\Unit {
 		$this->assertNotEmpty(Logger::write(null, 'Message line 1', array('name' => 'default')));
 
 		$expected = "Message line 1\n";
-		$result = file_get_contents($base . '/.log');
+		$result = \file_get_contents($base . '/.log');
 		$this->assertEqual($expected, $result);
 
-		unlink($base . '/.log');
+		\unlink($base . '/.log');
 	}
 
 	public function testMultipleAdaptersWriteByNameDefault() {
 		$base = Libraries::get(true, 'resources') . '/tmp/logs';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
 
 		Logger::config(array(
 			'default' => array(
@@ -156,16 +156,16 @@ class LoggerTest extends \lithium\test\Unit {
 		$this->assertFileExists($base . '/info_default.log');
 
 		$expected = "Default Message line 1\n";
-		$result = file_get_contents($base . '/info_default.log');
+		$result = \file_get_contents($base . '/info_default.log');
 		$this->assertEqual($expected, $result);
 
-		unlink($base . '/info_default.log');
+		\unlink($base . '/info_default.log');
 
 	}
 
 	public function testMultipleAdaptersWriteByNameSecondary() {
 		$base = Libraries::get(true, 'resources') . '/tmp/logs';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
 
 		Logger::config(array(
 			'default' => array(
@@ -191,10 +191,10 @@ class LoggerTest extends \lithium\test\Unit {
 		$this->assertFileExists($base . '/info_secondary.log');
 
 		$expected = "Secondary Message line 1\n";
-		$result = file_get_contents($base . '/info_secondary.log');
+		$result = \file_get_contents($base . '/info_secondary.log');
 		$this->assertEqual($expected, $result);
 
-		unlink($base . '/info_secondary.log');
+		\unlink($base . '/info_secondary.log');
 
 	}
 

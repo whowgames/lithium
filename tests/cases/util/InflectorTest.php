@@ -225,10 +225,10 @@ class InflectorTest extends \lithium\test\Unit {
 		$expected = array(
 			'rules', 'irregular', 'uninflected', 'regexUninflected', 'regexIrregular'
 		);
-		$this->assertEqual(array_keys($before), $expected);
-		$this->assertEqual(array_keys($after), $expected);
+		$this->assertEqual(\array_keys($before), $expected);
+		$this->assertEqual(\array_keys($after), $expected);
 
-		$result = array_diff($after['rules'], $before['rules']);
+		$result = \array_diff($after['rules'], $before['rules']);
 		$this->assertEqual($result, array('/rata/' => '\1ratus'));
 
 		foreach (array('irregular', 'uninflected', 'regexUninflected', 'regexIrregular') as $key) {

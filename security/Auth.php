@@ -131,10 +131,10 @@ class Auth extends \lithium\core\Adaptable {
 		);
 
 		$options += $defaults;
-		$params = compact('name', 'credentials', 'options');
+		$params = \compact('name', 'credentials', 'options');
 
 		return static::_filter(__FUNCTION__, $params, function($self, $params) {
-			extract($params);
+			\extract($params);
 			$config = $self::invokeMethod('_config', array($name));
 			$persist = $options['persist'];
 
@@ -150,9 +150,9 @@ class Auth extends \lithium\core\Adaptable {
 			}
 
 			if (($credentials) && $data = $self::adapter($name)->check($credentials, $options)) {
-				if ($options['persist'] && is_array($data)) {
-					$data = array_intersect_key($data, array_fill_keys($options['persist'], true));
-				} elseif (is_array($data)) {
+				if ($options['persist'] && \is_array($data)) {
+					$data = \array_intersect_key($data, \array_fill_keys($options['persist'], true));
+				} elseif (\is_array($data)) {
 					unset($data['password']);
 				}
 				return ($options['writeSession']) ? $self::set($name, $data) : $data;
@@ -179,10 +179,10 @@ class Auth extends \lithium\core\Adaptable {
 	 * @filter
 	 */
 	public static function set($name, $data, array $options = array()) {
-		$params = compact('name', 'data', 'options');
+		$params = \compact('name', 'data', 'options');
 
 		return static::_filter(__FUNCTION__, $params, function($self, $params) {
-			extract($params);
+			\extract($params);
 			$config = $self::invokeMethod('_config', array($name));
 			$session = $config['session'];
 
@@ -212,8 +212,8 @@ class Auth extends \lithium\core\Adaptable {
 		$defaults = array('clearSession' => true);
 		$options += $defaults;
 
-		return static::_filter(__FUNCTION__, compact('name', 'options'), function($self, $params) {
-			extract($params);
+		return static::_filter(__FUNCTION__, \compact('name', 'options'), function($self, $params) {
+			\extract($params);
 			$config = $self::invokeMethod('_config', array($name));
 			$session = $config['session'];
 

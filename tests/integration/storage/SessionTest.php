@@ -164,7 +164,7 @@ class SessionTest extends \lithium\test\Integration {
 	}
 
 	public function testEncryptStrategyWithPhpAdapter() {
-		$this->skipIf(!extension_loaded('mcrypt'), 'The `mcrypt` extension is not loaded.');
+		$this->skipIf(!\extension_loaded('mcrypt'), 'The `mcrypt` extension is not loaded.');
 
 		$config = array('name' => 'encryptInt');
 

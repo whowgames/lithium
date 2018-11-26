@@ -45,7 +45,7 @@ class Code extends \lithium\g11n\catalog\Adapter {
 	 */
 	protected function _init() {
 		parent::_init();
-		if (!is_dir($this->_config['path'])) {
+		if (!\is_dir($this->_config['path'])) {
 			$message = "Code directory does not exist at path `{$this->_config['path']}`.";
 			throw new ConfigException($message);
 		}
@@ -88,7 +88,7 @@ class Code extends \lithium\g11n\catalog\Adapter {
 		foreach ($iterator as $item) {
 			$file = $item->getPathname();
 
-			switch (pathinfo($file, PATHINFO_EXTENSION)) {
+			switch (\pathinfo($file, PATHINFO_EXTENSION)) {
 				case 'php':
 					$data += $this->_parsePhp($file);
 				break;
@@ -108,7 +108,7 @@ class Code extends \lithium\g11n\catalog\Adapter {
 	 * @return array
 	 */
 	protected function _parsePhp($file) {
-		$contents = file_get_contents($file);
+		$contents = \file_get_contents($file);
 		$contents = Compiler::compile($contents);
 
 		$defaults = array(
@@ -117,18 +117,18 @@ class Code extends \lithium\g11n\catalog\Adapter {
 			'position' => 0,
 			'occurrence' => array('file' => $file, 'line' => null)
 		);
-		extract($defaults);
+		\extract($defaults);
 		$data = array();
 
-		if (strpos($contents, '$t(') === false && strpos($contents, '$tn(') === false) {
+		if (\strpos($contents, '$t(') === false && \strpos($contents, '$tn(') === false) {
 			return $data;
 		}
 
-		$tokens = token_get_all($contents);
+		$tokens = \token_get_all($contents);
 		unset($contents);
 
 		foreach ($tokens as $key => $token) {
-			if (!is_array($token)) {
+			if (!\is_array($token)) {
 				$token = array(0 => null, 1 => $token, 2 => null);
 			}
 
@@ -139,7 +139,7 @@ class Code extends \lithium\g11n\catalog\Adapter {
 						'ids' => $ids,
 						'occurrences' => array($occurrence)
 					));
-					extract($defaults, EXTR_OVERWRITE);
+					\extract($defaults, EXTR_OVERWRITE);
 				} elseif ($token[0] === T_CONSTANT_ENCAPSED_STRING) {
 					$ids[$ids ? 'plural' : 'singular'] = $token[1];
 					$position++;
@@ -171,10 +171,10 @@ class Code extends \lithium\g11n\catalog\Adapter {
 	 */
 	protected function _merge(array $data, array $item) {
 		$filter = function ($value) use (&$filter) {
-			if (is_array($value)) {
-				return array_map($filter, $value);
+			if (\is_array($value)) {
+				return \array_map($filter, $value);
 			}
-			return substr($value, 1, -1);
+			return \substr($value, 1, -1);
 		};
 		$fields = array('id', 'ids', 'translated');
 

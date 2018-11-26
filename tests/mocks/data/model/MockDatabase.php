@@ -65,7 +65,7 @@ class MockDatabase extends \lithium\data\source\Database {
 	public function sources($class = null) {}
 
 	public function describe($entity, $fields = array(), array $meta = array()) {
-		return $this->_instance('schema', compact('fields'));
+		return $this->_instance('schema', \compact('fields'));
 	}
 
 	public function encoding($encoding = null) {}
@@ -105,8 +105,8 @@ class MockDatabase extends \lithium\data\source\Database {
 
 	protected function _insertId($query) {
 		$query = $query->export($this);
-		ksort($query);
-		return sha1(serialize($query));
+		\ksort($query);
+		return \sha1(\serialize($query));
 	}
 
 	public static function enabled($feature = null) {

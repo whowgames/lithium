@@ -25,7 +25,7 @@ class Iconv extends \lithium\core\DynamicObject {
 	 * @return boolean Returns `true` if enabled, otherwise `false`.
 	 */
 	public static function enabled() {
-		return extension_loaded('iconv');
+		return \extension_loaded('iconv');
 	}
 
 	/**
@@ -36,7 +36,7 @@ class Iconv extends \lithium\core\DynamicObject {
 	 * @return integer|boolean
 	 */
 	public function strlen($string) {
-		return iconv_strlen($string, 'UTF-8');
+		return \iconv_strlen($string, 'UTF-8');
 	}
 
 	/**
@@ -49,7 +49,7 @@ class Iconv extends \lithium\core\DynamicObject {
 	 * @return integer|boolean
 	 */
 	public function strpos($haystack, $needle, $offset) {
-		return iconv_strpos($haystack, $needle, $offset, 'UTF-8');
+		return \iconv_strpos($haystack, $needle, $offset, 'UTF-8');
 	}
 
 	/**
@@ -61,7 +61,7 @@ class Iconv extends \lithium\core\DynamicObject {
 	 * @return integer|boolean
 	 */
 	public function strrpos($haystack, $needle) {
-		return iconv_strrpos($haystack, $needle, 'UTF-8');
+		return \iconv_strrpos($haystack, $needle, 'UTF-8');
 	}
 
 	/**
@@ -74,7 +74,7 @@ class Iconv extends \lithium\core\DynamicObject {
 	 * @return string|boolean
 	 */
 	public function substr($string, $start, $length) {
-		return iconv_substr($string, $start, $length, 'UTF-8');
+		return \iconv_substr($string, $start, $length, 'UTF-8');
 	}
 }
 

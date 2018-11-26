@@ -75,7 +75,7 @@ class PasswordTest extends \lithium\test\Unit {
 
 		$maxLength = 72;
 		$salt = Password::salt('bf');
-		$password = str_repeat('a', $maxLength);
+		$password = \str_repeat('a', $maxLength);
 		$expected = Password::hash($password, $salt);
 		$result = Password::hash($password . 'a',  $salt);
 		$this->assertIdentical($expected, $result);

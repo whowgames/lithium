@@ -53,10 +53,10 @@ class Complexity extends \lithium\test\Filter {
 			}
 			foreach ($methods as $method => $lines) {
 				$lines = $inspector::lines($class, $lines);
-				$branches = $parser::tokenize(join("\n", (array) $lines), array(
+				$branches = $parser::tokenize(\join("\n", (array) $lines), array(
 					'include' => static::$_include
 				));
-				$results[$class][$method] = count($branches) + 1;
+				$results[$class][$method] = \count($branches) + 1;
 				$report->collect(__CLASS__, $results);
 			}
 		}
@@ -78,15 +78,15 @@ class Complexity extends \lithium\test\Filter {
 			if (!$methods) {
 				continue;
 			}
-			$metrics['class'][$class] = array_sum($methods) / count($methods);
+			$metrics['class'][$class] = \array_sum($methods) / \count($methods);
 
 			foreach ($methods as $method => $count) {
 				$metrics['max']["{$class}::{$method}()"] = $count;
 			}
 		}
 
-		arsort($metrics['max']);
-		arsort($metrics['class']);
+		\arsort($metrics['max']);
+		\arsort($metrics['class']);
 		return $metrics;
 	}
 
@@ -105,7 +105,7 @@ class Complexity extends \lithium\test\Filter {
 					$packagedResults[$class] = array();
 				}
 				$classResult = (array) $result[$class];
-				$packagedResults[$class] = array_merge($classResult, $packagedResults[$class]);
+				$packagedResults[$class] = \array_merge($classResult, $packagedResults[$class]);
 			}
 		}
 

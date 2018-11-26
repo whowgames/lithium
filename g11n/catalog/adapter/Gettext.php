@@ -93,7 +93,7 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 	 */
 	protected function _init() {
 		parent::_init();
-		if (!is_dir($this->_config['path'])) {
+		if (!\is_dir($this->_config['path'])) {
 			$message = "Gettext directory does not exist at path `{$this->_config['path']}`.";
 			throw new ConfigException($message);
 		}
@@ -111,14 +111,14 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 		$files = $this->_files($category, $locale, $scope);
 
 		foreach ($files as $file) {
-			$method = '_parse' . ucfirst(pathinfo($file, PATHINFO_EXTENSION));
+			$method = '_parse' . \ucfirst(\pathinfo($file, PATHINFO_EXTENSION));
 
-			if (!file_exists($file) || !is_readable($file)) {
+			if (!\file_exists($file) || !\is_readable($file)) {
 				continue;
 			}
-			$stream = fopen($file, 'rb');
+			$stream = \fopen($file, 'rb');
 			$data = $this->invokeMethod($method, array($stream));
-			fclose($stream);
+			\fclose($stream);
 
 			if ($data) {
 				$data['pluralRule'] = array(
@@ -145,13 +145,13 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 		$files = $this->_files($category, $locale, $scope);
 
 		foreach ($files as $file) {
-			$method = '_compile' . ucfirst(pathinfo($file, PATHINFO_EXTENSION));
+			$method = '_compile' . \ucfirst(\pathinfo($file, PATHINFO_EXTENSION));
 
-			if (!$stream = fopen($file, 'wb')) {
+			if (!$stream = \fopen($file, 'wb')) {
 				return false;
 			}
 			$this->invokeMethod($method, array($stream, $data));
-			fclose($stream);
+			\fclose($stream);
 		}
 		return true;
 	}
@@ -168,15 +168,15 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 		$path = $this->_config['path'];
 		$scope = $scope ?: 'default';
 
-		if (($pos = strpos($category, 'Template')) !== false) {
-			$category = substr($category, 0, $pos);
+		if (($pos = \strpos($category, 'Template')) !== false) {
+			$category = \substr($category, 0, $pos);
 			return array("{$path}/{$category}_{$scope}.pot");
 		}
 
 		if ($category === 'message') {
 			$category = 'messages';
 		}
-		$category = strtoupper($category);
+		$category = \strtoupper($category);
 
 		return array(
 			"{$path}/{$locale}/LC_{$category}/{$scope}.mo",
@@ -209,44 +209,44 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 		$data = array();
 		$item = $defaults;
 
-		while ($line = fgets($stream)) {
-			$line = trim($line);
+		while ($line = \fgets($stream)) {
+			$line = \trim($line);
 
 			if ($line === '') {
 				$data = $this->_merge($data, $item);
 				$item = $defaults;
-			} elseif (substr($line, 0, 3) === '#~ ') {
+			} elseif (\substr($line, 0, 3) === '#~ ') {
 				$item['flags']['obsolete'] = true;
-			} elseif (substr($line, 0, 3) === '#, ') {
-				$item['flags'][substr($line, 3)] = true;
-			} elseif (substr($line, 0, 3) === '#: ') {
+			} elseif (\substr($line, 0, 3) === '#, ') {
+				$item['flags'][\substr($line, 3)] = true;
+			} elseif (\substr($line, 0, 3) === '#: ') {
 				$item['occurrences'][] = array(
-					'file' => strtok(substr($line, 3), ':'),
-					'line' => strtok(':')
+					'file' => \strtok(\substr($line, 3), ':'),
+					'line' => \strtok(':')
 				);
-			} elseif (substr($line, 0, 3) === '#. ') {
-				$item['comments'][] = substr($line, 3);
+			} elseif (\substr($line, 0, 3) === '#. ') {
+				$item['comments'][] = \substr($line, 3);
 			} elseif ($line[0] === '#') {
-				$item['comments'][] = ltrim(substr($line, 1));
-			} elseif (substr($line, 0, 7) === 'msgid "') {
-				$item['ids']['singular'] = substr($line, 7, -1);
-			} elseif (substr($line, 0, 9) === 'msgctxt "') {
-				$item['context'] = substr($line, 9, -1);
-			} elseif (substr($line, 0, 8) === 'msgstr "') {
-				$item['translated'] = substr($line, 8, -1);
+				$item['comments'][] = \ltrim(\substr($line, 1));
+			} elseif (\substr($line, 0, 7) === 'msgid "') {
+				$item['ids']['singular'] = \substr($line, 7, -1);
+			} elseif (\substr($line, 0, 9) === 'msgctxt "') {
+				$item['context'] = \substr($line, 9, -1);
+			} elseif (\substr($line, 0, 8) === 'msgstr "') {
+				$item['translated'] = \substr($line, 8, -1);
 			} elseif ($line[0] === '"') {
 				$continues = isset($item['translated']) ? 'translated' : 'ids';
 
-				if (is_array($item[$continues])) {
-					end($item[$continues]);
-					$item[$continues][key($item[$continues])] .= substr($line, 1, -1);
+				if (\is_array($item[$continues])) {
+					\end($item[$continues]);
+					$item[$continues][\key($item[$continues])] .= \substr($line, 1, -1);
 				} else {
-					$item[$continues] .= substr($line, 1, -1);
+					$item[$continues] .= \substr($line, 1, -1);
 				}
-			} elseif (substr($line, 0, 14) === 'msgid_plural "') {
-				$item['ids']['plural'] = substr($line, 14, -1);
-			} elseif (substr($line, 0, 7) === 'msgstr[') {
-				$item['translated'][(integer) substr($line, 7, 1)] = substr($line, 11, -1);
+			} elseif (\substr($line, 0, 14) === 'msgid_plural "') {
+				$item['ids']['plural'] = \substr($line, 14, -1);
+			} elseif (\substr($line, 0, 7) === 'msgstr[') {
+				$item['translated'][(integer) \substr($line, 7, 1)] = \substr($line, 11, -1);
 			}
 		}
 		return $this->_merge($data, $item);
@@ -271,13 +271,13 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 	 * @throws RangeException If stream content has an invalid format.
 	 */
 	protected function _parseMo($stream) {
-		$stat = fstat($stream);
+		$stat = \fstat($stream);
 
 		if ($stat['size'] < self::MO_HEADER_SIZE) {
 			throw new RangeException("MO stream content has an invalid format.");
 		}
-		$magic = unpack('V1', fread($stream, 4));
-		$magic = hexdec(substr(dechex(current($magic)), -8));
+		$magic = \unpack('V1', \fread($stream, 4));
+		$magic = \hexdec(\substr(\dechex(\current($magic)), -8));
 
 		if ($magic == self::MO_LITTLE_ENDIAN_MAGIC) {
 			$isBigEndian = false;
@@ -298,14 +298,14 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 		foreach ($header as &$value) {
 			$value = $this->_readLong($stream, $isBigEndian);
 		}
-		extract($header);
+		\extract($header);
 		$data = array();
 
 		for ($i = 0; $i < $count; $i++) {
 			$singularId = $pluralId = null;
 			$translated = null;
 
-			fseek($stream, $offsetId + $i * 8);
+			\fseek($stream, $offsetId + $i * 8);
 
 			$length = $this->_readLong($stream, $isBigEndian);
 			$offset = $this->_readLong($stream, $isBigEndian);
@@ -314,26 +314,26 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 				continue;
 			}
 
-			fseek($stream, $offset);
-			$singularId = fread($stream, $length);
+			\fseek($stream, $offset);
+			$singularId = \fread($stream, $length);
 
-			if (strpos($singularId, "\000") !== false) {
-				list($singularId, $pluralId) = explode("\000", $singularId);
+			if (\strpos($singularId, "\000") !== false) {
+				list($singularId, $pluralId) = \explode("\000", $singularId);
 			}
 
-			fseek($stream, $offsetTranslated + $i * 8);
+			\fseek($stream, $offsetTranslated + $i * 8);
 			$length = $this->_readLong($stream, $isBigEndian);
 			$offset = $this->_readLong($stream, $isBigEndian);
 
-			fseek($stream, $offset);
-			$translated = fread($stream, $length);
+			\fseek($stream, $offset);
+			$translated = \fread($stream, $length);
 
-			if (strpos($translated, "\000") !== false) {
-				$translated = explode("\000", $translated);
+			if (\strpos($translated, "\000") !== false) {
+				$translated = \explode("\000", $translated);
 			}
 
 			$ids = array('singular' => $singularId, 'plural' => $pluralId);
-			$data = $this->_merge($data, compact('ids', 'translated'));
+			$data = $this->_merge($data, \compact('ids', 'translated'));
 		}
 		return $data;
 	}
@@ -346,9 +346,9 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 	 * @return integer
 	 */
 	protected function _readLong($stream, $isBigEndian) {
-		$result = unpack($isBigEndian ? 'N1' : 'V1', fread($stream, 4));
-		$result = current($result);
-		return (integer) substr($result, -8);
+		$result = \unpack($isBigEndian ? 'N1' : 'V1', \fread($stream, 4));
+		$result = \current($result);
+		return (integer) \substr($result, -8);
 	}
 
 	/**
@@ -381,8 +381,8 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 		$output[] = '"Content-Transfer-Encoding: 8bit\n"';
 		$output[] = '"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"';
 		$output[] = '';
-		$output = implode("\n", $output) . "\n";
-		fwrite($stream, $output);
+		$output = \implode("\n", $output) . "\n";
+		\fwrite($stream, $output);
 
 		foreach ($data as $key => $item) {
 			$output = array();
@@ -406,14 +406,14 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 					$output[] = "msgstr[{$key}] \"{$value}\"";
 				}
 			} else {
-				if (is_array($item['translated'])) {
-					$item['translated'] = array_pop($item['translated']);
+				if (\is_array($item['translated'])) {
+					$item['translated'] = \array_pop($item['translated']);
 				}
 				$output[] = "msgstr \"{$item['translated']}\"";
 			}
 			$output[] = '';
-			$output = implode("\n", $output) . "\n";
-			fwrite($stream, $output);
+			$output = \implode("\n", $output) . "\n";
+			\fwrite($stream, $output);
 		}
 		return true;
 	}
@@ -456,11 +456,11 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 	 */
 	protected function _prepareForWrite(array $item) {
 		$filter = function ($value) use (&$filter) {
-			if (is_array($value)) {
-				return array_map($filter, $value);
+			if (\is_array($value)) {
+				return \array_map($filter, $value);
 			}
-			$value = strtr($value, array("\\'" => "'", "\\\\" => "\\", "\r\n" => "\n"));
-			$value = addcslashes($value, "\0..\37\\\"");
+			$value = \strtr($value, array("\\'" => "'", "\\\\" => "\\", "\r\n" => "\n"));
+			$value = \addcslashes($value, "\0..\37\\\"");
 			return $value;
 		};
 		$fields = array('id', 'ids', 'translated');
@@ -476,7 +476,7 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 		$path = Libraries::get(true, 'path');
 		if (isset($item['occurrences'])) {
 			foreach ($item['occurrences'] as &$occurrence) {
-				$occurrence['file'] = str_replace($path, '', $occurrence['file']);
+				$occurrence['file'] = \str_replace($path, '', $occurrence['file']);
 			}
 		}
 		return parent::_prepareForWrite($item);
@@ -496,10 +496,10 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 	 */
 	protected function _merge(array $data, array $item) {
 		$filter = function ($value) use (&$filter) {
-			if (is_array($value)) {
-				return array_map($filter, $value);
+			if (\is_array($value)) {
+				return \array_map($filter, $value);
 			}
-			return stripcslashes($value);
+			return \stripcslashes($value);
 		};
 		$fields = array('id', 'ids', 'translated');
 
@@ -511,7 +511,7 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 		if (isset($item['ids']['singular'])) {
 			$item['id'] = $item['ids']['singular'];
 		}
-		if (empty($item['id']) || ctype_space($item['id'])) {
+		if (empty($item['id']) || \ctype_space($item['id'])) {
 			return $data;
 		}
 		return parent::_merge($data, $item);

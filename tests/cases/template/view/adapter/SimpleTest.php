@@ -27,7 +27,7 @@ class SimpleTest extends \lithium\test\Unit {
 		$message = new MockStringObject();
 		$message->message = 'Lithium is about to rock you.';
 
-		$result = $this->subject->render('Hello {:name}! {:message}', compact('message') + array(
+		$result = $this->subject->render('Hello {:name}! {:message}', \compact('message') + array(
 			'name' => 'World'
 		));
 		$expected = 'Hello World! Lithium is about to rock you.';

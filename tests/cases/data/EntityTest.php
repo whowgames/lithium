@@ -17,8 +17,8 @@ class EntityTest extends \lithium\test\Unit {
 
 	public function testSchemaAccess() {
 		$fields = array('foo' => array('type' => 'string'));
-		$schema = new Schema(compact('fields'));
-		$entity = new Entity(compact('schema'));
+		$schema = new Schema(\compact('fields'));
+		$entity = new Entity(\compact('schema'));
 		$this->assertEqual($schema, $entity->schema());
 	}
 
@@ -86,7 +86,7 @@ class EntityTest extends \lithium\test\Unit {
 		$model = $this->_model;
 		$data = array('foo' => true);
 
-		$entity = new Entity(compact('model', 'data'));
+		$entity = new Entity(\compact('model', 'data'));
 		$this->assertTrue($entity->validates());
 
 		$model::instanceMethods(array('testInstanceMethod' => function($entity) {
@@ -100,7 +100,7 @@ class EntityTest extends \lithium\test\Unit {
 
 	public function testMethodDispatchWithNoModel() {
 		$data = array('foo' => true);
-		$entity = new Entity(compact('data'));
+		$entity = new Entity(\compact('data'));
 		$this->expectException("/^No model bound to call `foo`.$/");
 		$entity->foo();
 	}
@@ -108,7 +108,7 @@ class EntityTest extends \lithium\test\Unit {
 	public function testMethodDispatchWithEntityAsModel() {
 		$data = array('foo' => true);
 		$model = 'lithium\data\Entity';
-		$entity = new Entity(compact('model', 'data'));
+		$entity = new Entity(\compact('model', 'data'));
 		$this->expectException("/^No model bound to call `foo`.$/");
 		$entity->foo();
 	}
@@ -190,7 +190,7 @@ class EntityTest extends \lithium\test\Unit {
 
 	public function testConversion() {
 		$data = array('foo' => '!!', 'bar' => '??', 'baz' => '--');
-		$entity = new Entity(compact('data'));
+		$entity = new Entity(\compact('data'));
 
 		$this->assertEqual($data, $entity->to('array'));
 		$this->assertEqual($data, $entity->data());
@@ -245,7 +245,7 @@ class EntityTest extends \lithium\test\Unit {
 		$old = $model::meta('title') ?: 'title';
 
 		$model::meta('title', 'firstName');
-		$object = new Entity(compact('model'));
+		$object = new Entity(\compact('model'));
 
 		$object->firstName = 'Bob';
 		$this->assertEqual('Bob', (string) $object);
@@ -259,7 +259,7 @@ class EntityTest extends \lithium\test\Unit {
 	public function testRespondsTo() {
 		$model = $this->_model;
 		$data = array('foo' => true);
-		$entity = new Entity(compact('model', 'data'));
+		$entity = new Entity(\compact('model', 'data'));
 
 		$this->assertTrue($entity->respondsTo('foobar'));
 		$this->assertTrue($entity->respondsTo('findByFoo'));
@@ -271,7 +271,7 @@ class EntityTest extends \lithium\test\Unit {
 	public function testRespondsToParentCall() {
 		$model = $this->_model;
 		$data = array('foo' => true);
-		$entity = new Entity(compact('model', 'data'));
+		$entity = new Entity(\compact('model', 'data'));
 
 		$this->assertTrue($entity->respondsTo('applyFilter'));
 		$this->assertFalse($entity->respondsTo('fooBarBaz'));
@@ -279,9 +279,9 @@ class EntityTest extends \lithium\test\Unit {
 
 	public function testHandlers() {
 		$handlers = array(
-			'stdClass' => function($value) { return substr($value->scalar, -1); }
+			'stdClass' => function($value) { return \substr($value->scalar, -1); }
 		);
-		$array = new Entity(compact('handlers') + array(
+		$array = new Entity(\compact('handlers') + array(
 			'data' => array(
 				'value' => (object) 'hello'
 			)

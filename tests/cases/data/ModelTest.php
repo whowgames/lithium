@@ -168,7 +168,7 @@ class ModelTest extends \lithium\test\Unit {
 
 	public function testMetaInformation() {
 		$class = 'lithium\tests\mocks\data\MockPost';
-		$expected = compact('class') + array(
+		$expected = \compact('class') + array(
 			'name'        => 'MockPost',
 			'key'         => 'id',
 			'title'       => 'title',
@@ -180,7 +180,7 @@ class ModelTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, MockPost::meta());
 
 		$class = 'lithium\tests\mocks\data\MockComment';
-		$expected = compact('class') + array(
+		$expected = \compact('class') + array(
 			'name'        => 'MockComment',
 			'key'         => 'comment_id',
 			'title'       => 'comment_id',
@@ -210,7 +210,7 @@ class ModelTest extends \lithium\test\Unit {
 
 	public function testSchemaInheritance() {
 		$result = MockSubProduct::schema();
-		$this->assertTrue(array_key_exists('price', $result->fields()));
+		$this->assertTrue(\array_key_exists('price', $result->fields()));
 	}
 
 	public function testInitializationInheritance() {
@@ -232,7 +232,7 @@ class ModelTest extends \lithium\test\Unit {
 		$this->assertCount(1, MockSubProduct::initializers());
 
 		$config = array('query' => array('with' => array('MockCreator')));
-		MockProduct::config(compact('config'));
+		MockProduct::config(\compact('config'));
 		$this->assertEqual(MockProduct::query(), MockSubProduct::query());
 
 		$expected = array('limit' => 50) + MockProduct::query();
@@ -265,7 +265,7 @@ class ModelTest extends \lithium\test\Unit {
 		);
 		$schema = new Schema(array('fields' => $expected));
 
-		MockSubProduct::config(compact('schema'));
+		MockSubProduct::config(\compact('schema'));
 		$result = MockSubProduct::schema();
 		$this->assertEqual($expected, $result->fields());
 	}
@@ -284,14 +284,14 @@ class ModelTest extends \lithium\test\Unit {
 	 * @return void
 	 */
 	public function testRelationshipIntrospection() {
-		$result = array_keys(MockPost::relations());
+		$result = \array_keys(MockPost::relations());
 		$expected = array('MockComment');
 		$this->assertEqual($expected, $result);
 
 		$result = MockPost::relations('hasMany');
 		$this->assertEqual($expected, $result);
 
-		$result = array_keys(MockComment::relations());
+		$result = \array_keys(MockComment::relations());
 		$expected = array('MockPost');
 		$this->assertEqual($expected, $result);
 
@@ -553,7 +553,7 @@ class ModelTest extends \lithium\test\Unit {
 		$post = MockPostForValidates::create();
 		$events = 'customEvent';
 
-		$this->assertFalse($post->validates(compact('events')));
+		$this->assertFalse($post->validates(\compact('events')));
 		$this->assertNotEmpty($post->errors());
 
 		$expected = array(
@@ -574,7 +574,7 @@ class ModelTest extends \lithium\test\Unit {
 		));
 
 		$events = 'customEvent';
-		$result = $post->validates(compact('events'));
+		$result = $post->validates(\compact('events'));
 		$this->assertTrue($result);
 		$result = $post->errors();
 		$this->assertEmpty($result);
@@ -585,7 +585,7 @@ class ModelTest extends \lithium\test\Unit {
 
 		$events = array('customEvent','anotherCustomEvent');
 
-		$result = $post->validates(compact('events'));
+		$result = $post->validates(\compact('events'));
 		$this->assertFalse($result);
 		$result = $post->errors();
 		$this->assertNotEmpty($result);
@@ -610,7 +610,7 @@ class ModelTest extends \lithium\test\Unit {
 
 		$events = array('customEvent','anotherCustomEvent');
 
-		$result = $post->validates(compact('events'));
+		$result = $post->validates(\compact('events'));
 		$this->assertFalse($result);
 		$result = $post->errors();
 		$this->assertNotEmpty($result);
@@ -629,7 +629,7 @@ class ModelTest extends \lithium\test\Unit {
 
 		$events = array('customEvent','anotherCustomEvent');
 
-		$result = $post->validates(compact('events'));
+		$result = $post->validates(\compact('events'));
 		$this->assertTrue($result);
 		$result = $post->errors();
 		$this->assertEmpty($result);
@@ -819,7 +819,7 @@ class ModelTest extends \lithium\test\Unit {
 		$post = MockPostForValidates::create();
 		$events = array('customEvent','anotherCustomEvent');
 
-		$result = $post->save(null,compact('events'));
+		$result = $post->save(null,\compact('events'));
 		$this->assertFalse($result);
 		$result = $post->errors();
 		$this->assertNotEmpty($result);
@@ -869,7 +869,7 @@ class ModelTest extends \lithium\test\Unit {
 		$this->assertEqual('delete', $query->type());
 		$this->assertEqual(array('published' => false), $query->conditions());
 
-		$keys = array_keys(array_filter($query->export(MockPost::connection())));
+		$keys = \array_keys(\array_filter($query->export(MockPost::connection())));
 		$this->assertEqual(array('conditions', 'model', 'type', 'source', 'alias'), $keys);
 	}
 

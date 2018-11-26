@@ -161,7 +161,7 @@ class Connections extends \lithium\core\Adaptable {
 		}
 
 		if (!$name) {
-			return array_keys(static::$_configurations);
+			return \array_keys(static::$_configurations);
 		}
 
 		if (!isset(static::$_configurations[$name])) {
@@ -189,7 +189,7 @@ class Connections extends \lithium\core\Adaptable {
 		if (!$config['adapter']) {
 			$config['adapter'] = $config['type'];
 		} else {
-			$paths = array_merge(array("adapter.data.source.{$config['type']}"), (array) $paths);
+			$paths = \array_merge(array("adapter.data.source.{$config['type']}"), (array) $paths);
 		}
 		return parent::_class($config, $paths);
 	}

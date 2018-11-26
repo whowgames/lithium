@@ -126,7 +126,7 @@ class ServiceTest extends \lithium\test\Unit {
 	public function testPost() {
 		$http = new Service($this->_testConfig);
 		$http->post('update.xml', array('status' => 'cool'));
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'POST /update.xml HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -138,7 +138,7 @@ class ServiceTest extends \lithium\test\Unit {
 		$result = (string) $http->last->request;
 		$this->assertEqual($expected, $result);
 
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'HTTP/1.1 200 OK',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -154,7 +154,7 @@ class ServiceTest extends \lithium\test\Unit {
 	public function testPut() {
 		$http = new Service($this->_testConfig);
 		$http->put('update.xml', array('status' => 'cool'));
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'PUT /update.xml HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -166,7 +166,7 @@ class ServiceTest extends \lithium\test\Unit {
 		$result = (string) $http->last->request;
 		$this->assertEqual($expected, $result);
 
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'HTTP/1.1 200 OK',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -182,7 +182,7 @@ class ServiceTest extends \lithium\test\Unit {
 	public function testDelete() {
 		$http = new Service($this->_testConfig);
 		$http->delete('posts/1');
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'DELETE /posts/1 HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -192,7 +192,7 @@ class ServiceTest extends \lithium\test\Unit {
 		$result = (string) $http->last->request;
 		$this->assertEqual($expected, $result);
 
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'HTTP/1.1 200 OK',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -207,7 +207,7 @@ class ServiceTest extends \lithium\test\Unit {
 		$http = new Service($this->_testConfig);
 		$data = array('status' => array('cool', 'awesome'));
 		$http->post('update.xml', $data, array('type' => 'json'));
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'POST /update.xml HTTP/1.1',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -219,7 +219,7 @@ class ServiceTest extends \lithium\test\Unit {
 		$result = (string) $http->last->request;
 		$this->assertEqual($expected, $result);
 
-		$expected = join("\r\n", array(
+		$expected = \join("\r\n", array(
 			'HTTP/1.1 200 OK',
 			'Host: localhost:80',
 			'Connection: Close',
@@ -235,7 +235,7 @@ class ServiceTest extends \lithium\test\Unit {
 	public function testConnection() {
 		$http = new Service($this->_testConfig);
 		$connection = $http->connection;
-		$this->assertEqual('lithium\tests\mocks\net\http\MockSocket', get_class($connection));
+		$this->assertEqual('lithium\tests\mocks\net\http\MockSocket', \get_class($connection));
 
 		$http->connection->open(array('scheme' => 'https'));
 		$config = $http->connection->config();
@@ -258,7 +258,7 @@ class ServiceTest extends \lithium\test\Unit {
 		);
 		$result = $http->last->request;
 		$this->assertEqual('PATCH', $result->method);
-		$this->assertEqual('lithium\net\http\Response', get_class($response));
+		$this->assertEqual('lithium\net\http\Response', \get_class($response));
 		$this->assertEqual('someData=someValue', $result->body());
 	}
 

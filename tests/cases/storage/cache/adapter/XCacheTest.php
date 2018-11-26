@@ -18,7 +18,7 @@ class XCacheTest extends \lithium\test\Unit {
 	 * @return void
 	 */
 	public function skip() {
-		$extensionExists = (extension_loaded('xcache') && (ini_get('xcache.var_size') !== 0));
+		$extensionExists = (\extension_loaded('xcache') && (\ini_get('xcache.var_size') !== 0));
 		$message = 'The XCache extension is not installed or not configured for userspace caching.';
 		$this->skipIf(!$extensionExists, $message);
 
@@ -52,12 +52,12 @@ class XCacheTest extends \lithium\test\Unit {
 		$key = 'key';
 		$data = 'value';
 		$expiry = '+5 seconds';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 
 		$closure = $this->XCache->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->XCache, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -71,12 +71,12 @@ class XCacheTest extends \lithium\test\Unit {
 		$key = 'another_key';
 		$data = 'more_data';
 		$expiry = '+1 minute';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 
 		$closure = $this->XCache->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->XCache, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -92,12 +92,12 @@ class XCacheTest extends \lithium\test\Unit {
 		$xCache = new XCache(array('expiry' => '+5 seconds'));
 		$key = 'default_key';
 		$data = 'value';
-		$time = strtotime('+5 seconds');
+		$time = \strtotime('+5 seconds');
 
 		$closure = $xCache->write($key, $data);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data');
+		$params = \compact('key', 'data');
 		$result = $closure($xCache, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -113,7 +113,7 @@ class XCacheTest extends \lithium\test\Unit {
 	public function testSimpleRead() {
 		$key = 'read_key';
 		$data = 'read data';
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 
 		$result = xcache_set($key, $data, 60);
 		$this->assertTrue($result);
@@ -121,7 +121,7 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -131,7 +131,7 @@ class XCacheTest extends \lithium\test\Unit {
 
 		$key = 'another_read_key';
 		$data = 'read data';
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 
 		$result = xcache_set($key, $data, 60);
 		$this->assertTrue($result);
@@ -139,7 +139,7 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -153,7 +153,7 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 		$this->assertFalse($result);
 
@@ -162,7 +162,7 @@ class XCacheTest extends \lithium\test\Unit {
 	public function testDelete() {
 		$key = 'delete_key';
 		$data = 'data to delete';
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 
 		$result = xcache_set($key, $data, 60);
 		$this->assertTrue($result);
@@ -170,7 +170,7 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 		$this->assertTrue($result);
 	}
@@ -178,12 +178,12 @@ class XCacheTest extends \lithium\test\Unit {
 	public function testDeleteNonExistentKey() {
 		$key = 'delete_key';
 		$data = 'data to delete';
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 
 		$closure = $this->XCache->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 		$this->assertFalse($result);
 	}
@@ -192,12 +192,12 @@ class XCacheTest extends \lithium\test\Unit {
 		$key = 'write_read_key';
 		$data = 'write/read value';
 		$expiry = '+5 seconds';
-		$time = strtotime($expiry);
+		$time = \strtotime($expiry);
 
 		$closure = $this->XCache->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->XCache, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -208,7 +208,7 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -216,18 +216,18 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 		$this->assertTrue($result);
 	}
 
 	public function testClear() {
-		$admin = (ini_get('xcache.admin.enable_auth') === "On");
+		$admin = (\ini_get('xcache.admin.enable_auth') === "On");
 		$this->skipIf($admin, "XCache::clear() test skipped due to authentication.");
 
 		$key1 = 'key_clear_1';
 		$key2 = 'key_clear_2';
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 
 		$result = xcache_set($key1, 'data that will no longer exist', $time);
 		$this->assertTrue($result);
@@ -243,7 +243,7 @@ class XCacheTest extends \lithium\test\Unit {
 	}
 
 	public function testDecrement() {
-		$time = strtotime('+1 minute') - time();
+		$time = \strtotime('+1 minute') - \time();
 		$key = 'decrement';
 		$value = 10;
 
@@ -253,7 +253,7 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->decrement($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 		$this->assertEqual($value - 1, $result);
 
@@ -265,7 +265,7 @@ class XCacheTest extends \lithium\test\Unit {
 	}
 
 	public function testDecrementNonIntegerValue() {
-		$time = strtotime('+1 minute') - time();
+		$time = \strtotime('+1 minute') - \time();
 		$key = 'non_integer';
 		$value = 'no';
 
@@ -275,7 +275,7 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->decrement($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 
 		$result = xcache_get($key);
@@ -284,7 +284,7 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->decrement($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 
 		$result = xcache_get($key);
@@ -295,7 +295,7 @@ class XCacheTest extends \lithium\test\Unit {
 	}
 
 	public function testIncrement() {
-		$time = strtotime('+1 minute') - time();
+		$time = \strtotime('+1 minute') - \time();
 		$key = 'increment';
 		$value = 10;
 
@@ -305,7 +305,7 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->increment($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 		$this->assertEqual($value + 1, $result);
 
@@ -317,7 +317,7 @@ class XCacheTest extends \lithium\test\Unit {
 	}
 
 	public function testIncrementNonIntegerValue() {
-		$time = strtotime('+1 minute');
+		$time = \strtotime('+1 minute');
 		$key = 'non_integer_increment';
 		$value = 'yes';
 
@@ -327,7 +327,7 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->increment($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 
 		$result = xcache_get($key);
@@ -336,7 +336,7 @@ class XCacheTest extends \lithium\test\Unit {
 		$closure = $this->XCache->increment($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->XCache, $params, null);
 
 		$result = xcache_get($key);

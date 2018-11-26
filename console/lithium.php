@@ -15,8 +15,8 @@
  * looking for a `config` directory with a `bootstrap.php` file in it.  If no
  * application context is found, just boot up the core framework.
  */
-$params = getopt("", array("app::"));
-$working = $params ? array_pop($params) : getcwd();
+$params = \getopt("", array("app::"));
+$working = $params ? \array_pop($params) : \getcwd();
 $app = null;
 
 /**
@@ -24,8 +24,8 @@ $app = null;
  * core automatically with the default settings.
  */
 $bootstrap = function() use ($working) {
-	define('LITHIUM_LIBRARY_PATH', dirname(dirname(__DIR__)));
-	define('LITHIUM_APP_PATH', $working);
+	\define('LITHIUM_LIBRARY_PATH', \dirname(\dirname(__DIR__)));
+	\define('LITHIUM_APP_PATH', $working);
 
 	if (!include LITHIUM_LIBRARY_PATH . '/lithium/core/Libraries.php') {
 		$message  = "Lithium core could not be found.  Check the value of LITHIUM_LIBRARY_PATH in ";
@@ -34,14 +34,14 @@ $bootstrap = function() use ($working) {
 		throw new ErrorException($message);
 	}
 
-	$resources = sys_get_temp_dir();
+	$resources = \sys_get_temp_dir();
 	$templates = $resources . '/tmp/cache/templates/';
-	if (!is_dir($templates)) {
-		mkdir($resources . '/tmp/cache/templates/', 0777, true);
+	if (!\is_dir($templates)) {
+		\mkdir($resources . '/tmp/cache/templates/', 0777, true);
 	}
 
 	lithium\core\Libraries::add('lithium');
-	lithium\core\Libraries::add(basename($working), array(
+	lithium\core\Libraries::add(\basename($working), array(
 		'default' => true,
 		'path' => $working,
 		'resources' => $resources
@@ -79,9 +79,9 @@ $run = function() {
  * Look to see if there's a bootstrap file. If there is, this is either a Lithium application or
  * plugin.
  */
-if (file_exists("{$working}/config/bootstrap.php")) {
+if (\file_exists("{$working}/config/bootstrap.php")) {
 	$app = $working;
-} elseif (file_exists("{$working}/app/config/bootstrap.php")) {
+} elseif (\file_exists("{$working}/app/config/bootstrap.php")) {
 	$app = "{$working}/app";
 }
 
@@ -91,10 +91,10 @@ if (file_exists("{$working}/config/bootstrap.php")) {
  */
 if ($app) {
 	foreach (array("bootstrap.php", "bootstrap/libraries.php") as $file) {
-		if (!file_exists($path = "{$app}/config/{$file}")) {
+		if (!\file_exists($path = "{$app}/config/{$file}")) {
 			continue;
 		}
-		if (preg_match("/^define\([\"']LITHIUM_LIBRARY_PATH[\"']/m", file_get_contents($path))) {
+		if (\preg_match("/^define\([\"']LITHIUM_LIBRARY_PATH[\"']/m", \file_get_contents($path))) {
 			include "{$app}/config/bootstrap.php";
 			exit($run());
 		}

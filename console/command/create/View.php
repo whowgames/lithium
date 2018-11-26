@@ -65,23 +65,23 @@ class View extends \lithium\console\command\Create {
 
 		if (!empty($this->_library['path'])) {
 			$path = $this->_library['path'] . "/views/{$params['path']}/{$params['file']}";
-			$file = str_replace('//', '/', "{$path}.php");
-			$directory = dirname($file);
+			$file = \str_replace('//', '/', "{$path}.php");
+			$directory = \dirname($file);
 
-			if (!is_dir($directory)) {
-				if (!mkdir($directory, 0755, true)) {
+			if (!\is_dir($directory)) {
+				if (!\mkdir($directory, 0755, true)) {
 					return false;
 				}
 			}
-			$directory = str_replace($this->_library['path'] . '/', '', $directory);
-			if (file_exists($file)) {
+			$directory = \str_replace($this->_library['path'] . '/', '', $directory);
+			if (\file_exists($file)) {
 				$prompt = "{$file} already exists. Overwrite?";
 				$choices = array('y', 'n');
-				if ($this->in($prompt, compact('choices')) !== 'y') {
+				if ($this->in($prompt, \compact('choices')) !== 'y') {
 					return "{$params['file']} skipped.";
 				}
 			}
-			if (is_int(file_put_contents($file, $result))) {
+			if (\is_int(\file_put_contents($file, $result))) {
 				return "{$params['file']}.php created in {$directory}.";
 			}
 		}

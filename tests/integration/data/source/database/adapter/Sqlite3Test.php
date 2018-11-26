@@ -229,8 +229,8 @@ class Sqlite3Test extends \lithium\tests\integration\data\Base {
 	public function testResultSetInFile() {
 		$connection = 'sqlite_file';
 		$base = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
-		$filename = tempnam($base, "sqlite");
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
+		$filename = \tempnam($base, "sqlite");
 		Connections::add($connection, array(
 			'type' => 'database',
 			'adapter' => 'Sqlite3',
@@ -300,9 +300,9 @@ class Sqlite3Test extends \lithium\tests\integration\data\Base {
 		$this->assertPattern('$\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$', $result['created']);
 		$this->assertPattern('$\d{4}-\d\d-\d\d \d\d:\d\d:\d\d$', $result['modified']);
 
-		$time = time();
-		$this->assertTrue($time - strtotime($result['created']) < 24 * 3600);
-		$this->assertTrue($time - strtotime($result['modified']) < 24 * 3600);
+		$time = \time();
+		$this->assertTrue($time - \strtotime($result['created']) < 24 * 3600);
+		$this->assertTrue($time - \strtotime($result['modified']) < 24 * 3600);
 	}
 }
 

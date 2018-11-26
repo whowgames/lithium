@@ -92,7 +92,7 @@ class Response extends \lithium\net\http\Response {
 	 * @return mixed
 	 */
 	public function headers($key = null, $value = null, $replace = true) {
-		if (is_string($key) && strtolower($key) == 'download') {
+		if (\is_string($key) && \strtolower($key) == 'download') {
 			$key = 'Content-Disposition';
 			$value = 'attachment; filename="' . $value . '"';
 		}
@@ -120,11 +120,11 @@ class Response extends \lithium\net\http\Response {
 				'Pragma' => 'no-cache'
 			));
 		}
-		$expires = is_int($expires) ? $expires : strtotime($expires);
+		$expires = \is_int($expires) ? $expires : \strtotime($expires);
 
 		return $this->headers(array(
-			'Expires' => gmdate('D, d M Y H:i:s', $expires) . ' GMT',
-			'Cache-Control' => 'max-age=' . ($expires - time()),
+			'Expires' => \gmdate('D, d M Y H:i:s', $expires) . ' GMT',
+			'Cache-Control' => 'max-age=' . ($expires - \time()),
 			'Pragma' => 'cache'
 		));
 	}
@@ -194,7 +194,7 @@ class Response extends \lithium\net\http\Response {
 	 */
 	protected function _writeHeaders($headers, $code = null) {
 		foreach ((array) $headers as $header) {
-			$code ? header($header, false, $code) : header($header, false);
+			$code ? \header($header, false, $code) : \header($header, false);
 		}
 	}
 }

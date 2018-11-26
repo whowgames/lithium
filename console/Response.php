@@ -56,14 +56,14 @@ class Response extends \lithium\core\DynamicObject {
 
 		$this->output = $config['output'];
 
-		if (!is_resource($this->output)) {
-			$this->output = fopen('php://stdout', 'r');
+		if (!\is_resource($this->output)) {
+			$this->output = \fopen('php://stdout', 'r');
 		}
 
 		$this->error = $config['error'];
 
-		if (!is_resource($this->error)) {
-			$this->error = fopen('php://stderr', 'r');
+		if (!\is_resource($this->error)) {
+			$this->error = \fopen('php://stderr', 'r');
 		}
 		parent::__construct($config);
 	}
@@ -75,7 +75,7 @@ class Response extends \lithium\core\DynamicObject {
 	 * @return mixed
 	 */
 	public function output($output) {
-		return fwrite($this->output, StringDeprecated::insert($output, $this->styles()));
+		return \fwrite($this->output, StringDeprecated::insert($output, $this->styles()));
 	}
 
 	/**
@@ -85,7 +85,7 @@ class Response extends \lithium\core\DynamicObject {
 	 * @return mixed
 	 */
 	public function error($error) {
-		return fwrite($this->error, StringDeprecated::insert($error, $this->styles()));
+		return \fwrite($this->error, StringDeprecated::insert($error, $this->styles()));
 	}
 
 	/**
@@ -93,10 +93,10 @@ class Response extends \lithium\core\DynamicObject {
 	 */
 	public function __destruct() {
 		if ($this->output) {
-			fclose($this->output);
+			\fclose($this->output);
 		}
 		if ($this->error) {
-			fclose($this->error);
+			\fclose($this->error);
 		}
 	}
 
@@ -125,11 +125,11 @@ class Response extends \lithium\core\DynamicObject {
 			'bold'    => "\033[1m",
 		);
 		if ($styles === false) {
-			return array_combine(array_keys($defaults), array_pad(array(), count($defaults), null));
+			return \array_combine(\array_keys($defaults), \array_pad(array(), \count($defaults), null));
 		}
 		$styles += $defaults;
 
-		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+		if (\strtoupper(\substr(PHP_OS, 0, 3)) === 'WIN') {
 			return $this->styles(false);
 		}
 		return $styles;

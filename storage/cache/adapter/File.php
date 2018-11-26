@@ -75,10 +75,10 @@ class File extends \lithium\core\DynamicObject {
 		$expiry = ($expiry) ?: $this->_config['expiry'];
 
 		return function($self, $params) use (&$path, $expiry) {
-			$expiry = strtotime($expiry);
+			$expiry = \strtotime($expiry);
 			$data = "{:expiry:{$expiry}}\n{$params['data']}";
 			$path = "{$path}/{$params['key']}";
-			return file_put_contents($path, $data);
+			return \file_put_contents($path, $data);
 		};
 	}
 
@@ -92,7 +92,7 @@ class File extends \lithium\core\DynamicObject {
 		$path = $this->_config['path'];
 
 		return function($self, $params) use (&$path) {
-			extract($params);
+			\extract($params);
 			$path = "$path/$key";
 			$file = new SplFileInfo($path);
 
@@ -100,15 +100,15 @@ class File extends \lithium\core\DynamicObject {
 				return false;
 			}
 
-			$data = file_get_contents($path);
-			preg_match('/^\{\:expiry\:(\d+)\}\\n/', $data, $matches);
+			$data = \file_get_contents($path);
+			\preg_match('/^\{\:expiry\:(\d+)\}\\n/', $data, $matches);
 			$expiry = $matches[1];
 
-			if ($expiry < time()) {
-				file_exists($path) && unlink($path);
+			if ($expiry < \time()) {
+				\file_exists($path) && \unlink($path);
 				return false;
 			}
-			return preg_replace('/^\{\:expiry\:\d+\}\\n/', '', $data, 1);
+			return \preg_replace('/^\{\:expiry\:\d+\}\\n/', '', $data, 1);
 		};
 	}
 
@@ -122,12 +122,12 @@ class File extends \lithium\core\DynamicObject {
 		$path = $this->_config['path'];
 
 		return function($self, $params) use (&$path) {
-			extract($params);
+			\extract($params);
 			$path = "$path/$key";
 			$file = new SplFileInfo($path);
 
 			if ($file->isFile() && $file->isReadable()) {
-				return file_exists($path) && unlink($path);
+				return \file_exists($path) && \unlink($path);
 			}
 			return false;
 		};
@@ -174,7 +174,7 @@ class File extends \lithium\core\DynamicObject {
 
 		foreach ($iterator as $file) {
 			if ($file->isFile()) {
-				unlink($file->getPathName());
+				\unlink($file->getPathName());
 			}
 		}
 		return true;

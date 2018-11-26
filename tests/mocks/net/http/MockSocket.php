@@ -33,18 +33,18 @@ class MockSocket extends \lithium\net\Socket {
 
 	public function read() {
 		if ($this->data->path === '/http_auth/') {
-			if (is_array($this->data->auth)) {
+			if (\is_array($this->data->auth)) {
 				$request = $this->data->to('array');
 				$data = $this->data->auth;
 				$data['nc'] = '00000001';
-				$data['cnonce'] = md5(time());
+				$data['cnonce'] = \md5(\time());
 				$username = $this->data->username;
 				$password = $this->data->password;
-				$part1 = md5("{$username}:{$data['realm']}:{$password}");
+				$part1 = \md5("{$username}:{$data['realm']}:{$password}");
 				$part2 = "{$data['nonce']}:{$data['nc']}:{$data['cnonce']}:{$data['qop']}";
-				$part3 = md5($this->data->method . ':' . $this->data->path);
-				$hash = md5("{$part1}:{$part2}:{$part3}");
-				preg_match('/response="(.*?)"/', $this->data->headers('Authorization'), $matches);
+				$part3 = \md5($this->data->method . ':' . $this->data->path);
+				$hash = \md5("{$part1}:{$part2}:{$part3}");
+				\preg_match('/response="(.*?)"/', $this->data->headers('Authorization'), $matches);
 				list($match, $response) = $matches;
 
 				if ($hash === $response) {
@@ -55,14 +55,14 @@ class MockSocket extends \lithium\net\Socket {
 			$header .= 'opaque="d3fb67a7aa4d887ec4bf83040a820a46";';
 			$this->data->headers('WWW-Authenticate', $header);
 			$status = "GET HTTP/1.1 401 Authorization Required";
-			$response = array($status, join("\r\n", $this->data->headers()), "", "not authorized");
-			return join("\r\n", $response);
+			$response = array($status, \join("\r\n", $this->data->headers()), "", "not authorized");
+			return \join("\r\n", $response);
 		}
 		return (string) $this->data;
 	}
 
 	public function write($data) {
-		if (!is_object($data)) {
+		if (!\is_object($data)) {
 			$data = $this->_instance($this->_classes['request'], (array) $data + $this->_config);
 		}
 		$this->data = $data;

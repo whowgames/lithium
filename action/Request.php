@@ -200,10 +200,10 @@ class Request extends \lithium\net\http\Request {
 		if (!isset($config['protocol'])) {
 			$config['protocol'] = $this->env('SERVER_PROTOCOL');
 		}
-		if ($config['protocol'] && strpos($config['protocol'], '/')) {
-			list($scheme, $version) = explode('/', $config['protocol']);
+		if ($config['protocol'] && \strpos($config['protocol'], '/')) {
+			list($scheme, $version) = \explode('/', $config['protocol']);
 			$https = ($this->env('HTTPS') ? 's' : '');
-			$scheme = strtolower($scheme) . $https;
+			$scheme = \strtolower($scheme) . $https;
 			if (!isset($config['scheme'])) {
 				$config['scheme'] = $scheme;
 			}
@@ -219,9 +219,9 @@ class Request extends \lithium\net\http\Request {
 		$this->headers('Content-Length', $this->env('CONTENT_LENGTH'));
 
 		foreach ($this->_env as $name => $value) {
-			if (substr($name, 0, 5) == 'HTTP_') {
-				$name = str_replace('_', ' ', substr($name, 5));
-				$name = str_replace(' ', '-', ucwords(strtolower($name)));
+			if (\substr($name, 0, 5) == 'HTTP_') {
+				$name = \str_replace('_', ' ', \substr($name, 5));
+				$name = \str_replace(' ', '-', \ucwords(\strtolower($name)));
 				$this->headers($name, $value);
 			}
 		}
@@ -246,28 +246,28 @@ class Request extends \lithium\net\http\Request {
 		);
 
 		if (!empty($this->_config['detectors']['mobile'][1])) {
-			$mobile = array_merge($mobile, (array) $this->_config['detectors']['mobile'][1]);
+			$mobile = \array_merge($mobile, (array) $this->_config['detectors']['mobile'][1]);
 		}
 		$this->_detectors['mobile'][1] = $mobile;
 
 		if (!empty($this->_config['detectors']['ios'][1])) {
-			$mobile = array_merge($ios, (array) $this->_config['detectors']['ios'][1]);
+			$mobile = \array_merge($ios, (array) $this->_config['detectors']['ios'][1]);
 		}
 		$this->_detectors['ios'][1] = $ios;
 
 		$this->data = $this->_config['data'];
 		if (isset($this->data['_method'])) {
-			$this->_computed['HTTP_X_HTTP_METHOD_OVERRIDE'] = strtoupper($this->data['_method']);
+			$this->_computed['HTTP_X_HTTP_METHOD_OVERRIDE'] = \strtoupper($this->data['_method']);
 			unset($this->data['_method']);
 		}
 		$type = $this->type($this->_config['type'] ?: $this->env('CONTENT_TYPE'));
-		$this->method = $method = strtoupper($this->env('REQUEST_METHOD'));
-		$hasBody = in_array($method, array('POST', 'PUT', 'PATCH'));
+		$this->method = $method = \strtoupper($this->env('REQUEST_METHOD'));
+		$hasBody = \in_array($method, array('POST', 'PUT', 'PATCH'));
 
 		if (!$this->body && $hasBody && $type !== 'html') {
-			$this->_stream = $this->_stream ?: fopen('php://input', 'r');
-			$this->body = stream_get_contents($this->_stream);
-			fclose($this->_stream);
+			$this->_stream = $this->_stream ?: \fopen('php://input', 'r');
+			$this->body = \stream_get_contents($this->_stream);
+			\fclose($this->_stream);
 		}
 		if (!$this->data && $this->body) {
 			$this->data = $this->body(null, array('decode' => true, 'encode' => false));
@@ -312,7 +312,7 @@ class Request extends \lithium\net\http\Request {
 	 * @todo Refactor to lazy-load environment settings
 	 */
 	public function env($key) {
-		if (array_key_exists($key, $this->_computed)) {
+		if (\array_key_exists($key, $this->_computed)) {
 			return $this->_computed[$key];
 		}
 		$val = null;
@@ -358,7 +358,7 @@ class Request extends \lithium\net\http\Request {
 				);
 				foreach ($https as $altKey) {
 					if ($addr = $this->env($altKey)) {
-						list($val) = explode(', ', $addr);
+						list($val) = \explode(', ', $addr);
 						break;
 					}
 				}
@@ -371,7 +371,7 @@ class Request extends \lithium\net\http\Request {
 			break;
 			case 'HTTPS':
 				if (isset($this->_env['SCRIPT_URI'])) {
-					$val = strpos($this->_env['SCRIPT_URI'], 'https://') === 0;
+					$val = \strpos($this->_env['SCRIPT_URI'], 'https://') === 0;
 				} elseif (isset($this->_env['HTTPS'])) {
 					$val = (!empty($this->_env['HTTPS']) && $this->_env['HTTPS'] !== 'off');
 				} else {
@@ -387,16 +387,16 @@ class Request extends \lithium\net\http\Request {
 			break;
 			case 'SCRIPT_FILENAME':
 				if ($this->env('PLATFORM') === 'IIS') {
-					$val = str_replace('\\\\', '\\', $this->env('PATH_TRANSLATED'));
+					$val = \str_replace('\\\\', '\\', $this->env('PATH_TRANSLATED'));
 				} elseif (isset($this->_env['DOCUMENT_ROOT']) && isset($this->_env['PHP_SELF'])) {
 					$val = $this->_env['DOCUMENT_ROOT'] . $this->_env['PHP_SELF'];
 				}
 			break;
 			case 'DOCUMENT_ROOT':
 				$fileName = $this->env('SCRIPT_FILENAME');
-				$offset = (!strpos($this->env('SCRIPT_NAME'), '.php')) ? 4 : 0;
-				$offset = strlen($fileName) - (strlen($this->env('SCRIPT_NAME')) + $offset);
-				$val = substr($fileName, 0, $offset);
+				$offset = (!\strpos($this->env('SCRIPT_NAME'), '.php')) ? 4 : 0;
+				$offset = \strlen($fileName) - (\strlen($this->env('SCRIPT_NAME')) + $offset);
+				$val = \substr($fileName, 0, $offset);
 			break;
 			case 'PHP_SELF':
 				$val = '/';
@@ -406,7 +406,7 @@ class Request extends \lithium\net\http\Request {
 				$val = $this->env('PLATFORM') === 'CGI';
 			break;
 			case 'HTTP_BASE':
-				$val = preg_replace('/^([^.])*/i', null, $this->env('HTTP_HOST'));
+				$val = \preg_replace('/^([^.])*/i', null, $this->env('HTTP_HOST'));
 			break;
 			case 'PHP_AUTH_USER':
 			case 'PHP_AUTH_PW':
@@ -416,21 +416,21 @@ class Request extends \lithium\net\http\Request {
 						return $this->_computed[$key] = $val;
 					}
 				}
-				if (stripos($header, 'basic') === 0) {
-					$decoded = base64_decode(substr($header, strlen('basic ')));
+				if (\stripos($header, 'basic') === 0) {
+					$decoded = \base64_decode(\substr($header, \strlen('basic ')));
 
-					if (strpos($decoded, ':') !== false) {
-						list($user, $password) = explode(':', $decoded, 2);
+					if (\strpos($decoded, ':') !== false) {
+						list($user, $password) = \explode(':', $decoded, 2);
 
 						$this->_computed['PHP_AUTH_USER'] = $user;
 						$this->_computed['PHP_AUTH_PW'] = $password;
 						return $this->_computed[$key];
 					}
-				} elseif (stripos($header, 'digest') === 0) {
-					return $this->_computed[$key] = substr($header, strlen('digest '));
+				} elseif (\stripos($header, 'digest') === 0) {
+					return $this->_computed[$key] = \substr($header, \strlen('digest '));
 				}
 			default:
-				$val = array_key_exists($key, $this->_env) ? $this->_env[$key] : $val;
+				$val = \array_key_exists($key, $this->_env) ? $this->_env[$key] : $val;
 			break;
 		}
 		return $this->_computed[$key] = $val;
@@ -471,14 +471,14 @@ class Request extends \lithium\net\http\Request {
 			return $this->_acceptContent;
 		}
 		$accept = $this->env('HTTP_ACCEPT');
-		$accept = (preg_match('/[a-z,-]/i', $accept)) ? explode(',', $accept) : array('text/html');
+		$accept = (\preg_match('/[a-z,-]/i', $accept)) ? \explode(',', $accept) : array('text/html');
 
-		foreach (array_reverse($accept) as $i => $type) {
+		foreach (\array_reverse($accept) as $i => $type) {
 			unset($accept[$i]);
-			list($type, $q) = (explode(';q=', $type, 2) + array($type, 1.0 + $i / 100));
-			$accept[$type] = ($type === '*/*') ? 0.1 : floatval($q);
+			list($type, $q) = (\explode(';q=', $type, 2) + array($type, 1.0 + $i / 100));
+			$accept[$type] = ($type === '*/*') ? 0.1 : \floatval($q);
 		}
-		arsort($accept, SORT_NUMERIC);
+		\arsort($accept, SORT_NUMERIC);
 
 		if (isset($accept['application/xhtml+xml']) && $accept['application/xhtml+xml'] >= 1) {
 			unset($accept['application/xml']);
@@ -488,10 +488,10 @@ class Request extends \lithium\net\http\Request {
 		if (isset($this->params['type']) && ($handler = $media::type($this->params['type']))) {
 			if (isset($handler['content'])) {
 				$type = (array) $handler['content'];
-				$accept = array(current($type) => 1) + $accept;
+				$accept = array(\current($type) => 1) + $accept;
 			}
 		}
-		return $this->_acceptContent = array_keys($accept);
+		return $this->_acceptContent = \array_keys($accept);
 	}
 
 	/**
@@ -523,17 +523,17 @@ class Request extends \lithium\net\http\Request {
 	 *         HTTP header or method name.
 	 */
 	public function get($key) {
-		list($var, $key) = explode(':', $key);
+		list($var, $key) = \explode(':', $key);
 
 		switch (true) {
-			case in_array($var, array('params', 'data', 'query')):
+			case \in_array($var, array('params', 'data', 'query')):
 				return isset($this->{$var}[$key]) ? $this->{$var}[$key] : null;
 			case ($var === 'env'):
-				return $this->env(strtoupper($key));
+				return $this->env(\strtoupper($key));
 			case ($var === 'http' && $key === 'method'):
 				return $this->env('REQUEST_METHOD');
 			case ($var === 'http'):
-				return $this->env('HTTP_' . strtoupper($key));
+				return $this->env('HTTP_' . \strtoupper($key));
 		}
 	}
 
@@ -577,26 +577,26 @@ class Request extends \lithium\net\http\Request {
 		$media = $this->_classes['media'];
 
 		if (!isset($this->_detectors[$flag])) {
-			if (!in_array($flag, $media::types())) {
+			if (!\in_array($flag, $media::types())) {
 				return false;
 			}
 			return $this->type() === $flag;
 		}
 		$detector = $this->_detectors[$flag];
 
-		if (!is_array($detector) && is_callable($detector)) {
+		if (!\is_array($detector) && \is_callable($detector)) {
 			return $detector($this);
 		}
-		if (!is_array($detector)) {
+		if (!\is_array($detector)) {
 			return (boolean) $this->env($detector);
 		}
 		list($key, $check) = $detector + array('', '');
 
-		if (is_array($check)) {
-			$check = '/' . join('|', $check) . '/i';
+		if (\is_array($check)) {
+			$check = '/' . \join('|', $check) . '/i';
 		}
 		if (Validator::isRegex($check)) {
-			return (boolean) preg_match($check, $this->env($key));
+			return (boolean) \preg_match($check, $this->env($key));
 		}
 		return ($this->env($key) === $check);
 	}
@@ -643,7 +643,7 @@ class Request extends \lithium\net\http\Request {
 	 * @return void
 	 */
 	public function detect($flag, $detector = null) {
-		if (is_array($flag)) {
+		if (\is_array($flag)) {
 			$this->_detectors = $flag + $this->_detectors;
 		} else {
 			$this->_detectors[$flag] = $detector;
@@ -662,7 +662,7 @@ class Request extends \lithium\net\http\Request {
 			if (!$local) {
 				return $ref;
 			}
-			$url = parse_url($ref) + array('path' => '');
+			$url = \parse_url($ref) + array('path' => '');
 			if (empty($url['host']) || $url['host'] === $this->env('HTTP_HOST')) {
 				$ref = $url['path'];
 				if (!empty($url['query'])) {
@@ -721,9 +721,9 @@ class Request extends \lithium\net\http\Request {
 	 */
 	protected function _base($base = null) {
 		if ($base === null) {
-			$base = preg_replace('/[^\/]+$/', '', $this->env('PHP_SELF'));
+			$base = \preg_replace('/[^\/]+$/', '', $this->env('PHP_SELF'));
 		}
-		$base = trim(str_replace(array("/app/webroot", '/webroot'), '', $base), '/');
+		$base = \trim(\str_replace(array("/app/webroot", '/webroot'), '', $base), '/');
 		return $base ? '/' . $base : '';
 	}
 
@@ -735,11 +735,11 @@ class Request extends \lithium\net\http\Request {
 	 */
 	protected function _url($url = null) {
 		if ($url !== null) {
-			return '/' . trim($url, '/');
+			return '/' . \trim($url, '/');
 		} elseif ($uri = $this->env('REQUEST_URI')) {
-			list($uri) = explode('?', $uri, 2);
-			$base = '/^' . preg_quote($this->_base, '/') . '/';
-			return '/' . trim(preg_replace($base, '', $uri), '/') ?: '/';
+			list($uri) = \explode('?', $uri, 2);
+			$base = '/^' . \preg_quote($this->_base, '/') . '/';
+			return '/' . \trim(\preg_replace($base, '', $uri), '/') ?: '/';
 		}
 		return '/';
 	}
@@ -756,11 +756,11 @@ class Request extends \lithium\net\http\Request {
 			$normalize = function($key, $value) use ($result, &$normalize){
 				foreach ($value as $param => $content) {
 					foreach ($content as $num => $val) {
-						if (is_numeric($num)) {
+						if (\is_numeric($num)) {
 							$result[$key][$num][$param] = $val;
 							continue;
 						}
-						if (is_array($val)) {
+						if (\is_array($val)) {
 							foreach ($val as $next => $one) {
 								$result[$key][$num][$next][$param] = $one;
 							}
@@ -773,11 +773,11 @@ class Request extends \lithium\net\http\Request {
 			};
 			foreach ($_FILES as $key => $value) {
 				if (isset($value['name'])) {
-					if (is_string($value['name'])) {
+					if (\is_string($value['name'])) {
 						$result[$key] = $value;
 						continue;
 					}
-					if (is_array($value['name'])) {
+					if (\is_array($value['name'])) {
 						$result += $normalize($key, $value);
 					}
 				}

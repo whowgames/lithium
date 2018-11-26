@@ -15,17 +15,17 @@ class HelpTest extends \lithium\test\Unit {
 
 	public function setUp() {
 		$this->classes = array('response' => 'lithium\tests\mocks\console\MockResponse');
-		$this->_backup['cwd'] = getcwd();
+		$this->_backup['cwd'] = \getcwd();
 		$this->_backup['_SERVER'] = $_SERVER;
 		$_SERVER['argv'] = array();
 
-		$this->request = new Request(array('input' => fopen('php://temp', 'w+')));
+		$this->request = new Request(array('input' => \fopen('php://temp', 'w+')));
 		$this->request->params = array('library' => 'build_test');
 	}
 
 	public function tearDown() {
 		$_SERVER = $this->_backup['_SERVER'];
-		chdir($this->_backup['cwd']);
+		\chdir($this->_backup['cwd']);
 	}
 
 	public function testRun() {
@@ -33,11 +33,11 @@ class HelpTest extends \lithium\test\Unit {
 		$this->assertTrue($command->run());
 
 		$expected = "COMMANDS via lithium\n";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$pattern = "/\s+test\s+Runs a given set of tests and outputs the results\./ms";
 		$this->assertPattern($pattern, $result);
@@ -55,29 +55,29 @@ class HelpTest extends \lithium\test\Unit {
 
 		$expected  = 'li3 test [--filters=<string>]';
 		$expected .= ' [--format=<string>] [--verbose] [--plain] [<path>]';
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 
 		$expected = "OPTIONS\n    <path>\n";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 
 		$expected = "DESCRIPTION\n";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 
 		$expected = "Command `TestWithDashes` not found";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->run('test-with-dashes');
 		$this->assertFalse($result);
 		$result = $command->response->error;
 		$this->assertPattern("/{$expected}/", $result);
 
 		$expected = "Command `TestWithUnderscores` not found";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->run('test_with_underscores');
 		$this->assertFalse($result);
 		$result = $command->response->error;
@@ -105,7 +105,7 @@ class HelpTest extends \lithium\test\Unit {
 		$this->assertNull($result);
 
 		$expected = "Utility for modifying format of words";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 	}
@@ -116,7 +116,7 @@ class HelpTest extends \lithium\test\Unit {
 		$this->assertNull($result);
 
 		$expected = "rules";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 	}
@@ -129,7 +129,7 @@ class HelpTest extends \lithium\test\Unit {
 		$this->assertNull($result);
 
 		$expected = "rules";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 	}
@@ -142,7 +142,7 @@ class HelpTest extends \lithium\test\Unit {
 		$this->assertNull($result);
 
 		$expected = "    --host=<string>\n        The hostname for this endpoint.";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 	}
@@ -155,7 +155,7 @@ class HelpTest extends \lithium\test\Unit {
 		$this->assertNull($result);
 
 		$expected = "    --host=<string>\n        The hostname for this endpoint.";
-		$expected = preg_quote($expected);
+		$expected = \preg_quote($expected);
 		$result = $command->response->output;
 		$this->assertPattern("/{$expected}/", $result);
 	}

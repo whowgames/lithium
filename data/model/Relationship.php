@@ -137,13 +137,13 @@ class Relationship extends \lithium\core\DynamicObject {
 		$config =& $this->_config;
 
 		if (!$config['to']) {
-			$assoc = preg_replace("/\\w+$/", "", $config['from']) . $config['name'];
+			$assoc = \preg_replace("/\\w+$/", "", $config['from']) . $config['name'];
 			$config['to'] = Libraries::locate('models', $assoc);
-		} elseif (!strpos($config['to'], '\\')) {
-			$config['to'] = preg_replace("/\\w+$/", "", $config['from']) . $config['to'];
+		} elseif (!\strpos($config['to'], '\\')) {
+			$config['to'] = \preg_replace("/\\w+$/", "", $config['from']) . $config['to'];
 		}
 
-		if (!$config['key'] || !is_array($config['key'])) {
+		if (!$config['key'] || !\is_array($config['key'])) {
 			$config['key'] = $this->_keys($config['key']);
 		}
 		if ($config['strategy']) {
@@ -190,7 +190,7 @@ class Relationship extends \lithium\core\DynamicObject {
 		$link = $this->link();
 		$strategies = $this->_strategies();
 
-		if (!isset($strategies[$link]) || !is_callable($strategies[$link])) {
+		if (!isset($strategies[$link]) || !\is_callable($strategies[$link])) {
 			$msg = "Attempted to get object for invalid relationship link type `{$link}`.";
 			throw new ConfigException($msg);
 		}
@@ -213,13 +213,13 @@ class Relationship extends \lithium\core\DynamicObject {
 			}
 			$conditions[$to] = $object->{$from};
 
-			if (is_object($conditions[$to]) && $conditions[$to] instanceof Countable) {
-				$conditions[$to] = iterator_to_array($conditions[$to]);
+			if (\is_object($conditions[$to]) && $conditions[$to] instanceof Countable) {
+				$conditions[$to] = \iterator_to_array($conditions[$to]);
 			}
 		}
 		$fields = $this->fields();
 		$fields = $fields === true ? null : $fields;
-		return compact('conditions', 'fields');
+		return \compact('conditions', 'fields');
 	}
 
 	/**
@@ -233,7 +233,7 @@ class Relationship extends \lithium\core\DynamicObject {
 	public function foreignKey($primaryKey) {
 		$result = array();
 		$entity = $this->_classes['entity'];
-		$keys = ($this->type() === 'belongsTo') ? array_flip($this->key()) : $this->key();
+		$keys = ($this->type() === 'belongsTo') ? \array_flip($this->key()) : $this->key();
 		$primaryKey = ($primaryKey instanceof $entity) ? $primaryKey->to('array') : $primaryKey;
 
 		foreach ($keys as $key => $foreignKey) {
@@ -250,7 +250,7 @@ class Relationship extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function respondsTo($method, $internal = false) {
-		return is_callable(array($this, $method), true);
+		return \is_callable(array($this, $method), true);
 	}
 
 	/**
@@ -265,7 +265,7 @@ class Relationship extends \lithium\core\DynamicObject {
 		$hasType = ($config['type'] === 'hasOne' || $config['type'] === 'hasMany');
 		$related = Libraries::locate('models', $config[$hasType ? 'from' : 'to']);
 
-		if (!class_exists($related)) {
+		if (!\class_exists($related)) {
 			throw new ClassNotFoundException("Related model class '{$related}' not found.");
 		}
 		if (!$related::key()) {
@@ -274,12 +274,12 @@ class Relationship extends \lithium\core\DynamicObject {
 		$keys = (array) $keys;
 		$related = (array) $related::key();
 
-		if (count($keys) !== count($related)) {
+		if (\count($keys) !== \count($related)) {
 			$msg = "Unmatched keys in relationship `{$config['name']}` between models ";
 			$msg .= "`{$config['from']}` and `{$config['to']}`.";
 			throw new ConfigException($msg);
 		}
-		return $hasType ? array_combine($related, $keys) : array_combine($keys, $related);
+		return $hasType ? \array_combine($related, $keys) : \array_combine($keys, $related);
 	}
 
 	/**

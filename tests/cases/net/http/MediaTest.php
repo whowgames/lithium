@@ -54,7 +54,7 @@ class MediaTest extends \lithium\test\Unit {
 		));
 
 		$result = Media::types();
-		$this->assertTrue(in_array('my', $result));
+		$this->assertTrue(\in_array('my', $result));
 
 		$result = Media::type('my');
 		$expected = array('text/x-my');
@@ -74,7 +74,7 @@ class MediaTest extends \lithium\test\Unit {
 		// Remove a custom media type:
 		Media::type('my', false);
 		$result = Media::types();
-		$this->assertFalse(in_array('my', $result));
+		$this->assertFalse(\in_array('my', $result));
 	}
 
 	/**
@@ -97,7 +97,7 @@ class MediaTest extends \lithium\test\Unit {
 	public function testAssetTypeHandling() {
 		$result = Media::assets();
 		$expected = array('js', 'css', 'image', 'generic');
-		$this->assertEqual($expected, array_keys($result));
+		$this->assertEqual($expected, \array_keys($result));
 
 		$result = Media::assets('css');
 		$expected = '.css';
@@ -168,7 +168,7 @@ class MediaTest extends \lithium\test\Unit {
 			),
 			'bootstrap' => false
 		));
-		$library = basename($path);
+		$library = \basename($path);
 
 		$result = Media::asset('foo', 'js', array('library' => 'cdn_js_test'));
 		$this->assertEqual("http://static.cdn.com/{$library}/js/foo.js", $result);
@@ -185,15 +185,15 @@ class MediaTest extends \lithium\test\Unit {
 
 	public function testAssetPathGeneration() {
 		$resources = Libraries::get(true, 'resources');
-		$this->skipIf(!is_writable($resources), "Cannot write test app to resources directory.");
+		$this->skipIf(!\is_writable($resources), "Cannot write test app to resources directory.");
 		$paths = array("{$resources}/media_test/webroot/css", "{$resources}/media_test/webroot/js");
 
 		foreach ($paths as $path) {
-			if (!is_dir($path)) {
-				mkdir($path, 0777, true);
+			if (!\is_dir($path)) {
+				\mkdir($path, 0777, true);
 			}
 		}
-		touch("{$paths[0]}/debug.css");
+		\touch("{$paths[0]}/debug.css");
 
 		Libraries::add('media_test', array('path' => "{$resources}/media_test"));
 
@@ -221,10 +221,10 @@ class MediaTest extends \lithium\test\Unit {
 		$result = Media::asset('this.file.should.not.exist', 'css', array('check' => true));
 		$this->assertFalse($result);
 
-		unlink("{$paths[0]}/debug.css");
+		\unlink("{$paths[0]}/debug.css");
 
-		foreach (array_merge($paths, array(dirname($paths[0]))) as $path) {
-			rmdir($path);
+		foreach (\array_merge($paths, array(\dirname($paths[0]))) as $path) {
+			\rmdir($path);
 		}
 	}
 
@@ -279,10 +279,10 @@ class MediaTest extends \lithium\test\Unit {
 
 		$resources = Libraries::get(true, 'resources');
 		$cssPath = "{$resources}/media_test/webroot/css";
-		$this->skipIf(!is_writable($resources), "Cannot write test app to resources directory.");
+		$this->skipIf(!\is_writable($resources), "Cannot write test app to resources directory.");
 
-		if (!is_dir($cssPath)) {
-			mkdir($cssPath, 0777, true);
+		if (!\is_dir($cssPath)) {
+			\mkdir($cssPath, 0777, true);
 		}
 
 		Libraries::add('media_test', array('path' => "{$resources}/media_test"));
@@ -290,7 +290,7 @@ class MediaTest extends \lithium\test\Unit {
 		$result = Media::asset('/foo/bar', 'js', array('base' => '/base', 'check' => true));
 		$this->assertFalse($result);
 
-		file_put_contents("{$cssPath}/debug.css", "html, body { background-color: black; }");
+		\file_put_contents("{$cssPath}/debug.css", "html, body { background-color: black; }");
 		$result = Media::asset('/css/debug', 'css', array(
 			'library' => 'media_test', 'base' => '/base', 'check' => true
 		));
@@ -310,10 +310,10 @@ class MediaTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, $result);
 
 		Libraries::remove('media_test');
-		unlink("{$cssPath}/debug.css");
+		\unlink("{$cssPath}/debug.css");
 
-		foreach (array($cssPath, dirname($cssPath)) as $path) {
-			rmdir($path);
+		foreach (array($cssPath, \dirname($cssPath)) as $path) {
+			\rmdir($path);
 		}
 	}
 
@@ -366,13 +366,13 @@ class MediaTest extends \lithium\test\Unit {
 
 		Media::type('csv', 'application/csv', array(
 			'encode' => function($data) {
-				ob_start();
-				$out = fopen('php://output', 'w');
+				\ob_start();
+				$out = \fopen('php://output', 'w');
 				foreach ($data as $record) {
-					fputcsv($out, $record);
+					\fputcsv($out, $record);
 				}
-				fclose($out);
-				return ob_get_clean();
+				\fclose($out);
+				return \ob_get_clean();
 			}
 		));
 
@@ -502,7 +502,7 @@ class MediaTest extends \lithium\test\Unit {
 		$response = new Response();
 		$response->type('custom');
 
-		Media::render($response, null, compact('request') + array(
+		Media::render($response, null, \compact('request') + array(
 			'layout' => false,
 			'template' => false,
 			'encode' => function($data, $handler) { return $handler['request']->foo; }
@@ -512,7 +512,7 @@ class MediaTest extends \lithium\test\Unit {
 
 	public function testMediaEncoding() {
 		$data = array('hello', 'goodbye', 'foo' => array('bar', 'baz' => 'dib'));
-		$expected = json_encode($data);
+		$expected = \json_encode($data);
 		$result = Media::encode('json', $data);
 		$this->assertEqual($expected, $result);
 
@@ -525,7 +525,7 @@ class MediaTest extends \lithium\test\Unit {
 
 	public function testRenderWithOptionsMerging() {
 		$base = Libraries::get(true, 'resources') . '/tmp';
-		$this->skipIf(!is_writable($base), "Path `{$base}` is not writable.");
+		$this->skipIf(!\is_writable($base), "Path `{$base}` is not writable.");
 
 		$request = new Request();
 		$request->params['controller'] = 'pages';
@@ -534,7 +534,7 @@ class MediaTest extends \lithium\test\Unit {
 		$response->type('html');
 
 		$this->expectException('/Template not found/');
-		Media::render($response, null, compact('request'));
+		Media::render($response, null, \compact('request'));
 		$this->_cleanUp();
 	}
 
@@ -544,8 +544,8 @@ class MediaTest extends \lithium\test\Unit {
 			'bootstrap' => false)
 		);
 		$this->assertEqual(
-			realpath(Libraries::get(true, 'path') . '/webroot'),
-			realpath(Media::webroot('defaultStyleApp'))
+			\realpath(Libraries::get(true, 'path') . '/webroot'),
+			\realpath(Media::webroot('defaultStyleApp'))
 		);
 
 		Libraries::add('customWebRootApp', array(
@@ -567,13 +567,13 @@ class MediaTest extends \lithium\test\Unit {
 	 * @return void
 	 */
 	public function testStateReset() {
-		$this->assertFalse(in_array('foo', Media::types()));
+		$this->assertFalse(\in_array('foo', Media::types()));
 
 		Media::type('foo', 'text/x-foo');
-		$this->assertTrue(in_array('foo', Media::types()));
+		$this->assertTrue(\in_array('foo', Media::types()));
 
 		Media::reset();
-		$this->assertFalse(in_array('foo', Media::types()));
+		$this->assertFalse(\in_array('foo', Media::types()));
 	}
 
 	public function testEncodeRecordSet() {
@@ -627,16 +627,16 @@ class MediaTest extends \lithium\test\Unit {
 
 		$resources = Libraries::get(true, 'resources');
 		$webroot = "{$resources}/media_test/webroot";
-		$this->skipIf(!is_writable($resources), "Cannot write test app to resources directory.");
+		$this->skipIf(!\is_writable($resources), "Cannot write test app to resources directory.");
 
-		if (!is_dir($webroot)) {
-			mkdir($webroot, 0777, true);
+		if (!\is_dir($webroot)) {
+			\mkdir($webroot, 0777, true);
 		}
 
 		Libraries::add('media_test', array('path' => "{$resources}/media_test"));
 		$this->assertFileExists(Media::webroot('media_test'));
 		Libraries::remove('media_test');
-		rmdir($webroot);
+		\rmdir($webroot);
 	}
 
 	/**
@@ -720,8 +720,8 @@ class MediaTest extends \lithium\test\Unit {
 
 	public function testLocation() {
 		$webroot = Libraries::get(true, 'resources') . '/tmp/tests/webroot';
-		mkdir($webroot);
-		$webroot = realpath($webroot);
+		\mkdir($webroot);
+		$webroot = \realpath($webroot);
 		$this->assertNotEmpty($webroot);
 		Media::attach('tests', array(
 			'absolute' => true,
@@ -859,15 +859,15 @@ class MediaTest extends \lithium\test\Unit {
 
 	public function testAssetPathGenerationWithLocation() {
 		$resources = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($resources), "Cannot write test app to resources directory.");
+		$this->skipIf(!\is_writable($resources), "Cannot write test app to resources directory.");
 		$paths = array("{$resources}/media_test/css", "{$resources}/media_test/js");
 
 		foreach ($paths as $path) {
-			if (!is_dir($path)) {
-				mkdir($path, 0777, true);
+			if (!\is_dir($path)) {
+				\mkdir($path, 0777, true);
 			}
 		}
-		touch("{$paths[0]}/debug.css");
+		\touch("{$paths[0]}/debug.css");
 
 		Media::attach('media_test', array(
 			'prefix' => '',
@@ -939,10 +939,10 @@ class MediaTest extends \lithium\test\Unit {
 		$result = Media::asset('this.file.should.not.exist.css', 'css', array('check' => true));
 		$this->assertFalse($result);
 
-		unlink("{$paths[0]}/debug.css");
+		\unlink("{$paths[0]}/debug.css");
 
-		foreach (array_merge($paths, array(dirname($paths[0]))) as $path) {
-			rmdir($path);
+		foreach (\array_merge($paths, array(\dirname($paths[0]))) as $path) {
+			\rmdir($path);
 		}
 	}
 

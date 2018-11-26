@@ -84,15 +84,15 @@ class Request extends \lithium\core\DynamicObject {
 	 */
 	protected function _init() {
 		$this->_env += (array) $_SERVER + (array) $_ENV;
-		$this->_env['working'] = getcwd() ?: null;
+		$this->_env['working'] = \getcwd() ?: null;
 		$argv = (array) $this->env('argv');
-		$this->_env['script'] = array_shift($argv);
+		$this->_env['script'] = \array_shift($argv);
 		$this->_env['PLATFORM'] = 'CLI';
 		$this->argv += $argv + (array) $this->_config['args'];
 		$this->input = $this->_config['input'];
 
-		if (!is_resource($this->_config['input'])) {
-			$this->input = fopen('php://stdin', 'r');
+		if (!\is_resource($this->_config['input'])) {
+			$this->input = \fopen('php://stdin', 'r');
 		}
 		parent::_init();
 	}
@@ -158,7 +158,7 @@ class Request extends \lithium\core\DynamicObject {
 		}
 		$this->params['command'] = $this->params['action'];
 		if (isset($this->params['args'][0])) {
-			$this->params['action'] = array_shift($this->params['args']);
+			$this->params['action'] = \array_shift($this->params['args']);
 		}
 		return $this;
 	}
@@ -169,7 +169,7 @@ class Request extends \lithium\core\DynamicObject {
 	 * @return string
 	 */
 	public function input() {
-		return fgets($this->input);
+		return \fgets($this->input);
 	}
 
 	/**
@@ -195,7 +195,7 @@ class Request extends \lithium\core\DynamicObject {
 	 */
 	public function __destruct() {
 		if ($this->input) {
-			fclose($this->input);
+			\fclose($this->input);
 		}
 	}
 }

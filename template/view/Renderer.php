@@ -196,15 +196,15 @@ abstract class Renderer extends \lithium\core\DynamicObject {
 		$this->_handlers += array(
 			'url' => function($url, $ref, array $options = array()) use (&$classes, &$req, $h) {
 				$url = $classes['router']::match($url ?: '', $req, $options);
-				return $h ? str_replace('&amp;', '&', $h($url)) : $url;
+				return $h ? \str_replace('&amp;', '&', $h($url)) : $url;
 			},
 			'path' => function($path, $ref, array $options = array()) use (&$classes, &$req, $h) {
 				$defaults = array('base' => $req ? $req->env('base') : '');
 				$type = 'generic';
 
-				if (is_array($ref) && $ref[0] && $ref[1]) {
+				if (\is_array($ref) && $ref[0] && $ref[1]) {
 					list($helper, $methodRef) = $ref;
-					list($class, $method) = explode('::', $methodRef);
+					list($class, $method) = \explode('::', $methodRef);
 					$type = $helper->contentMap[$method];
 				}
 				$path = $classes['media']::asset($path, $type, $options + $defaults);
@@ -214,13 +214,13 @@ abstract class Renderer extends \lithium\core\DynamicObject {
 			'title'   => 'escape',
 			'value'   => 'escape',
 			'scripts' => function($scripts) use (&$ctx) {
-				return "\n\t" . join("\n\t", $ctx['scripts']) . "\n";
+				return "\n\t" . \join("\n\t", $ctx['scripts']) . "\n";
 			},
 			'styles' => function($styles) use (&$ctx) {
-				return "\n\t" . join("\n\t", $ctx['styles']) . "\n";
+				return "\n\t" . \join("\n\t", $ctx['styles']) . "\n";
 			},
 			'head' => function($head) use (&$ctx) {
-				return "\n\t" . join("\n\t", $ctx['head']) . "\n";
+				return "\n\t" . \join("\n\t", $ctx['head']) . "\n";
 			}
 		);
 		unset($this->_config['view']);
@@ -260,7 +260,7 @@ abstract class Renderer extends \lithium\core\DynamicObject {
 			}
 			return $self->helper($property);
 		};
-		return $this->_filter(__METHOD__, compact('property'), $filter);
+		return $this->_filter(__METHOD__, \compact('property'), $filter);
 	}
 
 	/**
@@ -286,7 +286,7 @@ abstract class Renderer extends \lithium\core\DynamicObject {
 			return $this->_context[$method];
 		}
 		if (isset($this->_context[$method]) && $params) {
-			if (is_array($this->_context[$method])) {
+			if (\is_array($this->_context[$method])) {
 				$this->_context[$method][] = $params[0];
 			} else {
 				$this->_context[$method] = $params[0];
@@ -307,7 +307,7 @@ abstract class Renderer extends \lithium\core\DynamicObject {
 	 * @return bool
 	 */
 	public function respondsTo($method, $internal = false) {
-		return is_callable(array($this, $method), true);
+		return \is_callable(array($this, $method), true);
 	}
 
 	/**
@@ -324,10 +324,10 @@ abstract class Renderer extends \lithium\core\DynamicObject {
 		}
 		try {
 			$config += array('context' => $this);
-			return $this->_helpers[$name] = Libraries::instance('helper', ucfirst($name), $config);
+			return $this->_helpers[$name] = Libraries::instance('helper', \ucfirst($name), $config);
 		} catch (ClassNotFoundException $e) {
-			if (ob_get_length()) {
-				ob_end_clean();
+			if (\ob_get_length()) {
+				\ob_end_clean();
 			}
 			throw new RuntimeException("Helper `{$name}` not found.");
 		}
@@ -340,10 +340,10 @@ abstract class Renderer extends \lithium\core\DynamicObject {
 	 * @return mixed
 	 */
 	public function strings($strings = null) {
-		if (is_array($strings)) {
+		if (\is_array($strings)) {
 			return $this->_strings = $this->_strings + $strings;
 		}
-		if (is_string($strings)) {
+		if (\is_string($strings)) {
 			return isset($this->_strings[$strings]) ? $this->_strings[$strings] : null;
 		}
 		return $this->_strings;
@@ -384,10 +384,10 @@ abstract class Renderer extends \lithium\core\DynamicObject {
 	 *               value of `$handlers`.
 	 */
 	public function handlers($handlers = null) {
-		if (is_array($handlers)) {
+		if (\is_array($handlers)) {
 			return $this->_handlers += $handlers;
 		}
-		if (is_string($handlers)) {
+		if (\is_string($handlers)) {
 			return isset($this->_handlers[$handlers]) ? $this->_handlers[$handlers] : null;
 		}
 		return $this->_handlers;
@@ -421,14 +421,14 @@ abstract class Renderer extends \lithium\core\DynamicObject {
 		}
 
 		switch (true) {
-			case is_string($handler) && !$helper:
+			case \is_string($handler) && !$helper:
 				$helper = $this->helper('html');
-			case is_string($handler) && is_object($helper):
+			case \is_string($handler) && \is_object($helper):
 				return $helper->invokeMethod($handler, array($value, $method, $options));
-			case is_array($handler) && is_object($handler[0]):
+			case \is_array($handler) && \is_object($handler[0]):
 				list($object, $func) = $handler;
 				return $object->invokeMethod($func, array($value, $method, $options));
-			case is_callable($handler):
+			case \is_callable($handler):
 				return $handler($value, array($helper, $method), $options);
 			default:
 				return $value;
@@ -510,7 +510,7 @@ abstract class Renderer extends \lithium\core\DynamicObject {
 	protected function _render($type, $template, array $data = array(), array $options = array()) {
 		$context = $this->_options;
 		$options += $this->_options;
-		$result = $this->_view->render($type, $data + $this->_data, compact('template') + $options);
+		$result = $this->_view->render($type, $data + $this->_data, \compact('template') + $options);
 		$this->_options = $context;
 		return $result;
 	}

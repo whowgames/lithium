@@ -45,14 +45,14 @@ use lithium\util\Inflector;
 					<?php } ?>
 
 					<span class="filters">
-						<?php echo join('', array_map(
+						<?php echo \join('', \array_map(
 							function($class) use ($request) {
 								$url = "?filters[]={$class}";
-								$name = join('', array_slice(explode("\\", $class), -1));
+								$name = \join('', \array_slice(\explode("\\", $class), -1));
 								$key = Inflector::underscore($name);
 								$isActive = (
 									isset($request->query['filters']) &&
-									array_search($class, $request->query['filters']) !== false
+									\array_search($class, $request->query['filters']) !== false
 								);
 								$active = $isActive ? 'active' : null;
 								return "<a class=\"{$key} {$active}\" href=\"{$url}\">{$name}</a>";
@@ -65,7 +65,7 @@ use lithium\util\Inflector;
 
 					foreach ($report->filters() as $filter => $options) {
 						$data = $report->results['filters'][$filter];
-						echo $report->render($options['name'], compact('data', 'base'));
+						echo $report->render($options['name'], \compact('data', 'base'));
 					}
 					?>
 				</div>

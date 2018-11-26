@@ -33,7 +33,7 @@ class MemoryTest extends \lithium\test\Unit {
 		$closure = $this->Memory->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->Memory, $params, null);
 		$this->assertTrue($result);
 		$this->assertEqual($this->Memory->cache, $result);
@@ -41,7 +41,7 @@ class MemoryTest extends \lithium\test\Unit {
 		$closure = $this->Memory->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Memory, $params, null);
 		$this->assertEqual($data, $result);
 		$this->assertEqual($this->Memory->cache, array($key => $data));
@@ -55,15 +55,15 @@ class MemoryTest extends \lithium\test\Unit {
 		$closure = $this->Memory->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->Memory, $params, null);
 		$this->assertTrue($result);
 		$this->assertEqual($this->Memory->cache, $result);
 
-		$closure = $this->Memory->read(array_keys($key));
+		$closure = $this->Memory->read(\array_keys($key));
 		$this->assertInternalType('callable', $closure);
 
-		$params = array('key' => array_keys($key));
+		$params = array('key' => \array_keys($key));
 		$result = $closure($this->Memory, $params, null);
 		$this->assertEqual($key, $result);
 	}
@@ -76,7 +76,7 @@ class MemoryTest extends \lithium\test\Unit {
 		$closure = $this->Memory->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data');
+		$params = \compact('key', 'data');
 		$result = $closure($this->Memory, $params, null);
 		$this->assertTrue($result);
 		$this->assertEqual($this->Memory->cache, $result);
@@ -84,12 +84,12 @@ class MemoryTest extends \lithium\test\Unit {
 		$closure = $this->Memory->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Memory, $params, null);
 		$this->assertTrue($result);
 
 		$key = 'non_existent';
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Memory, $params, null);
 		$this->assertFalse($result);
 	}
@@ -102,7 +102,7 @@ class MemoryTest extends \lithium\test\Unit {
 		$closure = $this->Memory->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data');
+		$params = \compact('key', 'data');
 		$result = $closure($this->Memory, $params, null);
 		$this->assertTrue($result);
 		$this->assertEqual($this->Memory->cache, $result);
@@ -125,7 +125,7 @@ class MemoryTest extends \lithium\test\Unit {
 		$closure = $this->Memory->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data');
+		$params = \compact('key', 'data');
 		$result = $closure($this->Memory, $params, null);
 		$this->assertTrue($result);
 		$this->assertEqual($this->Memory->cache, $result);
@@ -144,13 +144,13 @@ class MemoryTest extends \lithium\test\Unit {
 		$closure = $this->Memory->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data');
+		$params = \compact('key', 'data');
 		$result = $closure($this->Memory, $params, null);
 		$this->assertTrue($result);
 		$this->assertEqual($this->Memory->cache, $result);
 
 		$closure = $this->Memory->increment($key);
-		$params = compact('key');
+		$params = \compact('key');
 
 		$result = $closure($this->Memory, $params, null);
 		$this->assertEqual($data + 1, $result);
@@ -164,13 +164,13 @@ class MemoryTest extends \lithium\test\Unit {
 		$closure = $this->Memory->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data');
+		$params = \compact('key', 'data');
 		$result = $closure($this->Memory, $params, null);
 		$this->assertTrue($result);
 		$this->assertEqual($this->Memory->cache, $result);
 
 		$closure = $this->Memory->decrement($key);
-		$params = compact('key');
+		$params = \compact('key');
 
 		$result = $closure($this->Memory, $params, null);
 		$this->assertEqual($data - 1, $result);

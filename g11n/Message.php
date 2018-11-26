@@ -107,7 +107,7 @@ class Message extends \lithium\core\StaticObject {
 		if ($options['noop']) {
 			$result = null;
 		} else {
-			$result = static::_translated($id, abs($options['count']), $options['locale'], array(
+			$result = static::_translated($id, \abs($options['count']), $options['locale'], array(
 				'scope' => $options['scope']
 			));
 		}
@@ -144,11 +144,11 @@ class Message extends \lithium\core\StaticObject {
 			return Message::translate($message, $options + array('default' => $message));
 		};
 		$tn = function($message1, $message2, $count, array $options = array()) {
-			return Message::translate($message1, $options + compact('count') + array(
+			return Message::translate($message1, $options + \compact('count') + array(
 				'default' => $count == 1 ? $message1 : $message2
 			));
 		};
-		return compact('t', 'tn');
+		return \compact('t', 'tn');
 	}
 
 	/**
@@ -162,7 +162,7 @@ class Message extends \lithium\core\StaticObject {
 		if ($cache === false) {
 			static::$_cachedPages = array();
 		}
-		if (is_array($cache)) {
+		if (\is_array($cache)) {
 			static::$_cachedPages += $cache;
 		}
 		return static::$_cachedPages;
@@ -185,11 +185,11 @@ class Message extends \lithium\core\StaticObject {
 	 * @filter
 	 */
 	protected static function _translated($id, $count, $locale, array $options = array()) {
-		$params = compact('id', 'count', 'locale', 'options');
+		$params = \compact('id', 'count', 'locale', 'options');
 
 		$cache =& static::$_cachedPages;
 		return static::_filter(__FUNCTION__, $params, function($self, $params) use (&$cache) {
-			extract($params);
+			\extract($params);
 
 			if (!isset($cache[$options['scope']][$locale])) {
 				$cache[$options['scope']][$locale] = Catalog::read(
@@ -201,11 +201,11 @@ class Message extends \lithium\core\StaticObject {
 			if (!isset($page[$id])) {
 				return null;
 			}
-			if (!is_array($page[$id])) {
+			if (!\is_array($page[$id])) {
 				return $page[$id];
 			}
 
-			if (!isset($page['pluralRule']) || !is_callable($page['pluralRule'])) {
+			if (!isset($page['pluralRule']) || !\is_callable($page['pluralRule'])) {
 				return null;
 			}
 			$key = $page['pluralRule']($count);

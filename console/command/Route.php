@@ -45,7 +45,7 @@ class Route extends \lithium\console\Command {
 		parent::_init();
 		Environment::set($this->env);
 
-		if (file_exists($this->_config['routes'])) {
+		if (\file_exists($this->_config['routes'])) {
 			return require $this->_config['routes'];
 		}
 		$this->error("The routes file for this library doesn't exist or can't be found.");
@@ -90,7 +90,7 @@ class Route extends \lithium\console\Command {
 
 		foreach ($routes As $route) {
 			$info = $route->export();
-			$columns[] = array($info['template'], json_encode($info['params']));
+			$columns[] = array($info['template'], \json_encode($info['params']));
 		}
 		$this->columns($columns);
 	}
@@ -119,21 +119,21 @@ class Route extends \lithium\console\Command {
 	 * @return void
 	 */
 	public function show() {
-		$url = join(" ", $this->request->params['args']);
+		$url = \join(" ", $this->request->params['args']);
 		$method = 'GET';
 
 		if (!$url) {
 			$this->error('Please provide a valid URL');
 		}
 
-		if (preg_match('/^(GET|POST|PUT|DELETE|HEAD|OPTIONS) (.+)/i', $url, $matches)) {
-			$method = strtoupper($matches[1]);
+		if (\preg_match('/^(GET|POST|PUT|DELETE|HEAD|OPTIONS) (.+)/i', $url, $matches)) {
+			$method = \strtoupper($matches[1]);
 			$url = $matches[2];
 		}
 
-		$request = new Request(compact('url') + array('env' => array('REQUEST_METHOD' => $method)));
+		$request = new Request(\compact('url') + array('env' => array('REQUEST_METHOD' => $method)));
 		$result = Router::process($request);
-		$this->out($result->params ? json_encode($result->params) : "No route found.");
+		$this->out($result->params ? \json_encode($result->params) : "No route found.");
 	}
 }
 

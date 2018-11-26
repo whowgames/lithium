@@ -10,14 +10,14 @@ $summary = array(
 <?php foreach ($data as $class => $coverage): ?>
 	<?php
 		$summary['classes']++;
-		$summary['executable'] += count($coverage['executable']);
-		$summary['covered'] += count($coverage['covered']);
-		$summary['uncovered'] += count($coverage['uncovered']);
+		$summary['executable'] += \count($coverage['executable']);
+		$summary['covered'] += \count($coverage['covered']);
+		$summary['uncovered'] += \count($coverage['uncovered']);
 		$summary['percentage'] += $coverage['percentage'];
 	?>
 	<h4 class="coverage">
 		<?php echo $class ?>:
-		<?php echo count($coverage['covered']) ?> of <?php echo count($coverage['executable']) ?>
+		<?php echo \count($coverage['covered']) ?> of <?php echo \count($coverage['executable']) ?>
 		lines covered (<em><?php echo $coverage['percentage'] ?>%</em>)
 	</h4>
 	<?php foreach ($coverage['output'] as $file => $data): ?>
@@ -27,7 +27,7 @@ $summary = array(
 					<div class="code-line <?php echo $row['class'] ?>">
 						<span class="line-num"><?php echo $line ?></span>
 						<span class="content"><?php
-							echo htmlspecialchars(str_replace("\t", "	", $row['data']))
+							echo \htmlspecialchars(\str_replace("\t", "	", $row['data']))
 						?></span>
 					</div><!-- code-line -->
 				<?php endforeach ?>
@@ -67,13 +67,13 @@ $summary = array(
 	<tr>
 		<td class="metric-name">Total Coverage</td>
 		<td class="metric">
-			<?php echo round(($summary['covered'] / $summary['executable']) * 100, 2) ?>%
+			<?php echo \round(($summary['covered'] / $summary['executable']) * 100, 2) ?>%
 		</td>
 	</tr>
 	<tr>
 		<td class="metric-name">Average Per Class</td>
 		<td class="metric">
-			<?php echo round($summary['percentage'] / $summary['classes'], 2) ?>%
+			<?php echo \round($summary['percentage'] / $summary['classes'], 2) ?>%
 		</td>
 	</tr>
 </tbody></table>

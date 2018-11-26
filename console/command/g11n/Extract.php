@@ -41,7 +41,7 @@ class Extract extends \lithium\console\Command {
 			$this->error('Yielded no items.');
 			return 1;
 		}
-		$count = count($data);
+		$count = \count($data);
 		$this->out("Yielded {$count} item(s).");
 		$this->out();
 
@@ -120,7 +120,7 @@ class Extract extends \lithium\console\Command {
 			$this->stop(1);
 		}
 		try {
-			return Catalog::write($name, 'messageTemplate', 'root', $data, compact('scope'));
+			return Catalog::write($name, 'messageTemplate', 'root', $data, \compact('scope'));
 		} catch (Exception $e) {
 			return false;
 		}
@@ -156,13 +156,13 @@ class Extract extends \lithium\console\Command {
 		$this->out();
 
 		$name = $this->in($prompt, array(
-			'choices' => array_keys($configs),
+			'choices' => \array_keys($configs),
 			'default' => 'temporary'
 		));
 
 		if ($name == 'temporary') {
 			foreach ($options as $option => $default) {
-				$configs[$name][$option] = $this->in(ucfirst($option) . ':', compact('default'));
+				$configs[$name][$option] = $this->in(\ucfirst($option) . ':', \compact('default'));
 			}
 			Catalog::config($configs);
 		}

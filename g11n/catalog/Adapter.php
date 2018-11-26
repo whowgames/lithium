@@ -88,11 +88,11 @@ class Adapter extends \lithium\core\DynamicObject {
 			return $data;
 		}
 		foreach (array('ids', 'flags', 'comments', 'occurrences') as $field) {
-			$data[$id][$field] = array_merge($data[$id][$field], $item[$field]);
+			$data[$id][$field] = \array_merge($data[$id][$field], $item[$field]);
 		}
 		if (!isset($data[$id]['translated'])) {
 			$data[$id]['translated'] = $item['translated'];
-		} elseif (is_array($item['translated'])) {
+		} elseif (\is_array($item['translated'])) {
 			$data[$id]['translated'] = (array) $data[$id]['translated'] + $item['translated'];
 		}
 		return $data;

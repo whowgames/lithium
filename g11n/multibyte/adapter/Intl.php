@@ -27,7 +27,7 @@ class Intl extends \lithium\core\DynamicObject {
 	 * @return boolean Returns `true` if enabled, otherwise `false`.
 	 */
 	public static function enabled() {
-		return extension_loaded('intl');
+		return \extension_loaded('intl');
 	}
 
 	/**
@@ -38,7 +38,7 @@ class Intl extends \lithium\core\DynamicObject {
 	 * @return integer|void
 	 */
 	public function strlen($string) {
-		return grapheme_strlen($string);
+		return \grapheme_strlen($string);
 	}
 
 	/**
@@ -51,7 +51,7 @@ class Intl extends \lithium\core\DynamicObject {
 	 * @return integer|boolean
 	 */
 	public function strpos($haystack, $needle, $offset) {
-		return grapheme_strpos($haystack, $needle, $offset);
+		return \grapheme_strpos($haystack, $needle, $offset);
 	}
 
 	/**
@@ -63,7 +63,7 @@ class Intl extends \lithium\core\DynamicObject {
 	 * @return integer|boolean
 	 */
 	public function strrpos($haystack, $needle) {
-		return grapheme_strrpos($haystack, $needle);
+		return \grapheme_strrpos($haystack, $needle);
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Intl extends \lithium\core\DynamicObject {
 	 * @return string|boolean
 	 */
 	public function substr($string, $start, $length) {
-		return grapheme_substr($string, $start, $length);
+		return \grapheme_substr($string, $start, $length);
 	}
 }
 

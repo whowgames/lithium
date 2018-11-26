@@ -54,16 +54,16 @@ class Profiler extends \lithium\test\Filter {
 	 */
 	public static function reset() {
 		foreach (static::$_metrics as $name => $check) {
-			$function = current((array) $check['function']);
+			$function = \current((array) $check['function']);
 
-			if (is_string($check['function']) && !function_exists($check['function'])) {
+			if (\is_string($check['function']) && !\function_exists($check['function'])) {
 				unset(static::$_metrics[$name]);
 			}
 		}
 
 		static::$_formatters = array(
-			'seconds' => function($value) { return number_format($value, 4) . 's'; },
-			'bytes' => function($value) { return number_format($value / 1024, 3) . 'k'; }
+			'seconds' => function($value) { return \number_format($value, 4) . 's'; },
+			'bytes' => function($value) { return \number_format($value / 1024, 3) . 'k'; }
 		);
 	}
 
@@ -88,12 +88,12 @@ class Profiler extends \lithium\test\Filter {
 
 			$runCheck = function($check) {
 				switch (true) {
-					case (is_object($check) || is_string($check)):
+					case (\is_object($check) || \is_string($check)):
 						return $check();
 					break;
-					case (is_array($check)):
-						$function = array_shift($check);
-						$result = !$check ? $check() : call_user_func_array($function, $check);
+					case (\is_array($check)):
+						$function = \array_shift($check);
+						$result = !$check ? $check() : \call_user_func_array($function, $check);
 					break;
 				}
 				return $result;
@@ -111,7 +111,7 @@ class Profiler extends \lithium\test\Filter {
 				__CLASS__,
 				array(
 					$self->subject() => $results,
-					'options' => $options + array('test' => get_class($self)),
+					'options' => $options + array('test' => \get_class($self)),
 					'method' => $params['method']
 				)
 			);
@@ -131,7 +131,7 @@ class Profiler extends \lithium\test\Filter {
 	public static function analyze($report, array $options = array()) {
 		$results = $report->results['group'];
 		$collectedResults = static::collect($report->results['filters'][__CLASS__]);
-		extract($collectedResults, EXTR_OVERWRITE);
+		\extract($collectedResults, EXTR_OVERWRITE);
 		$metrics = array();
 
 		foreach ($results as $testCase) {
@@ -190,7 +190,7 @@ class Profiler extends \lithium\test\Filter {
 	 * @return mixed
 	 */
 	public function check($name, $value = null) {
-		if (is_null($value) && !is_array($name)) {
+		if (\is_null($value) && !\is_array($name)) {
 			return isset(static::$_metrics[$name]) ? static::$_metrics[$name] : null;
 		}
 
@@ -203,7 +203,7 @@ class Profiler extends \lithium\test\Filter {
 			static::$_metrics[$name] = $value;
 		}
 
-		if (is_array($name)) {
+		if (\is_array($name)) {
 			static::$_metrics = $name + static::$_metrics;
 		}
 	}
@@ -220,7 +220,7 @@ class Profiler extends \lithium\test\Filter {
 		$packagedResults = array();
 
 		foreach ($filterResults as $results) {
-			$class = key($results);
+			$class = \key($results);
 			$options = $results['options'];
 			$options += $defaults;
 			$method = $results['method'];

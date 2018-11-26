@@ -41,7 +41,7 @@ class Mock extends \lithium\data\Source {
 	}
 
 	public function describe($entity, $fields = array(), array $meta = array()) {
-		return $this->_instance('schema', compact('fields'));
+		return $this->_instance('schema', \compact('fields'));
 	}
 
 	public function relationship($class, $type, $name, array $options = array()) {

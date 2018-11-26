@@ -16,7 +16,7 @@ class CommandTest extends \lithium\test\Unit {
 	public $request;
 
 	public function setUp() {
-		$this->request = new Request(array('input' => fopen('php://temp', 'w+')));
+		$this->request = new Request(array('input' => \fopen('php://temp', 'w+')));
 		$this->classes = array('response' => 'lithium\tests\mocks\console\MockResponse');
 	}
 
@@ -167,8 +167,8 @@ class CommandTest extends \lithium\test\Unit {
 
 	public function testIn() {
 		$command = new MockCommand(array('request' => $this->request));
-		fwrite($command->request->input, 'nada mucho');
-		rewind($command->request->input);
+		\fwrite($command->request->input, 'nada mucho');
+		\rewind($command->request->input);
 
 		$expected = "nada mucho";
 		$result = $command->in('What up dog?');
@@ -181,8 +181,8 @@ class CommandTest extends \lithium\test\Unit {
 
 	public function testQuit() {
 		$command = new MockCommand(array('request' => $this->request));
-		fwrite($command->request->input, "q\n");
-		rewind($command->request->input);
+		\fwrite($command->request->input, "q\n");
+		\rewind($command->request->input);
 
 		$result = $command->in('This should return bool false');
 		$this->assertFalse($result);
@@ -190,8 +190,8 @@ class CommandTest extends \lithium\test\Unit {
 
 	public function testInWithDefaultOption() {
 		$command = new MockCommand(array('request' => $this->request));
-		fwrite($command->request->input, '  ');
-		rewind($command->request->input);
+		\fwrite($command->request->input, '  ');
+		\rewind($command->request->input);
 
 		$expected = "y";
 		$result = $command->in('What up dog?', array('default' => 'y'));
@@ -201,9 +201,9 @@ class CommandTest extends \lithium\test\Unit {
 		$result = $command->response->output;
 		$this->assertEqual($expected, $result);
 
-		fwrite($command->request->input, "\n");
-		fwrite($command->request->input, 'n');
-		rewind($command->request->input);
+		\fwrite($command->request->input, "\n");
+		\fwrite($command->request->input, 'n');
+		\rewind($command->request->input);
 
 		$expected = "y";
 		$result = $command->in('R U Sure?', array('choices' => array('y', 'n'), 'default' => 'y'));
@@ -212,8 +212,8 @@ class CommandTest extends \lithium\test\Unit {
 
 	public function testInWithOptions() {
 		$command = new MockCommand(array('request' => $this->request));
-		fwrite($command->request->input, 'y');
-		rewind($command->request->input);
+		\fwrite($command->request->input, 'y');
+		\rewind($command->request->input);
 
 		$expected = "y";
 		$result = $command->in('Everything Cool?', array('choices' => array('y', 'n')));
@@ -226,9 +226,9 @@ class CommandTest extends \lithium\test\Unit {
 
 	public function testInWithBadInput(){
 		$command = new MockCommand(array('request' => $this->request));
-		fwrite($command->request->input, "f\n");
-		fwrite($command->request->input, 'y');
-		rewind($command->request->input);
+		\fwrite($command->request->input, "f\n");
+		\fwrite($command->request->input, 'y');
+		\rewind($command->request->input);
 
 		$expected = "y";
 		$result = $command->in('Everything Cool?', array('choices' => array('y', 'n')));

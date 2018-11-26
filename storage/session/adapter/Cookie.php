@@ -44,7 +44,7 @@ class Cookie extends \lithium\core\DynamicObject {
 	 */
 	public function __construct(array $config = array()) {
 		if (empty($config['name'])) {
-			$config['name'] = basename(Libraries::get(true, 'path')) . 'cookie';
+			$config['name'] = \basename(Libraries::get(true, 'path')) . 'cookie';
 		}
 		parent::__construct($config + $this->_defaults);
 	}
@@ -110,8 +110,8 @@ class Cookie extends \lithium\core\DynamicObject {
 				}
 				return array();
 			}
-			if (strpos($key, '.') !== false) {
-				$key = explode('.', $key);
+			if (\strpos($key, '.') !== false) {
+				$key = \explode('.', $key);
 				$result = (isset($_COOKIE[$config['name']])) ? $_COOKIE[$config['name']] : array();
 
 				foreach ($key as $k) {
@@ -150,13 +150,13 @@ class Cookie extends \lithium\core\DynamicObject {
 			$key = $params['key'];
 			$value = $params['value'];
 			$key = array($key => $value);
-			if (is_array($value)) {
+			if (\is_array($value)) {
 				$key = Set::flatten($key);
 			}
 
 			foreach ($key as $name => $val) {
 				$name = $cookieClass::keyFormat($name, $config);
-				$result = setcookie($name, $val, strtotime($expires), $config['path'],
+				$result = \setcookie($name, $val, \strtotime($expires), $config['path'],
 					$config['domain'], $config['secure'], $config['httponly']
 				);
 
@@ -177,14 +177,14 @@ class Cookie extends \lithium\core\DynamicObject {
 	 */
 	public function delete($key, array $options = array()) {
 		$config = $this->_config;
-		$cookieClass = get_called_class();
+		$cookieClass = \get_called_class();
 
 		return function($self, $params) use (&$config, $cookieClass) {
 			$key = $params['key'];
-			$path = '/' . str_replace('.', '/', $config['name'] . '.' . $key) . '/.';
-			$cookies = current(Set::extract($_COOKIE, $path));
-			if (is_array($cookies)) {
-				$cookies = array_keys(Set::flatten($cookies));
+			$path = '/' . \str_replace('.', '/', $config['name'] . '.' . $key) . '/.';
+			$cookies = \current(Set::extract($_COOKIE, $path));
+			if (\is_array($cookies)) {
+				$cookies = \array_keys(Set::flatten($cookies));
 				foreach ($cookies as &$name) {
 					$name = $key . '.' . $name;
 				}
@@ -193,7 +193,7 @@ class Cookie extends \lithium\core\DynamicObject {
 			}
 			foreach ($cookies as &$name) {
 				$name = $cookieClass::keyFormat($name, $config);
-				$result = setcookie($name, "", 1, $config['path'],
+				$result = \setcookie($name, "", 1, $config['path'],
 					$config['domain'], $config['secure'], $config['httponly']
 				);
 				if (!$result) {
@@ -213,19 +213,19 @@ class Cookie extends \lithium\core\DynamicObject {
 	public function clear(array $options = array()) {
 		$options += array('destroySession' => true);
 		$config = $this->_config;
-		$cookieClass = get_called_class();
+		$cookieClass = \get_called_class();
 
 		return function($self, $params) use (&$config, $options, $cookieClass) {
-			if ($options['destroySession'] && session_id()) {
-				session_destroy();
+			if ($options['destroySession'] && \session_id()) {
+				\session_destroy();
 			}
 			if (!isset($_COOKIE[$config['name']])) {
 				return true;
 			}
-			$cookies = array_keys(Set::flatten($_COOKIE[$config['name']]));
+			$cookies = \array_keys(Set::flatten($_COOKIE[$config['name']]));
 			foreach ($cookies as $name) {
 				$name = $cookieClass::keyFormat($name, $config);
-				$result = setcookie($name, "", 1, $config['path'],
+				$result = \setcookie($name, "", 1, $config['path'],
 					$config['domain'], $config['secure'], $config['httponly']
 				);
 				if (!$result) {
@@ -245,7 +245,7 @@ class Cookie extends \lithium\core\DynamicObject {
 	 * @return string The formatted key.
 	 */
 	public static function keyFormat($name, $config) {
-		return $config['name'] . '[' . str_replace('.', '][', $name) . ']';
+		return $config['name'] . '[' . \str_replace('.', '][', $name) . ']';
 	}
 }
 

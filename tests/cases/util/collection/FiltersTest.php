@@ -48,18 +48,18 @@ class FiltersTest extends \lithium\test\Unit {
 		$class = 'lithium\tests\mocks\util\MockFilters';
 
 		Filters::apply($class, 'filteredMethod', function($self, $params, $chain) {
-			return md5($chain->next($self, $params, $chain));
+			return \md5($chain->next($self, $params, $chain));
 		});
 
-		$expected = md5('Working?');
+		$expected = \md5('Working?');
 		$result = $class::filteredMethod();
 		$this->assertEqual($expected, $result);
 
 		Filters::apply($class, 'filteredMethod', function($self, $params, $chain) {
-			return sha1($chain->next($self, $params, $chain));
+			return \sha1($chain->next($self, $params, $chain));
 		});
 
-		$expected = md5(sha1('Working?'));
+		$expected = \md5(\sha1('Working?'));
 		$result = $class::filteredMethod();
 		$this->assertEqual($expected, $result);
 	}

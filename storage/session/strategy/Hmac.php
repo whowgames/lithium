@@ -149,7 +149,7 @@ class Hmac extends \lithium\core\DynamicObject {
 	protected static function _signature($data, $secret = null) {
 		unset($data['__signature']);
 		$secret = ($secret) ?: static::$_secret;
-		return hash_hmac('sha1', serialize($data), $secret);
+		return \hash_hmac('sha1', \serialize($data), $secret);
 	}
 }
 

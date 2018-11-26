@@ -18,19 +18,19 @@ class CompilerTest extends \lithium\test\Unit {
 	protected $_file = 'template.html.php';
 
 	public function skip() {
-		$path = realpath(Libraries::get(true, 'resources') . '/tmp/tests');
-		$this->skipIf(!is_writable($path), "Path `{$path}` is not writable.");
+		$path = \realpath(Libraries::get(true, 'resources') . '/tmp/tests');
+		$this->skipIf(!\is_writable($path), "Path `{$path}` is not writable.");
 
-		$path = realpath(Libraries::get(true, 'resources') . '/tmp/cache/templates');
-		$this->skipIf(!is_writable($path), "Path `{$path}` is not writable.");
+		$path = \realpath(Libraries::get(true, 'resources') . '/tmp/cache/templates');
+		$this->skipIf(!\is_writable($path), "Path `{$path}` is not writable.");
 	}
 
 	public function setUp() {
-		$this->_path = realpath(
-			str_replace('\\', '/', Libraries::get(true, 'resources')) . '/tmp/tests'
+		$this->_path = \realpath(
+			\str_replace('\\', '/', Libraries::get(true, 'resources')) . '/tmp/tests'
 		);
 
-		file_put_contents("{$this->_path}/{$this->_file}", "
+		\file_put_contents("{$this->_path}/{$this->_file}", "
 			<?php echo 'this is unescaped content'; ?" . ">
 			<?='this is escaped content'; ?" . ">
 			<?=\$alsoEscaped; ?" . ">
@@ -48,12 +48,12 @@ class CompilerTest extends \lithium\test\Unit {
 	}
 
 	public function tearDown() {
-		$path = realpath(Libraries::get(true, 'resources') . '/tmp/cache/templates');
+		$path = \realpath(Libraries::get(true, 'resources') . '/tmp/cache/templates');
 
-		foreach (glob("{$path}/*.php") as $file) {
-			unlink($file);
+		foreach (\glob("{$path}/*.php") as $file) {
+			\unlink($file);
 		}
-		unlink("{$this->_path}/{$this->_file}");
+		\unlink("{$this->_path}/{$this->_file}");
 	}
 
 	public function testTemplateContentRewriting() {
@@ -75,7 +75,7 @@ class CompilerTest extends \lithium\test\Unit {
 			"'); ?>",
 			"<?php echo \$h('This is pre-escaped content'); ?>"
 		);
-		$result = array_map('trim', explode("\n", trim(file_get_contents($template))));
+		$result = \array_map('trim', \explode("\n", \trim(\file_get_contents($template))));
 		$this->assertEqual($expected, $result);
 	}
 
@@ -97,21 +97,21 @@ class CompilerTest extends \lithium\test\Unit {
 
 	public function testTemplateCacheHit() {
 		$path = Libraries::get(true, 'resources') . '/tmp/cache/templates';
-		$original = Compiler::template("{$this->_path}/{$this->_file}", compact('path'));
-		$cache = glob("{$path}/*");
-		clearstatcache();
+		$original = Compiler::template("{$this->_path}/{$this->_file}", \compact('path'));
+		$cache = \glob("{$path}/*");
+		\clearstatcache();
 
-		$cached = Compiler::template("{$this->_path}/{$this->_file}", compact('path'));
+		$cached = Compiler::template("{$this->_path}/{$this->_file}", \compact('path'));
 		$this->assertEqual($original, $cached);
-		$this->assertEqual($cache, glob("{$path}/*"));
+		$this->assertEqual($cache, \glob("{$path}/*"));
 
-		file_put_contents("{$this->_path}/{$this->_file}", "Updated");
-		clearstatcache();
-		$updated = Compiler::template("{$this->_path}/{$this->_file}", compact('path'));
-		$newCache = glob("{$path}/*");
+		\file_put_contents("{$this->_path}/{$this->_file}", "Updated");
+		\clearstatcache();
+		$updated = Compiler::template("{$this->_path}/{$this->_file}", \compact('path'));
+		$newCache = \glob("{$path}/*");
 
 		$this->assertNotEqual($cache, $updated);
-		$this->assertEqual(count($cache), count($newCache));
+		$this->assertEqual(\count($cache), \count($newCache));
 		$this->assertNotEqual($cache, $newCache);
 	}
 }

@@ -17,7 +17,7 @@ class IntegrationTest extends \lithium\test\Unit {
 
 		$expected = 2;
 		$report = $test->run();
-		$result = count($report);
+		$result = \count($report);
 
 		$this->assertEqual($expected, $result);
 	}

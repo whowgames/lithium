@@ -89,7 +89,7 @@ class Dispatcher extends \lithium\core\StaticObject {
 		$defaults = array('request' => array());
 		$options += $defaults;
 		$classes = static::$_classes;
-		$params = compact('request', 'options');
+		$params = \compact('request', 'options');
 
 		return static::_filter(__FUNCTION__, $params, function($self, $params) use ($classes) {
 			$request = $params['request'];
@@ -117,7 +117,7 @@ class Dispatcher extends \lithium\core\StaticObject {
 	 * @return class lithium\console\Command Returns the instantiated command object.
 	 */
 	protected static function _callable($request, $params, $options) {
-		$params = compact('request', 'params', 'options');
+		$params = \compact('request', 'params', 'options');
 		return static::_filter(__FUNCTION__, $params, function($self, $params) {
 			$request = $params['request'];
 			$params = $params['params'];
@@ -127,8 +127,8 @@ class Dispatcher extends \lithium\core\StaticObject {
 				$request->params['args'][0] = $name;
 				$name = 'lithium\console\command\Help';
 			}
-			if (class_exists($class = Libraries::locate('command', $name))) {
-				return new $class(compact('request'));
+			if (\class_exists($class = Libraries::locate('command', $name))) {
+				return new $class(\compact('request'));
 			}
 			throw new UnexpectedValueException("Command `{$name}` not found.");
 		});
@@ -154,14 +154,14 @@ class Dispatcher extends \lithium\core\StaticObject {
 		foreach (static::$_rules as $name => $rules) {
 			foreach ($rules as $rule) {
 				if (!empty($params[$name]) && isset($rule[0])) {
-					$options = array_merge(
+					$options = \array_merge(
 						array($params[$name]), isset($rule[2]) ? (array) $rule[2] : array()
 					);
-					$result[$name] = call_user_func_array(array($rule[0], $rule[1]), $options);
+					$result[$name] = \call_user_func_array(array($rule[0], $rule[1]), $options);
 				}
 			}
 		}
-		return $result + array_diff_key($params, $result);
+		return $result + \array_diff_key($params, $result);
 	}
 
 	/**
@@ -175,19 +175,19 @@ class Dispatcher extends \lithium\core\StaticObject {
 	 * @return mixed Returns the result of the called action, typically `true` or `false`.
 	 */
 	protected static function _call($callable, $request, $params) {
-		$params = compact('callable', 'request', 'params');
+		$params = \compact('callable', 'request', 'params');
 		return static::_filter(__FUNCTION__, $params, function($self, $params) {
-			if (is_callable($callable = $params['callable'])) {
+			if (\is_callable($callable = $params['callable'])) {
 				$request = $params['request'];
 				$params = $params['params'];
 
-				if (!method_exists($callable, $params['action'])) {
-					array_unshift($params['args'], $request->params['action']);
+				if (!\method_exists($callable, $params['action'])) {
+					\array_unshift($params['args'], $request->params['action']);
 					$params['action'] = 'run';
 				}
 				$isHelp = (
 					!empty($params['help']) || !empty($params['h']) ||
-					!method_exists($callable, $params['action'])
+					!\method_exists($callable, $params['action'])
 				);
 				if ($isHelp) {
 					$params['action'] = '_help';

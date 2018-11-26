@@ -23,19 +23,19 @@ class MockAdapter extends \lithium\core\DynamicObject {
 	}
 
 	public function strlen() {
-		$this->testStrlenArgs = func_get_args();
+		$this->testStrlenArgs = \func_get_args();
 	}
 
 	public function strpos() {
-		$this->testStrposArgs = func_get_args();
+		$this->testStrposArgs = \func_get_args();
 	}
 
 	public function strrpos() {
-		$this->testStrrposArgs = func_get_args();
+		$this->testStrrposArgs = \func_get_args();
 	}
 
 	public function substr() {
-		$this->testSubstrArgs = func_get_args();
+		$this->testSubstrArgs = \func_get_args();
 	}
 }
 

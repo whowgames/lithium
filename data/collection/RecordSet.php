@@ -50,7 +50,7 @@ class RecordSet extends \lithium\data\Collection {
 		if ($this->_result) {
 			$this->_columns = $this->_columnMap();
 			if ($this->_query) {
-				$columns = array_filter(array_keys($this->_columns));
+				$columns = \array_filter(\array_keys($this->_columns));
 				$this->_dependencies = Set::expand(Set::normalize($columns));
 				$this->_keyIndex = $this->_keyIndex('');
 			}
@@ -80,13 +80,13 @@ class RecordSet extends \lithium\data\Collection {
 	protected function _set($data = null, $offset = null, $options = array()) {
 		if ($model = $this->_model) {
 			$options += array('defaults' => false);
-			$data = !is_object($data) ? $model::create($data, $options) : $data;
+			$data = !\is_object($data) ? $model::create($data, $options) : $data;
 			$key = $model::key($data);
 		} else {
 			$key = $offset;
 		}
-		if (is_array($key)) {
-			$key = count($key) === 1 ? current($key) : null;
+		if (\is_array($key)) {
+			$key = \count($key) === 1 ? \current($key) : null;
 		}
 		return $key !== null ? $this->_data[$key] = $data : $this->_data[] = $data;
 	}
@@ -120,9 +120,9 @@ class RecordSet extends \lithium\data\Collection {
 				}
 			}
 			foreach ($this->_columns as $name => $fields) {
-				$fieldCount = count($fields);
-				$record[$i][$name] = array_combine(
-					$fields, array_slice($data, $offset, $fieldCount)
+				$fieldCount = \count($fields);
+				$record[$i][$name] = \array_combine(
+					$fields, \array_slice($data, $offset, $fieldCount)
 				);
 				$offset += $fieldCount;
 			}
@@ -151,7 +151,7 @@ class RecordSet extends \lithium\data\Collection {
 	protected function _hydrateRecord($relations, $primary, $record, $min, $max, $name, &$relMap, $conn) {
 		$options = array('exists' => true, 'defaults' => false);
 
-		$count = count($record);
+		$count = \count($record);
 		if (!empty($relations)) {
 			foreach ($relations as $relation => $subrelations) {
 				$relName = $name ? $name . '.' . $relation : $relation;
@@ -174,7 +174,7 @@ class RecordSet extends \lithium\data\Collection {
 						}
 						$j++;
 					}
-					if (array_filter($record[$i][$relName])) {
+					if (\array_filter($record[$i][$relName])) {
 						$rel[] = $this->_hydrateRecord(
 							$subrelations, $relModel, $record, $i, $j, $relName, $relMap, $conn
 						);
@@ -200,7 +200,7 @@ class RecordSet extends \lithium\data\Collection {
 		if (!($model = $this->_model)) {
 			return array();
 		}
-		if (!is_object($this->_query) || !$this->_query->join()) {
+		if (!\is_object($this->_query) || !$this->_query->join()) {
 			$map = $model::connection()->schema($this->_query);
 			return $map;
 		}
@@ -226,19 +226,19 @@ class RecordSet extends \lithium\data\Collection {
 		$index = 0;
 		foreach ($this->_columns as $key => $value) {
 			if ($key === $name) {
-				$flip = array_flip($value);
+				$flip = \array_flip($value);
 				$keys = $model::meta('key');
-				if (!is_array($keys)) {
+				if (!\is_array($keys)) {
 					$keys = array($keys);
 				}
-				$keys = array_flip($keys);
-				$keys = array_intersect_key($flip, $keys);
+				$keys = \array_flip($keys);
+				$keys = \array_intersect_key($flip, $keys);
 				foreach ($keys as &$value) {
 					$value += $index;
 				}
-				return array_flip($keys);
+				return \array_flip($keys);
 			}
-			$index += count($value);
+			$index += \count($value);
 		}
 	}
 }

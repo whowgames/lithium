@@ -22,7 +22,7 @@ class SourceTest extends \lithium\test\Unit {
 			'applyFilter', 'invokeMethod', '__set_state', '_instance', '_filter', '_parents',
 			'_stop'
 		);
-		$this->assertEqual(sort($expected), sort($methods));
+		$this->assertEqual(\sort($expected), \sort($methods));
 	}
 
 	public function testBaseMethods() {

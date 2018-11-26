@@ -110,7 +110,7 @@ class Dispatcher extends \lithium\core\StaticObject {
 
 		foreach ($config as $key => $val) {
 			$key = "_{$key}";
-			if (!is_array($val)) {
+			if (!\is_array($val)) {
 				static::${$key} = $val;
 				continue;
 			}
@@ -136,7 +136,7 @@ class Dispatcher extends \lithium\core\StaticObject {
 	 */
 	public static function run($request, array $options = array()) {
 		$router = static::$_classes['router'];
-		$params = compact('request', 'options');
+		$params = \compact('request', 'options');
 
 		return static::_filter(__FUNCTION__, $params, function($self, $params) use ($router) {
 			$request = $params['request'];
@@ -173,25 +173,25 @@ class Dispatcher extends \lithium\core\StaticObject {
 			return false;
 		}
 
-		if (isset($params['controller']) && is_string($params['controller'])) {
+		if (isset($params['controller']) && \is_string($params['controller'])) {
 			$controller = $params['controller'];
 
-			if (strpos($controller, '.') !== false) {
-				list($library, $controller) = explode('.', $controller);
+			if (\strpos($controller, '.') !== false) {
+				list($library, $controller) = \explode('.', $controller);
 				$controller = $library . '.' . Inflector::camelize($controller);
-				$params += compact('library');
-			} elseif (strpos($controller, '\\') === false) {
+				$params += \compact('library');
+			} elseif (\strpos($controller, '\\') === false) {
 				$controller = Inflector::camelize($controller);
 
 				if (isset($params['library'])) {
 					$controller = "{$params['library']}.{$controller}";
 				}
 			}
-			$values = compact('controller');
+			$values = \compact('controller');
 		}
 		$values += $params;
 
-		if (is_callable($rules)) {
+		if (\is_callable($rules)) {
 			$rules = $rules($params);
 		}
 		foreach ($rules as $rule => $value) {
@@ -199,13 +199,13 @@ class Dispatcher extends \lithium\core\StaticObject {
 				continue;
 			}
 			foreach ($value as $k => $v) {
-				if (is_callable($v)) {
+				if (\is_callable($v)) {
 					$result[$k] = $v($values);
 					continue;
 				}
-				$match = preg_replace('/\{:\w+\}/', '@', $v);
-				$match = preg_replace('/@/', '.+', preg_quote($match, '/'));
-				if (preg_match('/' . $match . '/i', $values[$k])) {
+				$match = \preg_replace('/\{:\w+\}/', '@', $v);
+				$match = \preg_replace('/@/', '.+', \preg_quote($match, '/'));
+				if (\preg_match('/' . $match . '/i', $values[$k])) {
 					continue;
 				}
 				$result[$k] = StringDeprecated::insert($v, $values);
@@ -227,7 +227,7 @@ class Dispatcher extends \lithium\core\StaticObject {
 	 * @filter
 	 */
 	protected static function _callable($request, $params, $options) {
-		$params = compact('request', 'params', 'options');
+		$params = \compact('request', 'params', 'options');
 
 		return static::_filter(__FUNCTION__, $params, function($self, $params) {
 			$options = array('request' => $params['request']) + $params['options'];
@@ -256,9 +256,9 @@ class Dispatcher extends \lithium\core\StaticObject {
 	 * @filter
 	 */
 	protected static function _call($callable, $request, $params) {
-		$params = compact('callable', 'request', 'params');
+		$params = \compact('callable', 'request', 'params');
 		return static::_filter(__FUNCTION__, $params, function($self, $params) {
-			if (is_callable($callable = $params['callable'])) {
+			if (\is_callable($callable = $params['callable'])) {
 				return $callable($params['request'], $params['params']);
 			}
 			throw new DispatchException('Result not callable.');

@@ -57,29 +57,29 @@ class Parser extends \lithium\core\StaticObject {
 		if ($options['wrap']) {
 			$code = "<?php {$code}?>";
 		}
-		foreach (token_get_all($code) as $token) {
+		foreach (\token_get_all($code) as $token) {
 			$token = (isset($token[1])) ? $token : array(null, $token, $line);
 			list($id, $content, $line) = $token;
-			$name = $id ? token_name($id) : $content;
+			$name = $id ? \token_name($id) : $content;
 
 			if (!empty($options['include'])) {
-				if (!in_array($name, $options['include']) && !in_array($id, $options['include'])) {
+				if (!\in_array($name, $options['include']) && !\in_array($id, $options['include'])) {
 					continue;
 				}
 			}
 
 			if (!empty($options['ignore'])) {
-				if (in_array($name, $options['ignore']) || in_array($id, $options['ignore'])) {
+				if (\in_array($name, $options['ignore']) || \in_array($id, $options['ignore'])) {
 					continue;
 				}
 			}
 			$tokens[] = array('id' => $id, 'name' => $name, 'content' => $content, 'line' => $line);
 
-			$line += count(preg_split('/\r\n|\r|\n/', $content)) - 1;
+			$line += \count(\preg_split('/\r\n|\r|\n/', $content)) - 1;
 		}
 
 		if ($options['wrap'] && empty($options['include'])) {
-			$tokens = array_slice($tokens, 1, count($tokens) - 2);
+			$tokens = \array_slice($tokens, 1, \count($tokens) - 2);
 		}
 		return $tokens;
 	}
@@ -124,7 +124,7 @@ class Parser extends \lithium\core\StaticObject {
 				$prev = $tokens->prev();
 				$tokens->next();
 			} else {
-				$prev = reset($patternMatch);
+				$prev = \reset($patternMatch);
 			}
 
 			if (empty($patternMatch) && $options['startOfLine']) {
@@ -134,7 +134,7 @@ class Parser extends \lithium\core\StaticObject {
 		};
 
 		$capture = function($token) use (&$matches, &$patternMatch, $tokens, $breaks, $options) {
-			if (is_null($token)) {
+			if (\is_null($token)) {
 				$matches = $patternMatch = array();
 				return false;
 			}
@@ -149,7 +149,7 @@ class Parser extends \lithium\core\StaticObject {
 			}
 			$patternMatch[] = $token;
 
-			if (empty($options['capture']) || !in_array($token['name'], $options['capture'])) {
+			if (empty($options['capture']) || !\in_array($token['name'], $options['capture'])) {
 				return true;
 			}
 			if (!$breaks($token)) {
@@ -180,7 +180,7 @@ class Parser extends \lithium\core\StaticObject {
 				$pattern->rewind();
 
 				if (!empty($matches)) {
-					$results[] = array_map(
+					$results[] = \array_map(
 						function($i) use ($ret) { return isset($i[$ret]) ? $i[$ret] : $i; },
 						$matches
 					);
@@ -224,25 +224,25 @@ class Parser extends \lithium\core\StaticObject {
 		$options += $defaults;
 		$parameters = static::_prepareMatchParams($parameters);
 
-		$tokens = is_array($code) ? $code : static::tokenize($code, $options);
+		$tokens = \is_array($code) ? $code : static::tokenize($code, $options);
 		$results = array();
 
 		foreach ($tokens as $i => $token) {
-			if (!array_key_exists($token['name'], $parameters)) {
-				if (!in_array('*', $parameters)) {
+			if (!\array_key_exists($token['name'], $parameters)) {
+				if (!\in_array('*', $parameters)) {
 					continue;
 				}
 			}
 			$param = $parameters[$token['name']];
 
 			if (isset($param['before']) && $i > 0) {
-				if (!in_array($tokens[$i - 1]['name'], (array) $param['before'])) {
+				if (!\in_array($tokens[$i - 1]['name'], (array) $param['before'])) {
 					continue;
 				}
 			}
 
-			if (isset($param['after']) && $i + 1 < count($tokens)) {
-				 if (!in_array($tokens[$i + 1]['name'], (array) $param['after'])) {
+			if (isset($param['after']) && $i + 1 < \count($tokens)) {
+				 if (!\in_array($tokens[$i + 1]['name'], (array) $param['after'])) {
 					continue;
 				}
 			}
@@ -271,8 +271,8 @@ class Parser extends \lithium\core\StaticObject {
 		$content = $token['content'];
 
 		if ($pattern['name'] === 'T_VARIABLE') {
-			$match = substr($match, 1);
-			$content = substr($content, 1);
+			$match = \substr($match, 1);
+			$content = \substr($content, 1);
 		}
 
 		switch (true) {
@@ -291,7 +291,7 @@ class Parser extends \lithium\core\StaticObject {
 	 */
 	protected static function _prepareMatchParams($parameters) {
 		foreach (Set::normalize($parameters) as $token => $scope) {
-			if (strpos($token, 'T_') !== 0) {
+			if (\strpos($token, 'T_') !== 0) {
 				unset($parameters[$token]);
 
 				foreach (array('before', 'after') as $key) {
@@ -301,7 +301,7 @@ class Parser extends \lithium\core\StaticObject {
 					$items = array();
 
 					foreach ((array) $scope[$key] as $item) {
-						$items[] = (strpos($item, 'T_') !== 0)  ? static::token($item) : $item;
+						$items[] = (\strpos($item, 'T_') !== 0)  ? static::token($item) : $item;
 					}
 					$scope[$key] = $items;
 				}

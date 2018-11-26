@@ -20,9 +20,9 @@ class CodeTest extends \lithium\test\Unit {
 
 	public function setUp() {
 		$this->_path = $path = Libraries::get(true, 'resources') . '/tmp/tests';
-		$this->skipIf(!is_writable($this->_path), "Path `{$this->_path}` is not writable.");
+		$this->skipIf(!\is_writable($this->_path), "Path `{$this->_path}` is not writable.");
 
-		$this->adapter = new Code(compact('path'));
+		$this->adapter = new Code(\compact('path'));
 
 		$file = "{$this->_path}/a.php";
 		$data = <<<'EOD'
@@ -57,7 +57,7 @@ $t('mixed 2');
 $t('plural mixed 2');
 ?>
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 
 		$file = "{$this->_path}/a.html.php";
 		$data = <<<'EOD'
@@ -65,7 +65,7 @@ EOD;
 
 <?=$tn('singular simple 1 short', 'plural simple 1 short', 3); ?>
 EOD;
-		file_put_contents($file, $data);
+		\file_put_contents($file, $data);
 	}
 
 	public function tearDown() {

@@ -119,7 +119,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 *         types in sub-`Document` objects.
 	 */
 	public function &__get($name) {
-		if (strpos($name, '.')) {
+		if (\strpos($name, '.')) {
 			return $this->_getNested($name);
 		}
 
@@ -128,7 +128,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 		}
 		$result =& parent::__get($name);
 
-		if ($result !== null || array_key_exists($name, $this->_updated)) {
+		if ($result !== null || \array_key_exists($name, $this->_updated)) {
 			return $result;
 		}
 
@@ -185,7 +185,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 		}
 
 		foreach ($this->_updated as $key => $val) {
-			if (is_object($val) && method_exists($val, 'sync')) {
+			if (\is_object($val) && \method_exists($val, 'sync')) {
 				$nested = isset($data[$key]) ? $data[$key] : array();
 				$this->_updated[$key]->sync(null, $nested, $options);
 			}
@@ -210,8 +210,8 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	protected function &_getNested($name) {
 		$current = $this;
 		$null = null;
-		$path = explode('.', $name);
-		$length = count($path) - 1;
+		$path = \explode('.', $name);
+		$length = \count($path) - 1;
 
 		foreach ($path as $i => $key) {
 			if (!isset($current[$key])) {
@@ -219,7 +219,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 			}
 			$current = $current[$key];
 
-			if (is_scalar($current) && $i < $length) {
+			if (\is_scalar($current) && $i < $length) {
 				return $null;
 			}
 		}
@@ -241,8 +241,8 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 
 	protected function _setNested($name, $value) {
 		$current =& $this;
-		$path = explode('.', $name);
-		$length = count($path) - 1;
+		$path = \explode('.', $name);
+		$length = \count($path) - 1;
 
 		for ($i = 0; $i < $length; $i++) {
 			$key = $path[$i];
@@ -261,8 +261,8 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 			$current =& $next;
 		}
 
-		if (is_object($current)) {
-			$current->set(array(end($path) => $value));
+		if (\is_object($current)) {
+			$current->set(array(\end($path) => $value));
 		}
 	}
 
@@ -290,7 +290,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 * @return void
 	 */
 	public function __unset($name) {
-		$parts = explode('.', $name, 2);
+		$parts = \explode('.', $name, 2);
 		if (isset($parts[1])) {
 			unset($this->{$parts[0]}[$parts[1]]);
 		} else {
@@ -319,7 +319,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 
 		foreach ($data as $key => $val) {
 			unset($this->_increment[$key]);
-			if (strpos($key, '.')) {
+			if (\strpos($key, '.')) {
 				$this->_setNested($key, $val);
 				continue;
 			}
@@ -327,7 +327,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 				$pathKey = $this->_pathKey;
 				$model = $this->_model;
 				$parent = $this;
-				$val = $schema->cast($this, $key, $val, compact('pathKey', 'model', 'parent'));
+				$val = $schema->cast($this, $key, $val, \compact('pathKey', 'model', 'parent'));
 			}
 			if ($val instanceof self) {
 				$val->_exists = $options['init'] && $this->_exists;
@@ -389,10 +389,10 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 * @return mixed The current item after rewinding.
 	 */
 	public function rewind() {
-		reset($this->_data);
-		reset($this->_updated);
-		$this->_valid = (count($this->_updated) > 0);
-		return current($this->_updated);
+		\reset($this->_data);
+		\reset($this->_updated);
+		$this->_valid = (\count($this->_updated) > 0);
+		return \current($this->_updated);
 	}
 
 	/**
@@ -406,12 +406,12 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	}
 
 	public function current() {
-		$current = current($this->_data);
-		return isset($this->_removed[key($this->_data)]) ? null : $current;
+		$current = \current($this->_data);
+		return isset($this->_removed[\key($this->_data)]) ? null : $current;
 	}
 
 	public function key() {
-		$key = key($this->_data);
+		$key = \key($this->_data);
 		return isset($this->_removed[$key]) ? false : $key;
 	}
 
@@ -436,9 +436,9 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 *         available.
 	 */
 	public function next() {
-		$prev = key($this->_data);
-		$this->_valid = (next($this->_data) !== false);
-		$cur = key($this->_data);
+		$prev = \key($this->_data);
+		$this->_valid = (\next($this->_data) !== false);
+		$cur = \key($this->_data);
 
 		if (isset($this->_removed[$cur])) {
 			return $this->next();
@@ -446,7 +446,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 		if (!$this->_valid && $cur !== $prev && $cur !== null) {
 			$this->_valid = true;
 		}
-		return $this->_valid ? $this->__get(key($this->_data)) : null;
+		return $this->_valid ? $this->__get(\key($this->_data)) : null;
 	}
 
 	/**
@@ -469,7 +469,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 		}
 		$this->_increment[$field] += $value;
 
-		if (!is_numeric($this->_updated[$field])) {
+		if (!\is_numeric($this->_updated[$field])) {
 			throw new UnexpectedValueException("Field `{$field}` cannot be incremented.");
 		}
 		return $this->_updated[$field] += $value;
@@ -477,7 +477,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 
     public function count()
     {
-        return count($this->_data);
+        return \count($this->_data);
     }
 }
 

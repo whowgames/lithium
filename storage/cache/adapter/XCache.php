@@ -70,7 +70,7 @@ class XCache extends \lithium\core\DynamicObject {
 		$expiry = ($expiry) ?: $this->_config['expiry'];
 
 		return function($self, $params) use ($expiry) {
-			return xcache_set($params['key'], $params['data'], strtotime($expiry) - time());
+			return xcache_set($params['key'], $params['data'], \strtotime($expiry) - \time());
 		};
 	}
 
@@ -127,7 +127,7 @@ class XCache extends \lithium\core\DynamicObject {
 	 */
 	public function increment($key, $offset = 1) {
 		return function($self, $params) use ($offset) {
-			extract($params);
+			\extract($params);
 			return xcache_inc($params['key'], $offset);
 		};
 	}
@@ -144,7 +144,7 @@ class XCache extends \lithium\core\DynamicObject {
 	 * @return mixed True on successful clear, false otherwise.
 	 */
 	public function clear() {
-		$admin = (ini_get('xcache.admin.enable_auth') === "On");
+		$admin = (\ini_get('xcache.admin.enable_auth') === "On");
 		if ($admin && (!isset($this->_config['username']) || !isset($this->_config['password']))) {
 			return false;
 		}
@@ -181,7 +181,7 @@ class XCache extends \lithium\core\DynamicObject {
 	 * @return boolean True if enabled, false otherwise.
 	 */
 	public static function enabled() {
-		return extension_loaded('xcache');
+		return \extension_loaded('xcache');
 	}
 }
 

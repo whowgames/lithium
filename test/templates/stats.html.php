@@ -1,9 +1,9 @@
 <?php
 
-$passes = intval($count['passes']) ?: 0;
-$asserts = intval($count['asserts']) ?: 0;
-$fails = intval($count['fails']) ?: 0;
-$exceptions = intval($count['exceptions']) ?: 0;
+$passes = \intval($count['passes']) ?: 0;
+$asserts = \intval($count['asserts']) ?: 0;
+$fails = \intval($count['fails']) ?: 0;
+$exceptions = \intval($count['exceptions']) ?: 0;
 
 ?>
 <div class="test-result test-result-<?php echo ($success ? 'success' : 'fail') ?>">
@@ -15,7 +15,7 @@ $exceptions = intval($count['exceptions']) ?: 0;
 
 <?php foreach ((array) $stats['errors'] as $error): ?>
 	<?php if ($error['result'] == 'fail' || $error['result'] == 'exception'): ?>
-		<?php echo $self->render("{$error['result']}", compact('error')); ?>
+		<?php echo $self->render("{$error['result']}", \compact('error')); ?>
 	<?php endif ?>
 <?php endforeach ?>
 

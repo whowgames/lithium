@@ -19,13 +19,13 @@ class SerializerTest extends \lithium\test\Unit {
 	public function testWrite() {
 		$data = array('some' => 'data');
 		$result = $this->Serializer->write($data);
-		$expected = serialize($data);
+		$expected = \serialize($data);
 		$this->assertEqual($expected, $result);
 	}
 
 	public function testRead() {
 		$encoded = 'a:1:{s:4:"some";s:4:"data";}';
-		$expected = unserialize($encoded);
+		$expected = \unserialize($encoded);
 		$result = $this->Serializer->read($encoded);
 		$this->assertEqual($expected, $result);
 	}

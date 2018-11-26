@@ -197,16 +197,16 @@ class Query extends \lithium\core\DynamicObject {
 
 	protected function _init() {
 		parent::_init();
-		$keys = array_keys($this->_config);
+		$keys = \array_keys($this->_config);
 		foreach ($this->_initializers as $key) {
 			$val = $this->_config[$key];
 			if ($val !== null) {
-				$this->_config[$key] = is_array($val) ? array() : null;
+				$this->_config[$key] = \is_array($val) ? array() : null;
 				$this->{$key}($val);
 			}
 		}
 		if ($list = $this->_config['whitelist']) {
-			$this->_config['whitelist'] = array_combine($list, $list);
+			$this->_config['whitelist'] = \array_combine($list, $list);
 		}
 
 		if ($this->_entity && !$this->_config['model']) {
@@ -288,7 +288,7 @@ class Query extends \lithium\core\DynamicObject {
 		}
 		$conditions = (array) $conditions;
 		$this->_config['conditions'] = (array) $this->_config['conditions'];
-		$this->_config['conditions'] = array_merge($this->_config['conditions'], $conditions);
+		$this->_config['conditions'] = \array_merge($this->_config['conditions'], $conditions);
 		return $this;
 	}
 
@@ -304,7 +304,7 @@ class Query extends \lithium\core\DynamicObject {
 		}
 		$having = (array) $having;
 		$this->_config['having'] = (array) $this->_config['having'];
-		$this->_config['having'] = array_merge($this->_config['having'], $having);
+		$this->_config['having'] = \array_merge($this->_config['having'], $having);
 		return $this;
 	}
 
@@ -335,16 +335,16 @@ class Query extends \lithium\core\DynamicObject {
 			$this->_fields = array(0 => array(), 1 => array());
 		}
 		if ($fields === null) {
-			return array_merge(array_keys($this->_fields[1]), $this->_fields[0]);
+			return \array_merge(\array_keys($this->_fields[1]), $this->_fields[0]);
 		}
 		if (!$fields) {
 			return $this;
 		}
-		$fields = is_array($fields) ? $fields : array($fields);
+		$fields = \is_array($fields) ? $fields : array($fields);
 		foreach ($fields as $key => $field) {
-			if (is_string($field)) {
+			if (\is_string($field)) {
 				$this->_fields[1][$field] = true;
-			} elseif (is_array($field) && !is_numeric($key)) {
+			} elseif (\is_array($field) && !\is_numeric($key)) {
 				foreach ($field as &$val) {
 					$val = $key . '.' . $val;
 				}
@@ -364,7 +364,7 @@ class Query extends \lithium\core\DynamicObject {
 	 */
 	public function limit($limit = null) {
 		if ($limit) {
-			$this->_config['limit'] = intval($limit);
+			$this->_config['limit'] = \intval($limit);
 			return $this;
 		}
 		if ($limit === false) {
@@ -382,7 +382,7 @@ class Query extends \lithium\core\DynamicObject {
 	 */
 	public function offset($offset = null) {
 		if ($offset !== null) {
-			$this->_config['offset'] = intval($offset);
+			$this->_config['offset'] = \intval($offset);
 			return $this;
 		}
 		return $this->_config['offset'];
@@ -396,7 +396,7 @@ class Query extends \lithium\core\DynamicObject {
 	 */
 	public function page($page = null) {
 		if ($page) {
-			$this->_config['page'] = $page = (intval($page) ?: 1);
+			$this->_config['page'] = $page = (\intval($page) ?: 1);
 			$this->offset(($page - 1) * $this->_config['limit']);
 			return $this;
 		}
@@ -475,11 +475,11 @@ class Query extends \lithium\core\DynamicObject {
 		$bind =& $this->_entity;
 
 		if ($data) {
-			$bind ? $bind->set($data) : $this->_data = array_merge($this->_data, $data);
+			$bind ? $bind->set($data) : $this->_data = \array_merge($this->_data, $data);
 			return $this;
 		}
 		$data = $bind ? $bind->data() : $this->_data;
-		return ($list = $this->_config['whitelist']) ? array_intersect_key($data, $list) : $data;
+		return ($list = $this->_config['whitelist']) ? \array_intersect_key($data, $list) : $data;
 	}
 
 	/**
@@ -520,7 +520,7 @@ class Query extends \lithium\core\DynamicObject {
 	 *         doesn't exist.
 	 */
 	public function joins($name = null, $join = null) {
-		if (is_array($name)) {
+		if (\is_array($name)) {
 			$join = $name;
 			$name = null;
 		}
@@ -553,7 +553,7 @@ class Query extends \lithium\core\DynamicObject {
 		$options += $defaults;
 
 		if ($options['keys']) {
-			$keys = array_flip($options['keys']);
+			$keys = \array_flip($options['keys']);
 		} else {
 			$keys =& $this->_config;
 		}
@@ -572,11 +572,11 @@ class Query extends \lithium\core\DynamicObject {
 			$results[$item] = $this->_config[$item];
 		}
 
-		if (array_key_exists('data', $keys)) {
+		if (\array_key_exists('data', $keys)) {
 			$results['data'] = $this->_exportData();
 		}
 
-		if (array_key_exists('source', $keys)) {
+		if (\array_key_exists('source', $keys)) {
 			$results['source'] = $source->name($results['source']);
 		}
 
@@ -586,7 +586,7 @@ class Query extends \lithium\core\DynamicObject {
 
 		$created = array('fields', 'values');
 
-		if (is_array($results['fields']) && array_keys($results['fields']) == $created) {
+		if (\is_array($results['fields']) && \array_keys($results['fields']) == $created) {
 			$results = $results['fields'] + $results;
 		}
 		return $results;
@@ -624,23 +624,23 @@ class Query extends \lithium\core\DynamicObject {
 		if (!$list = $this->_config['whitelist']) {
 			return $data;
 		}
-		$list = array_combine($list, $list);
+		$list = \array_combine($list, $list);
 
 		if (!$this->_entity) {
-			return array_intersect_key($data, $list);
+			return \array_intersect_key($data, $list);
 		}
 
 		foreach ($data as $type => $values) {
-			if (!is_array($values)) {
+			if (!\is_array($values)) {
 				continue;
 			}
-			$data[$type] = array_intersect_key($values, $list);
+			$data[$type] = \array_intersect_key($values, $list);
 		}
 		return $data;
 	}
 
 	public function schema($field = null) {
-		if (is_object($field)) {
+		if (\is_object($field)) {
 			$this->_schema = $field;
 			return;
 		}
@@ -667,7 +667,7 @@ class Query extends \lithium\core\DynamicObject {
 			if (!$relpath) {
 				return $this->_config['alias'];
 			}
-			$return = array_search($relpath, $this->_paths);
+			$return = \array_search($relpath, $this->_paths);
 			return $return ?: null;
 		}
 
@@ -680,11 +680,11 @@ class Query extends \lithium\core\DynamicObject {
 		}
 
 		$relpath = (string) $relpath;
-		unset($this->_paths[array_search($relpath, $this->_paths)]);
+		unset($this->_paths[\array_search($relpath, $this->_paths)]);
 
 		if (!$alias && $relpath) {
-			$last = strrpos($relpath, '.');
-			$alias = $last ? substr($relpath, $last + 1) : $relpath;
+			$last = \strrpos($relpath, '.');
+			$alias = $last ? \substr($relpath, $last + 1) : $relpath;
 		}
 
 		if (isset($this->_alias[$alias])) {
@@ -735,7 +735,7 @@ class Query extends \lithium\core\DynamicObject {
 	 */
 	public function __call($method, array $params = array()) {
 		if ($params) {
-			$this->_config[$method] = current($params);
+			$this->_config[$method] = \current($params);
 			return $this;
 		}
 		return isset($this->_config[$method]) ? $this->_config[$method] : null;
@@ -768,7 +768,7 @@ class Query extends \lithium\core\DynamicObject {
 		if (!$key && $this->type() !== 'create') {
 			throw new ConfigException('No matching primary key found.');
 		}
-		if (is_array($key)) {
+		if (\is_array($key)) {
 			return $key;
 		}
 

@@ -35,8 +35,8 @@ class Integration extends \lithium\test\Unit {
 
 			$after = $self->results();
 
-			while (count($after) > count($before)) {
-				$result = array_pop($after);
+			while (\count($after) > \count($before)) {
+				$result = \array_pop($after);
 				if ($result['result'] === 'fail') {
 					return false;
 				}
@@ -63,17 +63,17 @@ class Integration extends \lithium\test\Unit {
 		$url = "{$config['scheme']}://{$config['host']}";
 		$failed = false;
 
-		set_error_handler(function($errno, $errstr) use (&$failed) {
+		\set_error_handler(function($errno, $errstr) use (&$failed) {
 			$failed = true;
 		});
 
-		dns_check_record($config['host'], 'A');
+		\dns_check_record($config['host'], 'A');
 
-		if ($handle = fopen($url, 'r')) {
-			fclose($handle);
+		if ($handle = \fopen($url, 'r')) {
+			\fclose($handle);
 		}
 
-		restore_error_handler();
+		\restore_error_handler();
 		return !$failed;
 	}
 

@@ -113,7 +113,7 @@ class Html extends \lithium\template\Helper {
 		if ($response = $this->_context->response()) {
 			$encoding = $encoding ?: $response->encoding;
 		}
-		return $this->_render(__METHOD__, 'charset', compact('encoding'));
+		return $this->_render(__METHOD__, 'charset', \compact('encoding'));
 	}
 
 	/**
@@ -147,12 +147,12 @@ class Html extends \lithium\template\Helper {
 		list($scope, $options) = $this->_options($defaults, $options);
 
 		if (isset($scope['type']) && $type = $scope['type']) {
-			$options += compact('title');
+			$options += \compact('title');
 			return $this->_metaLink($type, $url, $options);
 		}
 
-		$url = is_null($url) ? $title : $url;
-		return $this->_render(__METHOD__, 'link', compact('title', 'url', 'options'), $scope);
+		$url = \is_null($url) ? $title : $url;
+		return $this->_render(__METHOD__, 'link', \compact('title', 'url', 'options'), $scope);
 	}
 
 	/**
@@ -176,14 +176,14 @@ class Html extends \lithium\template\Helper {
 		$defaults = array('inline' => true);
 		list($scope, $options) = $this->_options($defaults, $options);
 
-		if (is_array($path)) {
+		if (\is_array($path)) {
 			foreach ($path as $i => $item) {
 				$path[$i] = $this->script($item, $scope);
 			}
-			return ($scope['inline']) ? join("\n\t", $path) . "\n" : null;
+			return ($scope['inline']) ? \join("\n\t", $path) . "\n" : null;
 		}
 		$m = __METHOD__;
-		$params = compact('path', 'options');
+		$params = \compact('path', 'options');
 
 		$script = $this->_filter(__METHOD__, $params, function($self, $params, $chain) use ($m) {
 			return $self->invokeMethod('_render', array($m, 'script', $params));
@@ -221,15 +221,15 @@ class Html extends \lithium\template\Helper {
 		$defaults = array('type' => 'stylesheet', 'inline' => true);
 		list($scope, $options) = $this->_options($defaults, $options);
 
-		if (is_array($path)) {
+		if (\is_array($path)) {
 			foreach ($path as $i => $item) {
 				$path[$i] = $this->style($item, $scope);
 			}
-			return ($scope['inline']) ? join("\n\t", $path) . "\n" : null;
+			return ($scope['inline']) ? \join("\n\t", $path) . "\n" : null;
 		}
 		$method = __METHOD__;
 		$type = $scope['type'];
-		$params = compact('type', 'path', 'options');
+		$params = \compact('type', 'path', 'options');
 		$filter = function($self, $params, $chain) use ($defaults, $method) {
 			$template = ($params['type'] === 'import') ? 'style-import' : 'style-link';
 			return $self->invokeMethod('_render', array($method, $template, $params));
@@ -287,8 +287,8 @@ class Html extends \lithium\template\Helper {
 	public function image($path, array $options = array()) {
 		$defaults = array('alt' => '');
 		$options += $defaults;
-		$path = is_array($path) ? $this->_context->url($path) : $path;
-		$params = compact('path', 'options');
+		$path = \is_array($path) ? $this->_context->url($path) : $path;
+		$params = \compact('path', 'options');
 		$method = __METHOD__;
 
 		return $this->_filter($method, $params, function($self, $params, $chain) use ($method) {
@@ -310,16 +310,16 @@ class Html extends \lithium\template\Helper {
 
 		if ($type === 'icon') {
 			$url = $url ?: 'favicon.ico';
-			$standard = $this->_render(__METHOD__, 'meta-link', compact('url', 'options'), array(
+			$standard = $this->_render(__METHOD__, 'meta-link', \compact('url', 'options'), array(
 				'handlers' => array('url' => 'path')
 			));
 			$options['rel'] = 'shortcut icon';
-			$ieFix = $this->_render(__METHOD__, 'meta-link', compact('url', 'options'), array(
+			$ieFix = $this->_render(__METHOD__, 'meta-link', \compact('url', 'options'), array(
 				'handlers' => array('url' => 'path')
 			));
 			return "{$standard}\n\t{$ieFix}";
 		}
-		return $this->_render(__METHOD__, 'meta-link', compact('url', 'options'), array(
+		return $this->_render(__METHOD__, 'meta-link', \compact('url', 'options'), array(
 			'handlers' => array()
 		));
 	}

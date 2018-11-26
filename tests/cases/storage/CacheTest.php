@@ -25,8 +25,8 @@ class CacheTest extends \lithium\test\Unit {
 	protected function _checkPath() {
 		$resources = Libraries::get(true, 'resources');
 
-		if (is_writable($resources) && !is_dir("{$resources}/tmp/cache")) {
-			mkdir("{$resources}/tmp/cache", 0777, true);
+		if (\is_writable($resources) && !\is_dir("{$resources}/tmp/cache")) {
+			\mkdir("{$resources}/tmp/cache", 0777, true);
 		}
 		$directory = new SplFileInfo("{$resources}/tmp/cache");
 
@@ -197,7 +197,7 @@ class CacheTest extends \lithium\test\Unit {
 		$result = Cache::write('default', $data, '+1 minute');
 		$this->assertTrue($result);
 
-		$keys = array_keys($data);
+		$keys = \array_keys($data);
 		$result = Cache::read('default', $keys);
 		$this->assertEqual($data, $result);
 	}
@@ -220,10 +220,10 @@ class CacheTest extends \lithium\test\Unit {
 		};
 
 		Cache::write('default', 'some_key', 'some value', '+1 minute');
-		$result = Cache::read('default', 'some_key', compact('conditions'));
+		$result = Cache::read('default', 'some_key', \compact('conditions'));
 		$this->assertNotEmpty($result);
 
-		$this->assertFalse(Cache::read('non_existing', 'key_value', compact('conditions')));
+		$this->assertFalse(Cache::read('non_existing', 'key_value', \compact('conditions')));
 	}
 
 	public function testCacheIncrementDecrementWithConditions() {
@@ -239,7 +239,7 @@ class CacheTest extends \lithium\test\Unit {
 			return false;
 		};
 
-		$result = Cache::increment('default', 'some_key', 1, compact('conditions'));
+		$result = Cache::increment('default', 'some_key', 1, \compact('conditions'));
 		$this->assertFalse($result);
 
 		$conditions = function() use (&$config) {
@@ -247,21 +247,21 @@ class CacheTest extends \lithium\test\Unit {
 		};
 
 		Cache::write('default', 'some_key', 1, '+1 minute');
-		$result = Cache::increment('default', 'some_key', 1, compact('conditions'));
+		$result = Cache::increment('default', 'some_key', 1, \compact('conditions'));
 		$this->assertEqual(2, $result);
 
 		$conditions = function() {
 			return false;
 		};
 
-		$result = Cache::decrement('default', 'decrement_some_key', 1, compact('conditions'));
+		$result = Cache::decrement('default', 'decrement_some_key', 1, \compact('conditions'));
 		$this->assertFalse($result);
 
 		$conditions = function() use (&$config) {
 			return (isset($config['default']));
 		};
 		Cache::write('default', 'decrement_some_key', 1, '+1 minute');
-		$result = Cache::decrement('default', 'decrement_some_key', 1, compact('conditions'));
+		$result = Cache::decrement('default', 'decrement_some_key', 1, \compact('conditions'));
 		$this->assertEqual(0, $result);
 	}
 
@@ -278,7 +278,7 @@ class CacheTest extends \lithium\test\Unit {
 			return false;
 		};
 		$result = Cache::write(
-			'default', 'some_key', 'some_data', '+1 minute', compact('conditions')
+			'default', 'some_key', 'some_data', '+1 minute', \compact('conditions')
 		);
 		$this->assertFalse($result);
 
@@ -287,12 +287,12 @@ class CacheTest extends \lithium\test\Unit {
 		};
 
 		$result = Cache::write(
-			'default', 'some_key', 'some_data', '+1 minute', compact('conditions')
+			'default', 'some_key', 'some_data', '+1 minute', \compact('conditions')
 		);
 		$this->assertTrue($result);
 
 		$result = Cache::write(
-			'non_existing', 'key_value', 'data', '+1 minute', compact('conditions')
+			'non_existing', 'key_value', 'data', '+1 minute', \compact('conditions')
 		);
 		$this->assertFalse($result);
 	}
@@ -311,14 +311,14 @@ class CacheTest extends \lithium\test\Unit {
 		};
 		$this->assertNull(Cache::read('default', 'read_through'));
 
-		$result = Cache::read('default', 'read_through', compact('write'));
+		$result = Cache::read('default', 'read_through', \compact('write'));
 		$this->assertIdentical('read-through write', $result);
 
 		$result = Cache::read('default', 'read_through');
 		$this->assertIdentical('read-through write', $result);
 
 		$write = array('+1 minute' => 'string read-through write');
-		$result = Cache::read('default', 'string_read_through', compact('write'));
+		$result = Cache::read('default', 'string_read_through', \compact('write'));
 		$this->assertIdentical('string read-through write', $result);
 
 		$result = Cache::read('default', 'string_read_through');
@@ -382,19 +382,19 @@ class CacheTest extends \lithium\test\Unit {
 		$conditions = function() use (&$config) {
 			return (isset($config['default']));
 		};
-		$result = Cache::read('non_existing', 'key_value', compact('conditions'));
+		$result = Cache::read('non_existing', 'key_value', \compact('conditions'));
 		$this->assertFalse($result);
 
-		$result = Cache::read('default', 'key_value', compact('conditions'));
+		$result = Cache::read('default', 'key_value', \compact('conditions'));
 		$this->assertEmpty($result);
 
-		$result = Cache::write('default', 'keyed', 'some data', '+1 minute', compact('conditions'));
+		$result = Cache::write('default', 'keyed', 'some data', '+1 minute', \compact('conditions'));
 		$this->assertTrue($result);
 
 		$conditions = function() {
 			return false;
 		};
-		$result = Cache::write('default', 'keyed', 'some data', '+1 minute', compact('conditions'));
+		$result = Cache::write('default', 'keyed', 'some data', '+1 minute', \compact('conditions'));
 		$this->assertFalse($result);
 	}
 
@@ -430,7 +430,7 @@ class CacheTest extends \lithium\test\Unit {
 		$conditions = function() use (&$config) {
 			return (isset($config['default']));
 		};
-		$result = Cache::delete('non_existing', 'key_value', compact('conditions'));
+		$result = Cache::delete('non_existing', 'key_value', \compact('conditions'));
 		$this->assertFalse($result);
 
 		$result = Cache::write('default', 'to delete', 'dead data', '+1 minute');
@@ -443,7 +443,7 @@ class CacheTest extends \lithium\test\Unit {
 		));
 		$this->assertFalse($result);
 
-		$result = Cache::delete('default', 'to delete', compact('conditions'));
+		$result = Cache::delete('default', 'to delete', \compact('conditions'));
 		$this->assertTrue($result);
 	}
 
@@ -571,22 +571,22 @@ class CacheTest extends \lithium\test\Unit {
 		$path = "{$resources}/tmp/cache";
 		$this->skipIf(!$this->_checkPath(), "{$path} does not have the proper permissions.");
 
-		$config = array('default' => compact('path') + array(
+		$config = array('default' => \compact('path') + array(
 			'adapter' => 'File',
 			'filters' => array()
 		));
 		Cache::config($config);
 
-		$time = time();
+		$time = \time();
 		$result = Cache::write('default', 'key', 'value', "@{$time} +1 minute");
 		$this->assertNotEmpty($result);
 
 		$time = $time + 60;
-		$result = file_get_contents("{$path}/key");
+		$result = \file_get_contents("{$path}/key");
 		$expected = "{:expiry:$time}\nvalue";
 		$this->assertEqual($result, $expected);
 
-		$result = unlink("{$path}/key");
+		$result = \unlink("{$path}/key");
 		$this->assertTrue($result);
 		$this->assertFileNotExists("{$path}/key");
 	}
@@ -596,7 +596,7 @@ class CacheTest extends \lithium\test\Unit {
 		$path = "{$resources}/tmp/cache";
 		$this->skipIf(!$this->_checkPath(), "{$path} does not have the proper permissions.");
 
-		$config = array('default' => compact('path') + array(
+		$config = array('default' => \compact('path') + array(
 			'adapter' => 'File',
 			'filters' => array(),
 			'strategies' => array('Serializer')
@@ -604,12 +604,12 @@ class CacheTest extends \lithium\test\Unit {
 		Cache::config($config);
 
 		$data = array('some' => 'data');
-		$time = time();
+		$time = \time();
 		$result = Cache::write('default', 'key', $data, "@{$time} +1 minute");
 		$this->assertNotEmpty($result);
 
 		$time = $time + 60;
-		$result = file_get_contents("{$path}/key");
+		$result = \file_get_contents("{$path}/key");
 
 		$expected = "{:expiry:$time}\na:1:{s:4:\"some\";s:4:\"data\";}";
 		$this->assertEqual($result, $expected);
@@ -617,7 +617,7 @@ class CacheTest extends \lithium\test\Unit {
 		$result = Cache::read('default', 'key');
 		$this->assertEqual($data, $result);
 
-		$result = unlink("{$path}/key");
+		$result = \unlink("{$path}/key");
 		$this->assertTrue($result);
 		$this->assertFileNotExists("{$path}/key");
 	}
@@ -627,7 +627,7 @@ class CacheTest extends \lithium\test\Unit {
 		$path = "{$resources}/tmp/cache";
 		$this->skipIf(!$this->_checkPath(), "{$path} does not have the proper permissions.");
 
-		$config = array('default' => compact('path') + array(
+		$config = array('default' => \compact('path') + array(
 			'adapter' => 'File',
 			'filters' => array(),
 			'strategies' => array('Serializer', 'Base64')
@@ -635,12 +635,12 @@ class CacheTest extends \lithium\test\Unit {
 		Cache::config($config);
 
 		$data = array('some' => 'data');
-		$time = time();
+		$time = \time();
 		$result = Cache::write('default', 'key', $data, "@{$time} +1 minute");
 		$this->assertNotEmpty($result);
 
 		$time = $time + 60;
-		$result = file_get_contents("{$path}/key");
+		$result = \file_get_contents("{$path}/key");
 
 		$expected = "{:expiry:$time}\nYToxOntzOjQ6InNvbWUiO3M6NDoiZGF0YSI7fQ==";
 		$this->assertEqual($result, $expected);
@@ -648,7 +648,7 @@ class CacheTest extends \lithium\test\Unit {
 		$result = Cache::read('default', 'key');
 		$this->assertEqual($data, $result);
 
-		$result = unlink("{$path}/key");
+		$result = \unlink("{$path}/key");
 		$this->assertTrue($result);
 		$this->assertFileNotExists("{$path}/key");
 	}

@@ -44,7 +44,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->Apc, $params, null);
 		$expected = $data;
 		$this->assertTrue($result);
@@ -62,7 +62,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->Apc, $params, null);
 		$expected = $data;
 		$this->assertTrue($result);
@@ -82,7 +82,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $apc->write($key, $data);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data');
+		$params = \compact('key', 'data');
 		$result = $closure($apc, $params, null);
 		$expected = $data;
 		$this->assertTrue($result);
@@ -106,15 +106,15 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->Apc, $params, null);
 
 		$this->assertEqual(array(), $result);
 
-		$result = apc_fetch(array_keys($key));
+		$result = apc_fetch(\array_keys($key));
 		$this->assertEqual($key, $result);
 
-		$result = apc_delete(array_keys($key));
+		$result = apc_delete(\array_keys($key));
 		$this->assertEqual(array(), $result);
 	}
 
@@ -128,7 +128,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Apc, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -145,7 +145,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Apc, $params, null);
 		$expected = $data;
 
@@ -167,7 +167,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->Apc, $params, null);
 		$this->assertEqual(array(), $result);
 
@@ -176,10 +176,10 @@ class ApcTest extends \lithium\test\Unit {
 			'key2' => 'data2',
 			'key3' => 'data3'
 		);
-		$result = apc_fetch(array_keys($key));
+		$result = apc_fetch(\array_keys($key));
 		$this->assertEqual($expected, $result);
 
-		$result = apc_delete(array_keys($key));
+		$result = apc_delete(\array_keys($key));
 		$this->assertEqual(array(), $result);
 	}
 
@@ -188,7 +188,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Apc, $params, null);
 		$this->assertFalse($result);
 	}
@@ -203,7 +203,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Apc, $params, null);
 		$this->assertTrue($result);
 	}
@@ -220,7 +220,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->Apc, $params, null);
 		$this->assertEqual(array(), $result);
 
@@ -229,7 +229,7 @@ class ApcTest extends \lithium\test\Unit {
 			'key2' => 'data2',
 			'key3' => 'data3'
 		);
-		$result = apc_delete(array_keys($key));
+		$result = apc_delete(\array_keys($key));
 		$this->assertEqual(array(), $result);
 	}
 
@@ -240,7 +240,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Apc, $params, null);
 		$this->assertFalse($result);
 	}
@@ -253,7 +253,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->write($key, $data, $expiry);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key', 'data', 'expiry');
+		$params = \compact('key', 'data', 'expiry');
 		$result = $closure($this->Apc, $params, null);
 		$expected = $data;
 		$this->assertTrue($result);
@@ -264,7 +264,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->read($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Apc, $params, null);
 		$expected = $data;
 		$this->assertEqual($expected, $result);
@@ -272,7 +272,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->delete($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Apc, $params, null);
 		$this->assertTrue($result);
 	}
@@ -304,7 +304,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->decrement($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Apc, $params, null);
 		$this->assertEqual($value - 1, $result);
 
@@ -325,7 +325,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->decrement($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Apc, $params, null);
 
 		$result = apc_fetch($key);
@@ -345,7 +345,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->increment($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Apc, $params, null);
 		$this->assertEqual($value + 1, $result);
 
@@ -366,7 +366,7 @@ class ApcTest extends \lithium\test\Unit {
 		$closure = $this->Apc->increment($key);
 		$this->assertInternalType('callable', $closure);
 
-		$params = compact('key');
+		$params = \compact('key');
 		$result = $closure($this->Apc, $params, null);
 
 		$result = apc_fetch($key);

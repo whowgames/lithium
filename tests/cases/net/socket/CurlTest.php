@@ -28,16 +28,16 @@ class CurlTest extends \lithium\test\Unit {
 
 	public function skip() {
 		$message = 'Your PHP installation was not compiled with curl support.';
-		$this->skipIf(!function_exists('curl_init'), $message);
+		$this->skipIf(!\function_exists('curl_init'), $message);
 	}
 
 	public function setUp() {
 		$base = 'lithium\net\socket';
 		Mocker::overwriteFunction("{$base}\curl_init", function($url) {
-			return fopen("php://memory", "rw");
+			return \fopen("php://memory", "rw");
 		});
 		Mocker::overwriteFunction("{$base}\curl_setopt_array", function($resource, $options) {
-			return count($options);
+			return \count($options);
 		});
 		Mocker::overwriteFunction("{$base}\curl_setopt", function($resource, $key, $value) {
 			return;

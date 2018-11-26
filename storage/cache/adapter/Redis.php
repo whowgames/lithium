@@ -94,7 +94,7 @@ class Redis extends \lithium\core\DynamicObject {
 		if (!$this->connection) {
 			$this->connection = new RedisCore();
 		}
-		list($ip, $port) = explode(':', $this->_config['host']);
+		list($ip, $port) = \explode(':', $this->_config['host']);
 		$method = $this->_config['persistent'] ? 'pconnect' : 'connect';
 		$this->connection->{$method}($ip, $port);
 	}
@@ -117,7 +117,7 @@ class Redis extends \lithium\core\DynamicObject {
 	 * @return mixed Returns the result of the method call
 	 */
 	public function __call($method, $params = array()) {
-		return call_user_func_array(array(&$this->connection, $method), $params);
+		return \call_user_func_array(array(&$this->connection, $method), $params);
 	}
 
 	/**
@@ -129,7 +129,7 @@ class Redis extends \lithium\core\DynamicObject {
 	 */
 	public function respondsTo($method, $internal = 0) {
 		$parentRespondsTo = parent::respondsTo($method, $internal);
-		return $parentRespondsTo || is_callable(array($this->connection, $method));
+		return $parentRespondsTo || \is_callable(array($this->connection, $method));
 	}
 
 	/**
@@ -141,7 +141,7 @@ class Redis extends \lithium\core\DynamicObject {
 	 * @return boolean Returns `true` if expiry could be set for the given key, `false` otherwise.
 	 */
 	protected function _ttl($key, $expiry) {
-		return $this->connection->expireAt($key, is_int($expiry) ? $expiry : strtotime($expiry));
+		return $this->connection->expireAt($key, \is_int($expiry) ? $expiry : \strtotime($expiry));
 	}
 
 	/**
@@ -159,7 +159,7 @@ class Redis extends \lithium\core\DynamicObject {
 		$_self =& $this;
 
 		return function($self, $params) use (&$_self, &$connection, $expiry) {
-			if (is_array($params['key'])) {
+			if (\is_array($params['key'])) {
 				$expiry = $params['data'];
 
 				if ($connection->mset($params['key'])) {
@@ -194,7 +194,7 @@ class Redis extends \lithium\core\DynamicObject {
 		return function($self, $params) use (&$connection) {
 			$key = $params['key'];
 
-			if (is_array($key)) {
+			if (\is_array($key)) {
 				return $connection->getMultiple($key);
 			}
 			return $connection->get($key);
@@ -269,7 +269,7 @@ class Redis extends \lithium\core\DynamicObject {
 	 * @return boolean Returns `true` if the Redis extension is enabled, `false` otherwise.
 	 */
 	public static function enabled() {
-		return extension_loaded('redis');
+		return \extension_loaded('redis');
 	}
 }
 

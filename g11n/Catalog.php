@@ -42,7 +42,7 @@ class Catalog extends \lithium\core\Adaptable {
 	public static function config($config = null) {
 		$defaults = array('scope' => null);
 
-		if (is_array($config)) {
+		if (\is_array($config)) {
 			foreach ($config as $i => $item) {
 				$config[$i] += $defaults;
 			}
@@ -79,10 +79,10 @@ class Catalog extends \lithium\core\Adaptable {
 		$defaults = array('scope' => null, 'lossy' => true);
 		$options += $defaults;
 
-		$category = strtok($category, '.');
-		$id = strtok('.');
+		$category = \strtok($category, '.');
+		$id = \strtok('.');
 
-		$names = $name === true ? array_keys(static::$_configurations) : (array) $name;
+		$names = $name === true ? \array_keys(static::$_configurations) : (array) $name;
 		$results = array();
 
 		foreach (Locale::cascade($locale) as $cascaded) {
@@ -95,7 +95,7 @@ class Catalog extends \lithium\core\Adaptable {
 			}
 		}
 		if ($options['lossy']) {
-			array_walk($results, function(&$value) {
+			\array_walk($results, function(&$value) {
 				$value = $value['translated'];
 			});
 		}
@@ -129,15 +129,15 @@ class Catalog extends \lithium\core\Adaptable {
 		$defaults = array('scope' => null);
 		$options += $defaults;
 
-		$category = strtok($category, '.');
-		$id = strtok('.');
+		$category = \strtok($category, '.');
+		$id = \strtok('.');
 
 		if ($id) {
 			$data = array($id => $data);
 		}
 
-		array_walk($data, function(&$value, $key) {
-			if (!is_array($value) || !array_key_exists('translated', $value)) {
+		\array_walk($data, function(&$value, $key) {
+			if (!\is_array($value) || !\array_key_exists('translated', $value)) {
 				$value = array('id' => $key, 'translated' => $value);
 			}
 		});

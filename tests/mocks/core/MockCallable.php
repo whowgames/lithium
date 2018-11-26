@@ -19,15 +19,15 @@ class MockCallable extends \lithium\core\DynamicObject {
 	public static $callStatic = array();
 
 	public function __construct() {
-		$this->construct = func_get_args();
+		$this->construct = \func_get_args();
 	}
 
 	public function __call($method, $params = array()) {
-		return $this->call = compact('method', 'params');
+		return $this->call = \compact('method', 'params');
 	}
 
 	public static function __callStatic($method, $params) {
-		return static::$callStatic = compact('method', 'params');
+		return static::$callStatic = \compact('method', 'params');
 	}
 
 	public function __get($value) {

@@ -249,12 +249,12 @@ class View extends \lithium\core\DynamicObject {
 			$encoding =& $this->_response->encoding;
 		}
 		$h = function($data) use (&$encoding) {
-			return htmlspecialchars((string) $data, ENT_QUOTES, $encoding);
+			return \htmlspecialchars((string) $data, ENT_QUOTES, $encoding);
 		};
-		$this->outputFilters += compact('h') + $this->_config['outputFilters'];
+		$this->outputFilters += \compact('h') + $this->_config['outputFilters'];
 
 		foreach (array('loader', 'renderer') as $key) {
-			if (is_object($this->_config[$key])) {
+			if (\is_object($this->_config[$key])) {
 				$this->{'_' . $key} = $this->_config[$key];
 				continue;
 			}
@@ -308,7 +308,7 @@ class View extends \lithium\core\DynamicObject {
 		$data += $options['data'];
 		$paths = $options['paths'];
 		unset($options['data'], $options['paths']);
-		$params = array_filter($options, function($val) { return $val && is_string($val); });
+		$params = \array_filter($options, function($val) { return $val && \is_string($val); });
 		$result = null;
 
 		foreach ($this->_process($process, $params) as $name => $step) {
@@ -351,11 +351,11 @@ class View extends \lithium\core\DynamicObject {
 		if (!$conditions = $step['conditions']) {
 			return true;
 		}
-		$isCallable = is_callable($conditions) && !is_string($conditions);
+		$isCallable = \is_callable($conditions) && !\is_string($conditions);
 		if ($isCallable && !$conditions($params, $data, $options)) {
 			return false;
 		}
-		if (is_string($conditions) && !(isset($options[$conditions]) && $options[$conditions])) {
+		if (\is_string($conditions) && !(isset($options[$conditions]) && $options[$conditions])) {
 			return false;
 		}
 
@@ -382,7 +382,7 @@ class View extends \lithium\core\DynamicObject {
 		$_renderer = $this->_renderer;
 		$_loader = $this->_loader;
 		$filters = $this->outputFilters;
-		$params = compact('step', 'params', 'options') + array(
+		$params = \compact('step', 'params', 'options') + array(
 			'data' => $data + $filters,
 			'loader' => $_loader,
 			'renderer' => $_renderer
@@ -394,13 +394,13 @@ class View extends \lithium\core\DynamicObject {
 		};
 		$result = $this->_filter(__METHOD__, $params, $filter);
 
-		if (is_array($step['capture'])) {
-			switch (key($step['capture'])) {
+		if (\is_array($step['capture'])) {
+			switch (\key($step['capture'])) {
 				case 'context':
-					$options['context'][current($step['capture'])] = $result;
+					$options['context'][\current($step['capture'])] = $result;
 				break;
 				case 'data':
-					$data[current($step['capture'])] = $result;
+					$data[\current($step['capture'])] = $result;
 				break;
 			}
 		}
@@ -420,19 +420,19 @@ class View extends \lithium\core\DynamicObject {
 	protected function _process($process, &$params) {
 		$defaults = array('conditions' => null, 'multi' => false);
 
-		if (!is_array($process)) {
+		if (!\is_array($process)) {
 			if (!isset($this->_processes[$process])) {
 				throw new TemplateException("Undefined rendering process '{$process}'.");
 			}
 			$process = $this->_processes[$process];
 		}
-		if (is_string(key($process))) {
+		if (\is_string(\key($process))) {
 			return $this->_convertSteps($process, $params, $defaults);
 		}
 		$result = array();
 
 		foreach ($process as $step) {
-			if (is_array($step)) {
+			if (\is_array($step)) {
 				$result[] = $step + $defaults;
 				continue;
 			}
@@ -457,9 +457,9 @@ class View extends \lithium\core\DynamicObject {
 	 * @return array Returns a converted set of rendering steps, to be executed in `render()`.
 	 */
 	protected function _convertSteps(array $command, array &$params, $defaults) {
-		if (count($command) === 1) {
-			$params['template'] = current($command);
-			return array(array('path' => key($command)) + $defaults);
+		if (\count($command) === 1) {
+			$params['template'] = \current($command);
+			return array(array('path' => \key($command)) + $defaults);
 		}
 		return $command;
 	}

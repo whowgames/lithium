@@ -68,14 +68,14 @@ class Curl extends \lithium\net\Socket {
 		}
 
 		$url = "{$config['scheme']}://{$config['host']}";
-		$this->_resource = curl_init($url);
+		$this->_resource = \curl_init($url);
 		$this->set(array(
 			CURLOPT_PORT => $config['port'],
 			CURLOPT_HEADER => true,
 			CURLOPT_RETURNTRANSFER => true
 		));
 
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return false;
 		}
 		$this->_isConnected = true;
@@ -93,12 +93,12 @@ class Curl extends \lithium\net\Socket {
 	 * @return boolean True on closed connection
 	 */
 	public function close() {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return true;
 		}
-		curl_close($this->_resource);
+		\curl_close($this->_resource);
 
-		if (is_resource($this->_resource)) {
+		if (\is_resource($this->_resource)) {
 			$this->close();
 		}
 		return true;
@@ -122,10 +122,10 @@ class Curl extends \lithium\net\Socket {
 	 *         of `curl_exec` otherwise.
 	 */
 	public function read() {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return false;
 		}
-		return curl_exec($this->_resource);
+		return \curl_exec($this->_resource);
 	}
 
 	/**
@@ -135,10 +135,10 @@ class Curl extends \lithium\net\Socket {
 	 * @return boolean
 	 */
 	public function write($data = null) {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return false;
 		}
-		if (!is_object($data)) {
+		if (!\is_object($data)) {
 			$data = $this->_instance($this->_classes['request'], (array) $data + $this->_config);
 		}
 		$this->set(CURLOPT_URL, $data->to('url'));
@@ -153,14 +153,14 @@ class Curl extends \lithium\net\Socket {
 			if (isset($data->method) && $data->method === 'POST') {
 				$this->set(array(CURLOPT_POST => true, CURLOPT_POSTFIELDS => $data->body()));
 			}
-			if (isset($data->method) && in_array($data->method,array('PUT','PATCH'))) {
+			if (isset($data->method) && \in_array($data->method,array('PUT','PATCH'))) {
 				$this->set(array(
 					CURLOPT_CUSTOMREQUEST => $data->method,
 					CURLOPT_POSTFIELDS => $data->body()
 				));
 			}
 		}
-		return (boolean) curl_setopt_array($this->_resource, $this->options);
+		return (boolean) \curl_setopt_array($this->_resource, $this->options);
 	}
 
 	/**
@@ -175,10 +175,10 @@ class Curl extends \lithium\net\Socket {
 	 *         option could not be set, true otherwise.
 	 */
 	public function timeout($time) {
-		if (!is_resource($this->_resource)) {
+		if (!\is_resource($this->_resource)) {
 			return false;
 		}
-		return curl_setopt($this->_resource, CURLOPT_CONNECTTIMEOUT, $time);
+		return \curl_setopt($this->_resource, CURLOPT_CONNECTTIMEOUT, $time);
 	}
 
 	/**

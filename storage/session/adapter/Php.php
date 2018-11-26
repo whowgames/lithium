@@ -44,7 +44,7 @@ class Php extends \lithium\core\DynamicObject {
 	 */
 	public function __construct(array $config = array()) {
 		if (empty($config['session.name'])) {
-			$config['session.name'] = basename(Libraries::get(true, 'path'));
+			$config['session.name'] = \basename(Libraries::get(true, 'path'));
 		}
 		parent::__construct($config + $this->_defaults);
 	}
@@ -63,10 +63,10 @@ class Php extends \lithium\core\DynamicObject {
 		unset($config['adapter'], $config['strategies'], $config['filters'], $config['init']);
 
 		foreach ($config as $key => $value) {
-			if (strpos($key, 'session.') === false) {
+			if (\strpos($key, 'session.') === false) {
 				continue;
 			}
-			if (ini_set($key, $value) === false) {
+			if (\ini_set($key, $value) === false) {
 				throw new ConfigException("Could not initialize the session.");
 			}
 		}
@@ -82,8 +82,8 @@ class Php extends \lithium\core\DynamicObject {
 		if (static::isStarted()) {
 			return true;
 		}
-		session_cache_limiter('nocache');
-		return session_start();
+		\session_cache_limiter('nocache');
+		return \session_start();
 	}
 
 	/**
@@ -94,10 +94,10 @@ class Php extends \lithium\core\DynamicObject {
 	 *                 has been closed.
 	 */
 	public static function isStarted() {
-		if (function_exists("session_status")) {
-			return session_status() === PHP_SESSION_ACTIVE;
+		if (\function_exists("session_status")) {
+			return \session_status() === PHP_SESSION_ACTIVE;
 		}
-		return isset($_SESSION) && session_id();
+		return isset($_SESSION) && \session_id();
 	}
 
 	/**
@@ -108,9 +108,9 @@ class Php extends \lithium\core\DynamicObject {
 	 */
 	public static function key($key = null) {
 		if ($key !== null) {
-			return session_id($key);
+			return \session_id($key);
 		}
-		return session_id() ?: null;
+		return \session_id() ?: null;
 	}
 
 	/**
@@ -147,16 +147,16 @@ class Php extends \lithium\core\DynamicObject {
 			if (!$key) {
 				return $_SESSION;
 			}
-			if (strpos($key, '.') === false) {
+			if (\strpos($key, '.') === false) {
 				return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
 			}
 			$filter  = function($keys, $data) use (&$filter) {
-				$key = array_shift($keys);
+				$key = \array_shift($keys);
 				if (isset($data[$key])) {
 					return (empty($keys)) ? $data[$key] : $filter($keys, $data[$key]);
 				}
 			};
-			return $filter(explode('.', $key), $_SESSION);
+			return $filter(\explode('.', $key), $_SESSION);
 		};
 	}
 
@@ -214,7 +214,7 @@ class Php extends \lithium\core\DynamicObject {
 		}
 
 		return function($self, $params) {
-			return session_destroy();
+			return \session_destroy();
 		};
 	}
 
@@ -225,10 +225,10 @@ class Php extends \lithium\core\DynamicObject {
 	 *         completely), `false` otherwise.
 	 */
 	public static function enabled() {
-		if (function_exists("session_status")) {
-			return session_status() !== PHP_SESSION_DISABLED;
+		if (\function_exists("session_status")) {
+			return \session_status() !== PHP_SESSION_DISABLED;
 		}
-		return in_array('session', get_loaded_extensions());
+		return \in_array('session', \get_loaded_extensions());
 	}
 
 	/**

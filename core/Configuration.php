@@ -48,7 +48,7 @@ class Configuration extends \lithium\core\DynamicObject {
 	 * @param array $config Configuration to set.
 	 */
 	public function set($name = null, $config = null) {
-		if (is_array($config)) {
+		if (\is_array($config)) {
 			$this->_configurations[$name] = $config;
 			return;
 		}
@@ -68,7 +68,7 @@ class Configuration extends \lithium\core\DynamicObject {
 	public function get($name = null) {
 		if ($name === null) {
 			$result = array();
-			$this->_configurations = array_filter($this->_configurations);
+			$this->_configurations = \array_filter($this->_configurations);
 
 			foreach ($this->_configurations as $key => $value) {
 				$result[$key] = $this->get($key);
@@ -89,7 +89,7 @@ class Configuration extends \lithium\core\DynamicObject {
 
 		$config = isset($settings[$name][$env]) ? $settings[$name][$env] : $settings[$name];
 
-		$method = is_callable($this->initConfig) ? $this->initConfig : null;
+		$method = \is_callable($this->initConfig) ? $this->initConfig : null;
 		$settings[$name][0] = $method ? $method($name, $config) : $config;
 		return $settings[$name][0];
 	}

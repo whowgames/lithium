@@ -223,7 +223,7 @@ abstract class Collection extends \lithium\util\Collection {
 	 */
 	public function offsetExists($offset) {
 		$this->offsetGet($offset);
-		return array_key_exists($offset, $this->_data);
+		return \array_key_exists($offset, $this->_data);
 	}
 
 	/**
@@ -233,9 +233,9 @@ abstract class Collection extends \lithium\util\Collection {
 	 * @return mixed Returns an `Entity` object if exists otherwise returns `null`.
 	 */
 	public function offsetGet($offset) {
-		while (!array_key_exists($offset, $this->_data) && $this->_populate()) {}
+		while (!\array_key_exists($offset, $this->_data) && $this->_populate()) {}
 
-		if (array_key_exists($offset, $this->_data)) {
+		if (\array_key_exists($offset, $this->_data)) {
 			return $this->_data[$offset];
 		}
 		return null;
@@ -261,8 +261,8 @@ abstract class Collection extends \lithium\util\Collection {
 	 */
 	public function offsetUnset($offset) {
 		$this->offsetGet($offset);
-		prev($this->_data);
-		if (key($this->_data) === null) {
+		\prev($this->_data);
+		if (\key($this->_data) === null) {
 			$this->rewind();
 		}
 		unset($this->_data[$offset]);
@@ -273,9 +273,9 @@ abstract class Collection extends \lithium\util\Collection {
 	 */
 	public function rewind() {
 		$this->_started = true;
-		reset($this->_data);
-		$this->_valid = !empty($this->_data) || !is_null($this->_populate());
-		return current($this->_data);
+		\reset($this->_data);
+		$this->_valid = !empty($this->_data) || !\is_null($this->_populate());
+		return \current($this->_data);
 	}
 
 	/**
@@ -289,8 +289,8 @@ abstract class Collection extends \lithium\util\Collection {
 			$this->current();
 		}
 		if ($this->_valid) {
-			$key = key($this->_data);
-			return (is_array($key) && !$full) ? reset($key) : $key;
+			$key = \key($this->_data);
+			return (\is_array($key) && !$full) ? \reset($key) : $key;
 		}
 		return null;
 	}
@@ -317,7 +317,7 @@ abstract class Collection extends \lithium\util\Collection {
 		if (!$this->_valid) {
 			return false;
 		}
-		return current($this->_data);
+		return \current($this->_data);
 	}
 
 	/**
@@ -332,12 +332,12 @@ abstract class Collection extends \lithium\util\Collection {
 		if (!$this->_started) {
 			$this->rewind();
 		}
-		next($this->_data);
-		$this->_valid = !(key($this->_data) === null);
+		\next($this->_data);
+		$this->_valid = !(\key($this->_data) === null);
 		if (!$this->_valid) {
-			$this->_valid = !is_null($this->_populate());
+			$this->_valid = !\is_null($this->_populate());
 		}
-		return current($this->_data);
+		return \current($this->_data);
 	}
 
 	/**
@@ -365,7 +365,7 @@ abstract class Collection extends \lithium\util\Collection {
 	 */
 	public function find($filter, array $options = array()) {
 		$this->offsetGet(null);
-		if (is_array($filter)) {
+		if (\is_array($filter)) {
 			$filter = $this->_filterFromArray($filter);
 		}
 		return parent::find($filter, $options);
@@ -379,7 +379,7 @@ abstract class Collection extends \lithium\util\Collection {
 	 * @return object Returns the first object found matching the filter criteria.
 	 */
 	public function first($filter = null) {
-		return parent::first(is_array($filter) ? $this->_filterFromArray($filter) : $filter);
+		return parent::first(\is_array($filter) ? $this->_filterFromArray($filter) : $filter);
 	}
 
 	/**
@@ -481,19 +481,19 @@ abstract class Collection extends \lithium\util\Collection {
 	public function sort($field = 'id', array $options = array()) {
 		$this->offsetGet(null);
 
-		if (is_string($field)) {
+		if (\is_string($field)) {
 			$sorter = function ($a, $b) use ($field) {
-				if (is_array($a)) {
+				if (\is_array($a)) {
 					$a = (object) $a;
 				}
 
-				if (is_array($b)) {
+				if (\is_array($b)) {
 					$b = (object) $b;
 				}
 
-				return strcmp($a->$field, $b->$field);
+				return \strcmp($a->$field, $b->$field);
 			};
-		} elseif (is_callable($field)) {
+		} elseif (\is_callable($field)) {
 			$sorter = $field;
 		}
 
@@ -545,7 +545,7 @@ abstract class Collection extends \lithium\util\Collection {
 
 		$index = $options['indexed'] || ($options['indexed'] === null && $this->_parent === null);
 		if (!$index) {
-			$data = array_values($this->_data);
+			$data = \array_values($this->_data);
 		} else {
 			$data = $options['internal'] ? $this->_data : $this;
 		}

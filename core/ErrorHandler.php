@@ -63,7 +63,7 @@ class ErrorHandler extends \lithium\core\StaticObject {
 	 * @return Current configuration set.
 	 */
 	public static function config($config = array()) {
-		return (static::$_config = array_merge($config, static::$_config));
+		return (static::$_config = \array_merge($config, static::$_config));
 	}
 
 	/**
@@ -91,12 +91,12 @@ class ErrorHandler extends \lithium\core\StaticObject {
 		}
 		static::$_isRunning = true;
 		static::$_runOptions = $config + $defaults;
-		$self = get_called_class();
+		$self = \get_called_class();
 
 		$trap = function($code, $message, $file, $line = 0, $context = null) use ($self) {
-			$trace = debug_backtrace();
-			$trace = array_slice($trace, 1, count($trace));
-			$self::handle(compact('type', 'code', 'message', 'file', 'line', 'trace', 'context'));
+			$trace = \debug_backtrace();
+			$trace = \array_slice($trace, 1, \count($trace));
+			$self::handle(\compact('type', 'code', 'message', 'file', 'line', 'trace', 'context'));
 		};
 
 		$convert = function($code, $message, $file, $line = 0, $context = null) use ($self) {
@@ -104,11 +104,11 @@ class ErrorHandler extends \lithium\core\StaticObject {
 		};
 
 		if (static::$_runOptions['trapErrors']) {
-			set_error_handler($trap);
+			\set_error_handler($trap);
 		} elseif (static::$_runOptions['convertErrors']) {
-			set_error_handler($convert);
+			\set_error_handler($convert);
 		}
-		set_exception_handler(static::$_exceptionHandler);
+		\set_exception_handler(static::$_exceptionHandler);
 	}
 
 	/**
@@ -125,8 +125,8 @@ class ErrorHandler extends \lithium\core\StaticObject {
 	 * handlers are set after a call to `run()`.
 	 */
 	public static function stop() {
-		restore_error_handler();
-		restore_exception_handler();
+		\restore_error_handler();
+		\restore_exception_handler();
 		static::$_isRunning = false;
 	}
 
@@ -141,32 +141,32 @@ class ErrorHandler extends \lithium\core\StaticObject {
 		static::$_exceptionHandler = null;
 		static::$_checks = array(
 			'type'  => function($config, $info) {
-				return (boolean) array_filter((array) $config['type'], function($type) use ($info) {
-					return $type === $info['type'] || is_subclass_of($info['type'], $type);
+				return (boolean) \array_filter((array) $config['type'], function($type) use ($info) {
+					return $type === $info['type'] || \is_subclass_of($info['type'], $type);
 				});
 			},
 			'code' => function($config, $info) {
 				return ($config['code'] & $info['code']);
 			},
 			'stack' => function($config, $info) {
-				return (boolean) array_intersect((array) $config['stack'], $info['stack']);
+				return (boolean) \array_intersect((array) $config['stack'], $info['stack']);
 			},
 			'message' => function($config, $info) {
-				return preg_match($config['message'], $info['message']);
+				return \preg_match($config['message'], $info['message']);
 			}
 		);
-		$self = get_called_class();
+		$self = \get_called_class();
 
 		static::$_exceptionHandler = function($exception, $return = false) use ($self) {
-			if (ob_get_length()) {
-				ob_end_clean();
+			if (\ob_get_length()) {
+				\ob_end_clean();
 			}
-			$info = compact('exception') + array(
-				'type' => get_class($exception),
+			$info = \compact('exception') + array(
+				'type' => \get_class($exception),
 				'stack' => $self::trace($exception->getTrace())
 			);
 			foreach (array('message', 'file', 'line', 'trace') as $key) {
-				$method = 'get' . ucfirst($key);
+				$method = 'get' . \ucfirst($key);
 				$info[$key] = $exception->{$method}();
 			}
 			return $return ? $info : $self::handle($info);
@@ -185,7 +185,7 @@ class ErrorHandler extends \lithium\core\StaticObject {
 		$checks = static::$_checks;
 		$rules = $scope ?: static::$_config;
 		$handler = static::$_exceptionHandler;
-		$info = is_object($info) ? $handler($info, true) : $info;
+		$info = \is_object($info) ? $handler($info, true) : $info;
 
 		$defaults = array(
 			'type' => null, 'code' => 0, 'message' => null, 'file' => null, 'line' => 0,
@@ -197,7 +197,7 @@ class ErrorHandler extends \lithium\core\StaticObject {
 		$info['origin'] = static::_origin($info['trace']);
 
 		foreach ($rules as $config) {
-			foreach (array_keys($config) as $key) {
+			foreach (\array_keys($config) as $key) {
 				if ($key === 'conditions' || $key === 'scope' || $key === 'handler') {
 					continue;
 				}
@@ -232,16 +232,16 @@ class ErrorHandler extends \lithium\core\StaticObject {
 	protected static function _origin(array $stack) {
 		foreach ($stack as $frame) {
 			if (isset($frame['class'])) {
-				return trim($frame['class'], '\\');
+				return \trim($frame['class'], '\\');
 			}
 		}
 	}
 
 	public static function apply($object, array $conditions, $handler) {
 		$conditions = $conditions ?: array('type' => 'Exception');
-		list($class, $method) = is_string($object) ? explode('::', $object) : $object;
+		list($class, $method) = \is_string($object) ? \explode('::', $object) : $object;
 		$wrap = static::$_exceptionHandler;
-		$_self = get_called_class();
+		$_self = \get_called_class();
 
 		$filter = function($self, $params, $chain) use ($_self, $conditions, $handler, $wrap) {
 			try {
@@ -254,7 +254,7 @@ class ErrorHandler extends \lithium\core\StaticObject {
 			}
 		};
 
-		if (is_string($class)) {
+		if (\is_string($class)) {
 			Filters::apply($class, $method, $filter);
 		} else {
 			$class->applyFilter($method, $filter);
@@ -264,9 +264,9 @@ class ErrorHandler extends \lithium\core\StaticObject {
 	public static function matches($info, $conditions) {
 		$checks = static::$_checks;
 		$handler = static::$_exceptionHandler;
-		$info = is_object($info) ? $handler($info, true) : $info;
+		$info = \is_object($info) ? $handler($info, true) : $info;
 
-		foreach (array_keys($conditions) as $key) {
+		foreach (\array_keys($conditions) as $key) {
 			if ($key === 'conditions' || $key === 'scope' || $key === 'handler') {
 				continue;
 			}
@@ -295,7 +295,7 @@ class ErrorHandler extends \lithium\core\StaticObject {
 		foreach ($stack as $frame) {
 			if (isset($frame['function'])) {
 				if (isset($frame['class'])) {
-					$result[] = trim($frame['class'], '\\') . '::' . $frame['function'];
+					$result[] = \trim($frame['class'], '\\') . '::' . $frame['function'];
 				} else {
 					$result[] = $frame['function'];
 				}
