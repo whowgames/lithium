@@ -523,7 +523,7 @@ class Form extends \lithium\template\Helper {
 		list($scope, $options) = $this->_options($defaults, $options);
 		list($title, $options, $template) = $this->_defaults(__METHOD__, $title, $options);
 
-		$arguments = \compact('type', 'title', 'options', 'value');
+		$arguments = @\compact('type', 'title', 'options', 'value');
 		return $this->_render(__METHOD__, 'button', $arguments, $scope);
 	}
 
