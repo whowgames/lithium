@@ -88,7 +88,13 @@ class RecordSet extends \lithium\data\Collection {
 		if (\is_array($key)) {
 			$key = \count($key) === 1 ? \current($key) : null;
 		}
-		return $key !== null ? $this->_data[$key] = $data : $this->_data[] = $data;
+        if ($key === null) {
+			return $this->_data[] = $data;
+		}
+		reset($this->_data);
+		$this->_data[$key] = $data;
+		end($this->_data);
+		return $data;
 	}
 
 	/**
