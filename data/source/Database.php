@@ -287,7 +287,8 @@ abstract class Database extends \lithium\data\Source {
 
 		$options = $config['options'] + array(
 			PDO::ATTR_PERSISTENT => $config['persistent'],
-			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_TIMEOUT => 10,
 		);
 
 		try {
