@@ -103,8 +103,8 @@ class Session extends \lithium\core\Adaptable {
 			if (!$method || !$name) {
 				return null;
 			}
-		}
-		$filters = $settings['filters'] ?: array();
+        }
+        $filters = $settings && $settings['filters'] ?: array();
 		$result = static::_filter(__FUNCTION__, \compact('key', 'options'), $method, $filters);
 
 		if ($options['strategies']) {
