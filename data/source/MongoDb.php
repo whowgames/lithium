@@ -798,7 +798,7 @@ class MongoDb extends \lithium\data\Source {
 			}
 			$current = \key($value);
 
-			if (!isset($ops[$current]) && is_string($current) && $current[0] !== '$') {
+			if (!isset($ops[$current]) && $current[0] !== '$') {
 				$conditions[$key] = array('$in' => $cast($key, $value));
 				continue;
 			}
