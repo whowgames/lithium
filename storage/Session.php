@@ -92,7 +92,7 @@ class Session extends \lithium\core\Adaptable {
 		$defaults = array('name' => null, 'strategies' => true);
 		$options += $defaults;
 		$method = ($name = $options['name']) ? static::adapter($name)->read($key, $options) : null;
-		$settings = static::_config($name);
+        $settings = static::_config($name);
 
 		if (!$method) {
 			foreach (\array_keys(static::$_configurations) as $name) {
@@ -103,8 +103,14 @@ class Session extends \lithium\core\Adaptable {
 			if (!$method || !$name) {
 				return null;
 			}
-		}
-		$filters = $settings['filters'] ?: array();
+        }
+
+        $filters = [];
+
+        if ($settings && !empty($settings['filters'])) {
+            $filters = $settings['filters'];
+        }
+
 		$result = static::_filter(__FUNCTION__, \compact('key', 'options'), $method, $filters);
 
 		if ($options['strategies']) {
