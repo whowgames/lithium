@@ -252,10 +252,13 @@ class MongoDb extends \lithium\data\Source {
 		$login = $cfg['login'] ? "{$cfg['login']}:{$cfg['password']}@" : '';
 		$connection = "mongodb://{$login}{$host}" . ($login ? "/{$cfg['database']}" : '');
 
+        /*
 		$options = array(
 			'connect' => true,
 			'connectTimeoutMS' => $cfg['timeout'],
 		);
+        */
+        $options = [];
 
         if (isset($cfg['replicaSet']) && $cfg['replicaSet']) {
             $options['replicaSet'] = $cfg['replicaSet'];
@@ -265,9 +268,11 @@ class MongoDb extends \lithium\data\Source {
 			if ($persist = $cfg['persistent']) {
 				$options['persist'] = $persist === true ? 'default' : $persist;
 			}
+            /*
 			\MongoLog::setLevel(\MongoLog::ALL);
 			\MongoLog::setModule(\MongoLog::ALL);
 			\MongoLog::setCallback(array($this, '_x_log'));
+            */
 			$server = $this->_classes['server'];
 			$this->server = new $server($connection, $options);
 
@@ -280,12 +285,14 @@ class MongoDb extends \lithium\data\Source {
 				$this->server->setReadPreference($prefs[0], $prefs[1]);
 			}
 		} catch (Exception $e) {
-			$this->_x_log_dump();
+			//$this->_x_log_dump();
 			throw new NetworkException("Could not connect to the database.", 503, $e);
 		}
 
+        /*
 		\MongoLog::setLevel(\MongoLog::NONE);
 		\MongoLog::setModule(\MongoLog::NONE);
+        */
 
 
 		return $this->_isConnected;
