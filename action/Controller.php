@@ -303,7 +303,7 @@ class Controller extends \lithium\core\DynamicObject {
 	 */
 	public function redirect($url, array $options = array()) {
 		$router = $this->_classes['router'];
-		$defaults = array('location' => null, 'status' => 302, 'head' => true, 'exit' => false);
+		$defaults = array('location' => null, 'status' => 301, 'head' => true, 'exit' => false);
 		$options += $defaults;
 		$params = \compact('url', 'options');
 
@@ -320,5 +320,3 @@ class Controller extends \lithium\core\DynamicObject {
 		return $this->response;
 	}
 }
-
-?>

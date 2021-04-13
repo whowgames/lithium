@@ -154,14 +154,14 @@ class Response extends \lithium\net\http\Response {
 		$code = null;
 		if (isset($this->headers['location']) || isset($this->headers['Location'])) {
 			if ($this->status['code'] === 200) {
-				$this->status(302);
+				$this->status(301);
 			}
 			$code = $this->status['code'];
 		}
 		$this->_writeHeaders($this->status() ?: $this->status(500));
 		$this->_writeHeaders($this->headers(), $code);
 
-		if ($this->status['code'] === 302 || $this->status['code'] === 204) {
+		if ($this->status['code'] === 302 || $this->status['code'] == 301 || $this->status['code'] === 204) {
 			return;
 		}
 		$chunked = $this->body(null, $this->_config);
@@ -198,5 +198,3 @@ class Response extends \lithium\net\http\Response {
 		}
 	}
 }
-
-?>
