@@ -161,7 +161,7 @@ class Response extends \lithium\net\http\Response {
 		$this->_writeHeaders($this->status() ?: $this->status(500));
 		$this->_writeHeaders($this->headers(), $code);
 
-		if ($this->status['code'] === 302 || $this->status['code'] == 301 || $this->status['code'] === 204) {
+		if ($this->status['code'] === 302 || $this->status['code'] === 301 || $this->status['code'] === 204) {
 			return;
 		}
 		$chunked = $this->body(null, $this->_config);
