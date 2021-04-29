@@ -1437,7 +1437,7 @@ abstract class Database extends \lithium\data\Source {
 		return $this->_filter(__METHOD__, $params, function($self, $params) {
 			$sql = $params['sql'];
 			list($code, $error) = $self->error();
-			throw new QueryException("{$sql}: {$error}", $code);
+			throw new QueryException("{$error}: {$sql}", $code);
 		});
 	}
 
