@@ -2,8 +2,8 @@
 /**
  * Lithium: the most rad php framework
  *
- * @copyright     Copyright 2013, Union of RAD (http://union-of-rad.org)
- * @license       http://opensource.org/licenses/bsd-license.php The BSD License
+ * @copyright	 Copyright 2013, Union of RAD (http://union-of-rad.org)
+ * @license	   http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
 namespace lithium\g11n\catalog\adapter;
@@ -78,7 +78,7 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 	 * Constructor.
 	 *
 	 * @param array $config Available configuration options are:
-	 *        - `'path'`: The path to the directory holding the data.
+	 *		- `'path'`: The path to the directory holding the data.
 	 */
 	public function __construct(array $config = array()) {
 		$defaults = array('path' => null);
@@ -123,9 +123,9 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 			if ($data) {
 				$data['pluralRule'] = array(
 					'id' => 'pluralRule',
-					'translated' => function($count) {
-						return $count !== 1;
-					}
+					'translated' => function ($count) use ($locale) {
+						return $this->getPluralIndexForTranslation($locale, (int) $count);
+					},
 				);
 				return $data;
 			}
@@ -516,6 +516,54 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 		}
 		return parent::_merge($data, $item);
 	}
-}
 
-?>
+	/**
+	 * Returns index of a msg in po file for specific locale
+	 *
+	 * @param string $locale
+	 * @param int $cnt
+	 * @return int Sindex
+	 */
+	protected function getPluralIndexForTranslation(string $locale, int $cnt): int {
+		switch ($locale) {
+			case 'de_DE':
+			case 'es_ES':
+			case 'fr_FR':
+			case 'it_IT':
+			case 'nl_NL':
+			case 'tr_TR':
+			case 'en_GB':
+			case 'en_US':
+			case 'hu_HU':
+			case 'pt_PT':
+			case 'pt_BR':
+			case 'da_DK':
+			case 'sv_SE':
+				return $cnt !== 1 ? 1 : 0;
+
+			case 'cs_CZ':
+				return $cnt === 1 ? 0 : ($cnt >= 2 && $cnt <= 4 ? 1 : 3);
+
+			case 'pl_PL':
+				return $cnt === 1
+					? 0
+					: ($cnt % 10 >= 2 && $cnt % 10 <= 4 && ($cnt % 100 < 12 || $cnt % 100 > 14)
+						? 1
+						: (($cnt !== 1 && $cnt % 10 >= 0 && $cnt % 10 <= 1) || ($cnt % 10 >= 5 && $cnt % 10 <= 9) || ($cnt % 100 >= 12 && $cnt % 100 <= 14)
+							? 2
+							: 3));
+
+			case 'ro_RO':
+				return $cnt === 1 ? 0 : ($cnt === 0 || ($cnt % 100 > 0 && $cnt % 100 < 20) ? 1 : 2);
+
+			case 'ru_RU':
+				return $cnt % 10 === 1 && $cnt % 100 !== 11
+					? 0
+					: ($cnt % 10 >= 2 && $cnt % 10 <= 4 && ($cnt % 100 < 12 || $cnt % 100 > 14)
+						? 1
+						: ($cnt % 10 === 0 || ($cnt % 10 >= 5 && $cnt % 10 <= 9) || ($cnt % 100 >= 11 && $cnt % 100 <= 14)
+							? 2
+							: 3));
+		}
+	}
+}
