@@ -428,7 +428,7 @@ class StringDeprecated {
 				$results[] = $buffer;
 				$buffer = '';
 			} else {
-				$buffer .= $data{$tmpOffset};
+				$buffer .= $data[$tmpOffset];
 			}
 
 			if ($leftBound !== $rightBound) {
