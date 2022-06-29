@@ -132,7 +132,7 @@ class Router extends \lithium\core\StaticObject {
 	 * @see lithium\net\http\Router::parse()
 	 * @see lithium\net\http\Router::match()
 	 * @param string $template An empty string, or a route string "/"
-	 * @param array $params An array describing the default or required elements of the route
+	 * @param string|array $params An array describing the default or required elements of the route
 	 * @param array $options
 	 * @return array Array of routes
 	 */
@@ -909,5 +909,3 @@ class Router extends \lithium\core\StaticObject {
 		return false;
 	}
 }
-
-?>
