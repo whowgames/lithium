@@ -1,5 +1,8 @@
 # OS X
 .DS_Store
 
+# PHPStorm
+.idea/
+
 # Vim
 .*.sw[a-z]

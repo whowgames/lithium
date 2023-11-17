@@ -157,8 +157,12 @@ class Growl extends \lithium\core\DynamicObject {
 		$type = $options['type'];
 		$title = $options['title'];
 
-		$message = \compact('type', 'title', 'description') + array('app' => $this->_config['name']);
-		$message = \array_map('utf8_encode', $message);
+		$configName = $this->_config['name'];
+
+		$message = \compact('type', 'title', 'description') + array('app' => $configName);
+		$message = \array_map(function() use ($configName) {
+			return \mb_convert_encoding($configName, 'UTF-8', 'ISO-8859-1');
+		}, $message);
 
 		$flags = ($options['priority'] & 7) * 2;
 		$flags = ($options['priority'] < 0) ? $flags |= 8 : $flags;
@@ -185,11 +189,11 @@ class Growl extends \lithium\core\DynamicObject {
 			return true;
 		}
 		$ct = \count($this->_config['notifications']);
-		$app = \utf8_encode($this->_config['name']);
+		$app = \mb_convert_encoding($this->_config['name'], 'UTF-8', 'ISO-8859-1');
 		$nameEnc = $defaultEnc = '';
 
 		foreach ($this->_config['notifications'] as $i => $name) {
-			$name = \utf8_encode($name);
+			$name = \mb_convert_encoding($name, 'UTF-8', 'ISO-8859-1');
 			$nameEnc .= \pack('n', \strlen($name)) . $name;
 			$defaultEnc .= \pack('c', $i);
 		}
