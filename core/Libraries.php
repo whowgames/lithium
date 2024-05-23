@@ -868,8 +868,8 @@ class Libraries {
 			foreach (static::_searchPaths($paths, $library, $params) as $tpl) {
 				$params['library'] = \rtrim($config['prefix'], '\\');
 				$class = \str_replace('\\*', '', StringDeprecated::insert($tpl, $params));
-
-				if (\file_exists($file = Libraries::path($class, $options))) {
+				$file = Libraries::path($class, $options);
+				if ($file && \file_exists($file)) {
 					return ($options['type'] === 'file') ? $file : $class;
 				}
 			}
