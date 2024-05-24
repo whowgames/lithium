@@ -8,6 +8,8 @@
 
 namespace lithium\data\source;
 
+use ReturnTypeWillChange;
+
 abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 
 	/**
@@ -82,6 +84,7 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	/**
 	 * Rewinds the result set to the first position.
 	 */
+	#[ReturnTypeWillChange]
 	public function rewind() {
 		$this->_iterator = 0;
 		$this->_started = false;
