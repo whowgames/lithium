@@ -74,7 +74,7 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	 *
 	 * @return boolean `true` if valid, `false` otherwise.
 	 */
-	public function valid() {
+	public function valid(): bool {
 		if (!$this->_init) {
 			$this->_valid = $this->_fetch();
 		}
@@ -84,8 +84,7 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	/**
 	 * Rewinds the result set to the first position.
 	 */
-	#[ReturnTypeWillChange]
-	public function rewind() {
+	public function rewind(): void {
 		$this->_iterator = 0;
 		$this->_started = false;
 		$this->_key = null;
@@ -96,9 +95,9 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	/**
 	 * Contains the current result.
 	 *
-	 * @return array The current result (or `null` if there is none).
+	 * @return array|bool The current result (or `null` if there is none).
 	 */
-	public function current() {
+	public function current(): array|bool {
 		if (!$this->_init) {
 			$this->_fetch();
 		}
@@ -111,7 +110,7 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	 *
 	 * @return integer The current iterator position.
 	 */
-	public function key() {
+	public function key(): mixed {
 		if (!$this->_init) {
 			$this->_fetch();
 		}
@@ -124,9 +123,10 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	 *
 	 * @return mixed The previous result (or `false` if there is none).
 	 */
-	public function prev() {
+	public function prev(): mixed
+	{
 		if (!$this->_cache) {
-			return;
+			return false;
 		}
 		if (isset($this->_cache[--$this->_iterator - 1])) {
 			$this->_key = $this->_iterator - 1;
@@ -138,9 +138,10 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	/**
 	 * Fetches the next element from the resource.
 	 *
-	 * @return mixed The next result (or `false` if there is none).
+	 * @return array|bool The next result (or `false` if there is none).
 	 */
-	public function next() {
+	#[ReturnTypeWillChange] public function next(): array|bool
+	{
 		if ($this->_started === false) {
 			return $this->current();
 		}
@@ -157,7 +158,8 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	 *
 	 * @return boolean Return `true` on success or `false` otherwise.
 	 */
-	protected function _fetch() {
+	protected function _fetch(): bool
+	{
 		$this->_init = true;
 		if ($this->_fetchFromCache() || $this->_fetchFromResource()) {
 			return true;
@@ -172,7 +174,8 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	 *
 	 * @return boolean Return `true` on success or `false` if it has not been cached yet.
 	 */
-	protected function _fetchFromCache() {
+	protected function _fetchFromCache(): bool
+	{
         if (\is_object($this->_cache) || \is_array($this->_cache)) {
             if ($this->_iterator < \count($this->_cache)) {
                 $this->_key = $this->_iterator;
