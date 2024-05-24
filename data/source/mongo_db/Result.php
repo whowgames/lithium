@@ -11,12 +11,12 @@ namespace lithium\data\source\mongo_db;
 use MongoGridFSFile;
 
 class Result extends \lithium\data\source\Result {
-	public function prev() {
+	public function prev(): mixed{
 		return null;
 	}
 
-	protected function _fetchFromCache() {
-		return null;
+	protected function _fetchFromCache(): bool {
+		return false;
 	}
 
 	/**
