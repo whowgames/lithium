@@ -499,7 +499,7 @@ class Gettext extends \lithium\g11n\catalog\Adapter {
 			if (\is_array($value)) {
 				return \array_map($filter, $value);
 			}
-			return \stripcslashes($value);
+			return $value ? \stripcslashes($value) : "";
 		};
 		$fields = array('id', 'ids', 'translated');
 
