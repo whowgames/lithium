@@ -314,7 +314,7 @@ class Help extends \lithium\console\Command {
 	 * @return string
 	 */
 	protected function _pad($message, $level = 1) {
-		$padding = str_repeat(' ', $level * 4);
+		$padding = is_string($level) ? $level : str_repeat(' ', $level * 4);
 		return $padding . str_replace("\n", "\n{$padding}", $message);
 	}
 }
