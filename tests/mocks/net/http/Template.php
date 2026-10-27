@@ -9,7 +9,7 @@
 
 namespace lithium\tests\mocks\net\http;
 
-class Template extends \lithium\core\Object {
+class Template extends \lithium\core\Li3Object {
 
 	public function __construct(array $config = []) {
 		$config['response']->headers('Custom', 'Value');

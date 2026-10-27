@@ -9,7 +9,7 @@
 
 namespace lithium\tests\mocks\core;
 
-class MockCallable extends \lithium\core\Object {
+class MockCallable extends \lithium\core\Li3Object {
 
 	public $construct = [];
 

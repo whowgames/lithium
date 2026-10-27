@@ -21,7 +21,7 @@ use lithium\tests\mocks\core\MockInstantiator;
 class ObjectTest extends \lithium\test\Unit {
 
 	/**
-	 * Tests that the correct parameters are always passed in Object::invokeMethod(), regardless of
+	 * Tests that the correct parameters are always passed in Li3Object::invokeMethod(), regardless of
 	 * the number.
 	 */
 	public function testMethodInvocationWithParameters() {
@@ -76,7 +76,7 @@ class ObjectTest extends \lithium\test\Unit {
 	}
 
 	public function testParents() {
-		$expected = ['lithium\core\Object' => 'lithium\core\Object'];
+		$expected = ['lithium\core\Li3Object' => 'lithium\core\Li3Object'];
 
 		$result = MockObjectForParents::parents();
 		$this->assertEqual($expected, $result);

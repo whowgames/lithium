@@ -16,7 +16,7 @@ use lithium\core\Environment;
  *
  * @see lithium\core\Environment
  */
-class Configuration extends \lithium\core\Object {
+class Configuration extends \lithium\core\Li3Object {
 
 	/**
 	 * Can provide configurations based on the environment,

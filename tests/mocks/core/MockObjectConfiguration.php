@@ -9,7 +9,7 @@
 
 namespace lithium\tests\mocks\core;
 
-class MockObjectConfiguration extends \lithium\core\Object {
+class MockObjectConfiguration extends \lithium\core\Li3Object {
 
 	protected $_testScalar = 'default';
 
