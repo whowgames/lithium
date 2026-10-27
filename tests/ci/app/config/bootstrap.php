@@ -53,6 +53,15 @@ switch (getenv('DB')) {
 			]
 		]);
 	break;
+	case 'mongodb_new':
+		Connections::add('test', [
+			'test' => [
+				'type' => 'MongoDBNew',
+				'host' => 'localhost',
+				'database' => 'lithium_test'
+			]
+		]);
+	break;
 	case 'mysql':
 		Connections::add('test', [
 			'test' => [
