@@ -1,0 +1,59 @@
+volumes:
+  mongo-data:
+
+
+services:
+  mongo:
+    image: mongo:5-focal
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+
+
+  lithium:
+    image: whow-php:8.4-apache
+    ports:
+      - "8090:80"
+    build:
+      context: docker-images/whow-php
+      dockerfile: Dockerfile.apache
+      args:
+        PHP_VERSION: 8.4
+    depends_on:
+      mongo:
+        condition: service_started
+    volumes:
+      # Entrypoint
+      - ./docker-files/entrypoint.sh:/entrypoint.sh
+
+      # User's SSH config
+      - ~/.ssh:/ssh
+
+      # PHP configuration:
+      - ../local-dev/custompackages/cfg-php/src/usr/share/cfg-php/config/php8.4/cfg-php.ini:/usr/local/etc/php/conf.d/cfg-php.ini
+      - ../local-dev/files/php-apache-service/php-dev.ini:/usr/local/etc/php/conf.d/php-dev.ini
+
+      # PHP modules:
+      - ../local-dev/custompackages/cfg-php/src/usr/share/php:/usr/share/php
+      - ../local-dev/custompackages/cfg-php/src/usr/share/cfg-php:/usr/share/cfg-php
+
+      # Apache config: (needed?)
+      - ../local-dev/custompackages/cfg-apache/src/usr/lib/cfg-apache:/usr/lib/cfg-apache
+      - ../local-dev/custompackages/cfg-apache/src/usr/share/cfg-apache:/usr/share/cfg-apache
+      - ../local-dev/custompackages/cfg-sudo/src/usr/lib/cfg-sudo:/usr/lib/cfg-sudo
+      - ../local-dev/custompackages/cfg-base/src/usr/lib/cfg-base:/usr/lib/cfg-base
+      - ../local-dev/custompackages/srvcfg/src/usr/lib/srvcfg:/usr/lib/srvcfg
+
+      # Apache config:
+      - ./docker-files/lithium.conf:/etc/apache2/sites-enabled/lithium.conf
+
+      # Our web projects:
+      - type: bind
+        source: .
+        target: /home/lithium
+    tmpfs:
+      - /var/tmp/lithium:exec,uid=33,gid=33
+    environment:
+      APACHE_DOCUMENT_ROOT: /home
+      COMPOSER_ROOT_VERSION: 1.1.x-dev
+    entrypoint: /entrypoint.sh
