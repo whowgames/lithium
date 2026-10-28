@@ -26,13 +26,13 @@ find "$APACHE_DOCUMENT_ROOT" -maxdepth 5 -type d -name .git -print0 \
 	| sed 's@/\.git@@g' \
 	| xargs -0 -n 1 -r -- git config --global --add safe.directory
 
-composer install --ignore-platform-reqs --prefer-source
-
 case "$TEST" in
 	1|yes|on|YES|ON)
 		./tests/ci/test.sh
 		;;
 	*)
+		composer install --ignore-platform-reqs --prefer-source
+
 		mkdir -p docker-logs
 		exec apache2-foreground
 		;;
