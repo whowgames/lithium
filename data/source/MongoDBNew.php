@@ -246,7 +246,7 @@ class MongoDBNew extends \lithium\data\Source {
 			'password'   => null,
 			'database'   => null,
 			'timeout'    => 100,
-			'replicaSet' => false,
+			'replicaSet' => null,
 			'schema'     => null,
 			'gridPrefix' => 'fs',
 			'w'          => 1,
@@ -377,7 +377,6 @@ class MongoDBNew extends \lithium\data\Source {
 
 		$options = [
 			'connectTimeoutMS' => $this->_config['timeout'],
-			'replicaSet' => $this->_config['replicaSet'],
 		];
 
 		// Unserialize everything as a PHP array, as was done in the legacy `mongo` extension.
@@ -388,6 +387,10 @@ class MongoDBNew extends \lithium\data\Source {
 				'array' => 'array',
 			],
 		];
+
+		if (isset($this->_config['replicaSet'])) {
+			$options['replicaSet'] = $this->_config['replicaSet'];
+		}
 
 		if ($prefs = $this->_config['readPreference']) {
 			if (!is_array($prefs)) {
@@ -436,7 +439,7 @@ class MongoDBNew extends \lithium\data\Source {
 	public function sources($class = null) {
 		$this->_checkConnection();
 		$conn = $this->connection;
-		return array_map(function($col) { return $col->getName(); }, $conn->listCollections());
+		return array_map(function($col) { return $col->getName(); }, iterator_to_array($conn->listCollections()));
 	}
 
 	/**
@@ -553,7 +556,7 @@ class MongoDBNew extends \lithium\data\Source {
 				$result = ['ok' => true];
 				$data['create']['_id'] = $this->_saveFile($data['create']);
 			} else {
-				$result = $this->connection->{$source}->insert($data['create'], $options);
+				$result = $this->connection->{$source}->insertOne($data['create'], $options);
 				$result = $this->_ok($result);
 			}
 
@@ -747,7 +750,7 @@ class MongoDBNew extends \lithium\data\Source {
 			if ($source === "{$prefix}.files") {
 				$result = $this->_deleteFile($conditions);
 			} else {
-				$result = $this->connection->{$args['source']}->remove($conditions, $options);
+				$result = $this->connection->{$args['source']}->deleteOne($conditions, $options);
 				$result = $this->_ok($result);
 			}
 			if ($result && $query->entity()) {
@@ -775,7 +778,10 @@ class MongoDBNew extends \lithium\data\Source {
 		if (is_bool($result)) {
 			return $result;
 		}
-		return !isset($result['err']) || $result['err'] === null;
+		if (is_array($result)) {
+			return !isset($result['err']) || $result['err'] === null;
+		}
+		return $result->isAcknowledged();
 	}
 	/**
 	 * Executes calculation-related queries, such as those required for `count`.
@@ -791,7 +797,20 @@ class MongoDBNew extends \lithium\data\Source {
 
 		switch ($type) {
 			case 'count':
-				return $this->read($query, $options)->count();
+				$this->_checkConnection();
+
+				$defaults = ['return' => 'resource'];
+				$options += $defaults;
+
+				$params = compact('query', 'options');
+
+				return Filters::run($this, __FUNCTION__, $params, function($params) {
+					$query = $params['query'];
+					$options = $params['options'];
+					$source = $args['source'];
+					$collection = $this->connection->{$source};
+					return $this->countDocuments($query, $options);
+				});
 		}
 	}
 
