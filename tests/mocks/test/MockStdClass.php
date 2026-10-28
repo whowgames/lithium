@@ -9,7 +9,7 @@
 
 namespace lithium\tests\mocks\test;
 
-class MockStdClass extends \lithium\core\Object {
+class MockStdClass extends \lithium\core\Li3Object {
 
 	protected $_data = [];
 

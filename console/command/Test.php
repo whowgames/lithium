@@ -272,7 +272,7 @@ class Test extends \lithium\console\Command {
 	 * ```
 	 * lithium/tests/cases/core/ObjectTest.php -> lithium\tests\cases\core\ObjectTest
 	 * lithium/tests/cases/core                -> lithium\tests\cases\core
-	 * lithium/core/Object.php                 -> lithium\core\Object
+	 * lithium/core/Li3Object.php              -> lithium\core\Li3Object
 	 * lithium/core/                           -> lithium\core
 	 * lithium/core                            -> lithium\core
 	 * ```

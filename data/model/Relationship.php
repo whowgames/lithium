@@ -19,7 +19,7 @@ use lithium\core\ClassNotFoundException;
  * The `Relationship` class encapsulates the data and functionality necessary to link two model
  * classes together.
  */
-class Relationship extends \lithium\core\Object {
+class Relationship extends \lithium\core\Li3Object {
 
 	/**
 	 * Class dependencies.

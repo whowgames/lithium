@@ -24,7 +24,7 @@ use lithium\console\command\Help;
  * ```
  *
  */
-class Command extends \lithium\core\Object {
+class Command extends \lithium\core\Li3Object {
 
 	/**
 	 * A Request object.
