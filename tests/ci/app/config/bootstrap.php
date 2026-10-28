@@ -57,7 +57,7 @@ switch (getenv('DB')) {
 		Connections::add('test', [
 			'test' => [
 				'type' => 'MongoDBNew',
-				'host' => 'localhost',
+				'host' => 'mongo',
 				'database' => 'lithium_test'
 			]
 		]);
