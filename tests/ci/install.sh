@@ -14,9 +14,11 @@ set +e
 #composer require alcaeus/mongo-php-adapter:1.2.2
 composer require mongodb/mongodb
 
-composer install --ignore-platform-reqs --prefer-source
 cd libraries
-git clone git@github.com:whowgames/li3_fixtures.git
+git clone -b OPS-481-php-8.4 git@github.com:whowgames/li3_fixtures.git
+cd -
+
+composer install --ignore-platform-reqs --prefer-source
 
 mkdir -p /tmp/tmp/logs
 mkdir -p /tmp/tmp/tests
