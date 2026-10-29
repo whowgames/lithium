@@ -14,11 +14,6 @@ services:
     image: whow-php:8.4-apache
     ports:
       - "8090:80"
-    build:
-      context: docker-images/whow-php
-      dockerfile: Dockerfile.apache
-      args:
-        PHP_VERSION: 8.4
     depends_on:
       mongo:
         condition: service_started
