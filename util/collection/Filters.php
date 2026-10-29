@@ -195,12 +195,13 @@ class Filters extends \lithium\util\Collection {
 	 * @param array $chain The Filters object instance containing this chain of filters.
 	 * @return mixed Returns the return value of the next filter in the chain.
 	 */
-	public function next($self = null, $params = null, $chain = null) {
+	public function next($self = null, $params = null, $chain = null): void {
 		if (empty($self) || empty($chain)) {
-			return parent::next();
+			parent::next();
+		} else {
+			$next = parent::next();
+			$next($self, $params, $chain);
 		}
-		$next = parent::next();
-		return $next($self, $params, $chain);
 	}
 
 	/**
