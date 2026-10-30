@@ -267,6 +267,7 @@ class MongoDBNew extends \lithium\data\Source {
 	 * @return void
 	 */
 	protected function _init() {
+		/*
 		$hosts = [];
 		foreach ((array) $this->_config['host'] as $host) {
 			$host = HostString::parse($host) + [
@@ -289,6 +290,12 @@ class MongoDBNew extends \lithium\data\Source {
 				implode(',', $hosts)
 			);
 		}
+		*/
+		$cfg = $this->_config;
+		$host = \is_array($cfg['host']) ? \join(',', $cfg['host']) : $cfg['host'];
+		$login = $cfg['login'] ? "{$cfg['login']}:{$cfg['password']}@" : '';
+		$this->_config['dsn'] = "mongodb://{$login}{$host}" . ($login ? "/{$cfg['database']}" : '');
+
 		parent::_init();
 
 		$this->_operators += [
@@ -370,7 +377,7 @@ class MongoDBNew extends \lithium\data\Source {
 	public function connect() {
 		$server = $this->_classes['server'];
 
-		if ($this->server && $this->server->getConnections() && $this->connection) {
+		if ($this->server && $this->connection) {
 			return $this->_isConnected = true;
 		}
 		$this->_isConnected = false;
@@ -423,7 +430,7 @@ class MongoDBNew extends \lithium\data\Source {
 	 * @return boolean True
 	 */
 	public function disconnect() {
-		if ($this->server && $this->server->getConnections()) {
+		if ($this->server) {
 			$this->_isConnected = false;
 			unset($this->connection, $this->server);
 		}

@@ -16,6 +16,8 @@ use lithium\analysis\logger\adapter\Syslog;
  */
 class SyslogTest extends \lithium\test\Unit {
 
+	public $syslog;
+
 	public function setUp() {
 		$this->syslog = new Syslog();
 		Logger::config(array('syslog' => array('adapter' => $this->syslog)));

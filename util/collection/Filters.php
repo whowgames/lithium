@@ -180,8 +180,9 @@ class Filters extends \lithium\util\Collection {
 		}
 
 		$chain = new Filters($options);
-		$next = $chain->rewind();
-		return $next($class, $params, $chain);
+		$chain->rewind();
+		$next = $chain->current();
+		$next($class, $params, $chain);
 	}
 
 	/**
@@ -195,13 +196,13 @@ class Filters extends \lithium\util\Collection {
 	 * @param array $chain The Filters object instance containing this chain of filters.
 	 * @return mixed Returns the return value of the next filter in the chain.
 	 */
-	public function next($self = null, $params = null, $chain = null): void {
-		if (empty($self) || empty($chain)) {
-			parent::next();
-		} else {
-			$next = parent::next();
-			$next($self, $params, $chain);
+	public function next($self = null, $params = null, $chain = null): mixed {
+		parent::next();
+		if (!empty($self) && !empty($chain)) {
+			$next = parent::current();
+			return $next($self, $params, $chain);
 		}
+		return parent::current();
 	}
 
 	/**

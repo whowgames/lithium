@@ -160,7 +160,7 @@ class Library extends \lithium\console\Command {
 		if ($this->server) {
 			$this->_settings['servers'][$this->server] = true;
 		}
-		if (\file_exists($this->conf)) {
+		if (isset($this->conf) && \file_exists($this->conf)) {
 			$this->_settings += (array) \json_decode($this->conf, true);
 		}
 		$this->path = $this->_toPath($this->path ?: 'libraries');

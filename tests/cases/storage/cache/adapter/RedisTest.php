@@ -14,9 +14,11 @@ use lithium\storage\cache\adapter\Redis;
 
 class RedisTest extends \lithium\test\Unit {
 
+	protected $_redis = null;
+
 	public function __construct(array $config = array()) {
 		$defaults = array(
-			'host' => '127.0.0.1',
+			'host' => 'redis',
 			'port' => 6379
 		);
 		parent::__construct($config + $defaults);
@@ -28,6 +30,8 @@ class RedisTest extends \lithium\test\Unit {
 	 * @return void
 	 */
 	public function skip() {
+		$this->skipIf(true, 'The redis tests are manually disabled.');
+
 		$this->skipIf(!Redis::enabled(), 'The redis extension is not installed.');
 
 		$redis = new RedisCore();

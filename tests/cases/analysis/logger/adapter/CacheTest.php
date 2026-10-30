@@ -17,6 +17,8 @@ use lithium\analysis\logger\adapter\Cache;
  */
 class CacheTest extends \lithium\test\Unit {
 
+	public $cachelog;
+
 	/**
 	 * Sets up and configers the logger and also the cache storage for testing.
 	 */

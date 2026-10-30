@@ -20,13 +20,13 @@ class Schema extends \lithium\data\DocumentSchema {
 	protected $_handlers = [];
 
 	protected $_types = [
-		'MongoDB\BSON\ObjectId' => 'id',
-		'MongoDB\BSON\UTCDateTime'    => 'date',
-		'MongoDB\BSON\Javascript'    => 'code',
-		'MongoDB\BSON\Binary' => 'binary',
-		'datetime'     => 'date',
-		'timestamp'    => 'date',
-		'int'          => 'integer'
+		'MongoDB\BSON\ObjectId'    => 'id',
+		'MongoDB\BSON\UTCDateTime' => 'date',
+		'MongoDB\BSON\Javascript'  => 'code',
+		'MongoDB\BSON\Binary'      => 'binary',
+		'datetime'                 => 'date',
+		'timestamp'                => 'date',
+		'int'                      => 'integer'
 	];
 
 	/**

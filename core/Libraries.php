@@ -561,6 +561,9 @@ class Libraries {
 	public static function path($class, array $options = array()) {
 		$defaults = array('dirs' => false);
 		$options += $defaults;
+		if (!\is_string($class)) {
+			$class = get_class($class);
+		}
 		$class = \ltrim($class, '\\');
 
 		if (isset(static::$_cachedPaths[$class]) && !$options['dirs']) {

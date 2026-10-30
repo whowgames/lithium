@@ -1,45 +1,45 @@
 <?php
 /**
- * li₃: the most RAD framework for PHP (http://li3.me)
+ * Lithium: the most rad php framework
  *
- * Copyright 2016, Union of RAD. All rights reserved. This source
- * code is distributed under the terms of the BSD 3-Clause License.
- * The full license text can be found in the LICENSE.txt file.
+ * @copyright     Copyright 2013, Union of RAD (http://union-of-rad.org)
+ * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
-namespace lithium\data\source\mongodb_new;
+namespace lithium\data\source\mongo_db;
 
-/**
- * This is the result class for all MongoDB. It needs a `MongoCursor` as
- * a resource to operate on.
- *
- * @link http://php.net/manual/en/class.mongocursor.php
- */
+use MongoGridFSFile;
+
 class Result extends \lithium\data\source\Result {
+	public function prev() {
+		return null;
+	}
+
+	protected function _fetchFromCache() {
+		return null;
+	}
 
 	/**
-	 * Fetches the next result from the resource.
+	 * Fetches the result from the resource and caches it.
 	 *
-	 * @return array|boolean|null Returns a key/value pair for the next result,
-	 *         `null` if there is none, `false` if something bad happened.
+	 * @return boolean Return `true` on success or `false` if it is not valid.
 	 */
-	protected function _fetch() {
-		if (!$this->_resource) {
-			return false;
-		}
-		if (!$this->_resource->hasNext()) {
-			return null;
-		}
-		$result = $this->_resource->getNext();
+	protected function _fetchFromResource() {
+		if ($this->_resource && $this->_resource->hasNext()) {
+			$this->_resource->next();
+			$result = $this->_resource->current();
 
-		//TODO: Is there still a way to detect if the result is actually a GridFS file? If so, do we need to change its structure?
-		/*
-		if ($result instanceof MongoGridFSFile) {
-			$result = ['file' => $result] + $result->file;
+			//TODO: Is there still a way to detect if the result is actually a GridFS file? If so, do we need to change its structure?
+			/*
+			$isFile = ($result instanceof MongoGridFSFile);
+			$result = $isFile ? array('file' => $result) + $result->file : $result;
+			*/
+
+			$this->_key = $this->_iterator;
+			$this->_current = $result;
+			return true;
 		}
-		 */
-		return [$this->_iterator, $result];
+
+		return false;
 	}
 }
-
-?>

@@ -266,7 +266,7 @@ class PostgreSql extends \lithium\data\source\Database {
 			return \explode(",", $searchPath);
 		}
 		try{
-			$this->connection->exec("SET search_path TO ${searchPath}");
+			$this->connection->exec("SET search_path TO {$searchPath}");
 			return true;
 		} catch (PDOException $e) {
 			return false;

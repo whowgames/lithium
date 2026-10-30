@@ -96,6 +96,13 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	protected $_data = array();
 
 	/**
+	 * Whether the collection has been closed.
+	 *
+	 * @var bool
+	 */
+	protected $_closed = false;
+
+	/**
 	 * Allows a collection's items to be automatically assigned from class construction options.
 	 *
 	 * @var array
@@ -441,8 +448,9 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *
 	 * @return mixed The current item after rewinding.
 	 */
-	public function rewind(): void {
+	public function rewind(): mixed {
 		\reset($this->_data);
+		return \current($this->_data);
 	}
 
 	/**
@@ -500,8 +508,9 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *
 	 * @return The current item after moving or `false` on failure.
 	 */
-	public function next($self = null, $params = null, $chain = null): void {
+	public function next($self = null, $params = null, $chain = null): mixed {
 		\next($this->_data);
+		return \current($this->_data);
 	}
 
 	/**

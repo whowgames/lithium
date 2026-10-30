@@ -1,7 +1,8 @@
 #/bin/bash
 set -xeuf
 
-php tests/ci/depends.php $OPCODE_CACHE
+# Not needed inside docker
+#php tests/ci/depends.php $OPCODE_CACHE
 
 cd ..
 mkdir -p app/libraries
@@ -18,6 +19,7 @@ set +e
 composer require mongodb/mongodb
 
 cd libraries
+rm -r li3_fixtures
 git clone -b OPS-481-php-8.4 git@github.com:whowgames/li3_fixtures.git
 cd -
 

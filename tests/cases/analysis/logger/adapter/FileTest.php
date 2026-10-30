@@ -16,6 +16,8 @@ class FileTest extends \lithium\test\Unit {
 
 	public $subject;
 
+	public $path;
+
 	public function skip() {
 		$path = \realpath(Libraries::get(true, 'resources') . '/tmp/logs');
 		$this->skipIf(!\is_writable($path), "Path `{$path}` is not writable.");

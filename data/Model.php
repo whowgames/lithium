@@ -1019,7 +1019,7 @@ class Model extends \lithium\core\StaticObject {
 	 * @param array $methods
 	 * @return array
 	 */
-	public static function instanceMethods(array $methods = null) {
+	public static function instanceMethods(?array $methods = null) {
 		$class = \get_called_class();
 
 		if (!isset(static::$_instanceMethods[$class])) {
