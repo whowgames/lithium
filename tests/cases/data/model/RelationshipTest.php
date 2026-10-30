@@ -18,6 +18,7 @@ class RelationshipTest extends \lithium\test\Unit {
 
 	protected $_gallery = 'lithium\tests\mocks\data\model\MockGallery';
 	protected $_image = 'lithium\tests\mocks\data\model\MockImage';
+	protected $_db = null;
 
 	public function setUp() {
 		$this->_db = new MockDatabase();

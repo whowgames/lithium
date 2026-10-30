@@ -643,7 +643,7 @@ class Router extends \lithium\core\StaticObject {
 	 * @return mixed Returns the previous scope if if `$name` is not null and `$closure` is null,
 	 *         returns the default used scope if `$name` is null, otherwise returns `null`.
 	 */
-	public static function scope($name = null, Closure $closure = null) {
+	public static function scope($name = null, ?Closure $closure = null) {
 		if ($name === null) {
 			return static::$_scope;
 		}

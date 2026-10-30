@@ -29,6 +29,7 @@ class SecurityTest extends \lithium\test\Unit {
 	}
 
 	public function setUp() {
+		$request = null; //FIXME: What should this be?
 		$this->context = new MockFormRenderer(\compact('request'));
 		$this->subject = new Security(array('context' => $this->context));
 	}

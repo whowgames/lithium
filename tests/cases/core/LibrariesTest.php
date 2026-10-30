@@ -16,6 +16,8 @@ use lithium\tests\mocks\core\MockInitMethod;
 
 class LibrariesTest extends \lithium\test\Unit {
 
+	public $hasApp = null;
+
 	protected $_cache = array();
 
 	public function setUp() {
@@ -36,12 +38,12 @@ class LibrariesTest extends \lithium\test\Unit {
 		$invalidDS = $ds === '/' ? '\\' : '/';
 
 		$result = Libraries::path('\lithium\core\Libraries');
-		$this->assertNotEmpty(\strpos($result, "${ds}lithium${ds}core${ds}Libraries.php"));
+		$this->assertNotEmpty(\strpos($result, "{$ds}lithium{$ds}core{$ds}Libraries.php"));
 		$this->assertFileExists($result);
 		$this->assertFalse(\strpos($result, $invalidDS));
 
 		$result = Libraries::path('lithium\core\Libraries');
-		$this->assertNotEmpty(\strpos($result, "${ds}lithium${ds}core${ds}Libraries.php"));
+		$this->assertNotEmpty(\strpos($result, "{$ds}lithium{$ds}core{$ds}Libraries.php"));
 		$this->assertFileExists($result);
 		$this->assertFalse(\strpos($result, $invalidDS));
 	}

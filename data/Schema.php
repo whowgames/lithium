@@ -86,7 +86,7 @@ class Schema extends \lithium\core\DynamicObject implements \ArrayAccess {
 		return isset($this->_meta[$name]) ? $this->_meta[$name] : null;
 	}
 
-	public function has($field) {
+	public function has($field): bool {
 		if (\is_string($field)) {
 			return isset($this->_fields[$field]);
 		}
@@ -102,9 +102,9 @@ class Schema extends \lithium\core\DynamicObject implements \ArrayAccess {
 	 * @param string $field
 	 * @return boolean
 	 */
-	public function is($condition, $field) {
+	public function is($condition, $field): bool {
 		if (!isset($this->_fields[$field])) {
-			return null;
+			return false;
 		}
 		return isset($this->_fields[$field][$condition]) && $this->_fields[$field][$condition];
 	}
@@ -121,7 +121,7 @@ class Schema extends \lithium\core\DynamicObject implements \ArrayAccess {
 		return $data;
 	}
 
-	public function reset() {
+	public function reset(): void {
 		$this->_fields = array();
 	}
 
@@ -132,7 +132,7 @@ class Schema extends \lithium\core\DynamicObject implements \ArrayAccess {
 	 * @param array $fields New schema data.
 	 * @return void
 	 */
-	public function append(array $fields) {
+	public function append(array $fields): void {
 		if ($this->_locked) {
 			throw new RuntimeException("Schema cannot be modified.");
 		}
@@ -147,29 +147,29 @@ class Schema extends \lithium\core\DynamicObject implements \ArrayAccess {
 	 *               the existing fields will not be overwritten.
 	 * @return void
 	 */
-	public function merge($schema) {
+	public function merge($schema): void {
 		if ($this->_locked) {
 			throw new RuntimeException("Schema cannot be modified.");
 		}
 		$this->_fields += $schema->fields();
 	}
 
-	public function offsetGet($key) {
+	public function offsetGet($key): mixed {
 		return $this->fields($key);
 	}
 
-	public function offsetSet($key, $value) {
+	public function offsetSet($key, $value): void {
 		if ($this->_locked) {
 			throw new RuntimeException("Schema cannot be modified.");
 		}
 		$this->_fields[$key] = $value;
 	}
 
-	public function offsetExists($key) {
+	public function offsetExists($key): bool {
 		return isset($this->_fields[$key]);
 	}
 
-	public function offsetUnset($key) {
+	public function offsetUnset($key): void {
 		unset($this->_fields[$key]);
 	}
 }

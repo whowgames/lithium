@@ -12,6 +12,8 @@ use MongoId;
 
 class MockMongoConnection {
 
+	public $connected = false;
+
 	public $queries = array();
 
 	public $results = array();
