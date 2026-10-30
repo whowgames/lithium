@@ -9,6 +9,10 @@ services:
     volumes:
       - mongo-data:/data/db
 
+  redis:
+    image: valkey/valkey:7-alpine
+    restart: always
+
 
   lithium:
     image: whow-php:8.4-apache
@@ -16,6 +20,8 @@ services:
       - "8090:80"
     depends_on:
       mongo:
+        condition: service_started
+      redis:
         condition: service_started
     volumes:
       # Entrypoint
