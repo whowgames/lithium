@@ -395,7 +395,7 @@ class MongoDBNew extends \lithium\data\Source {
 			],
 		];
 
-		if (isset($this->_config['replicaSet'])) {
+		if (isset($this->_config['replicaSet']) && $this->_config['replicaSet']) {
 			$options['replicaSet'] = $this->_config['replicaSet'];
 		}
 
