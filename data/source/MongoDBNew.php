@@ -12,10 +12,8 @@ namespace lithium\data\source;
 use MongoDB\BSON\Javascript;
 use MongoDB\BSON\Regex;
 use MongoDB\Driver\ReadPreference;
-use lithium\aop\Filters;
 use lithium\util\Inflector;
 use lithium\core\NetworkException;
-use lithium\net\HostString;
 use Exception;
 
 /**
@@ -536,35 +534,28 @@ class MongoDBNew extends \lithium\data\Source {
 	 * @return boolean
 	 * @filter
 	 */
-	public function create($query, array $options = []) {
+	public function create($query, array $options = array()) {
+		$_config = $this->_config;
+		$defaults = array('w' => 0, 'fsync' => false);
+		$options += $defaults;
 		$this->_checkConnection();
 
-		$defaults = [
-			'w' => $this->_config['w'],
-			'wTimeoutMS' => $this->_config['wTimeoutMS'],
-			'fsync' => false
-		];
-		$options += $defaults;
+		$params = \compact('query', 'options');
+		$_exp = $this->_classes['exporter'];
 
-		$params = compact('query', 'options');
-
-		return Filters::run($this, __FUNCTION__, $params, function($params) {
-			$exporter = $this->_classes['exporter'];
-			$prefix = $this->_config['gridPrefix'];
-
+		return $this->_filter(__METHOD__, $params, function($self, $params) use ($_config, $_exp) {
 			$query   = $params['query'];
 			$options = $params['options'];
 
-			$args    = $query->export($this, ['keys' => ['source', 'data']]);
-			$data    = $exporter::get('create', $args['data']);
+			$args    = $query->export($self, array('keys' => array('source', 'data')));
+			$data    = $_exp::get('create', $args['data']);
 			$source  = $args['source'];
 
-			if ($source === "{$prefix}.files" && isset($data['create']['file'])) {
-				$result = ['ok' => true];
-				$data['create']['_id'] = $this->_saveFile($data['create']);
+			if ($source === "{$_config['gridPrefix']}.files" && isset($data['create']['file'])) {
+				$result = array('ok' => true);
+				$data['create']['_id'] = $self->invokeMethod('_saveFile', array($data['create']));
 			} else {
-				$result = $this->connection->{$source}->insertOne($data['create'], $options);
-				$result = $this->_ok($result);
+				$result = $self->connection->{$source}->insert($data['create'], $options);
 			}
 
 			if ($result === true || isset($result['ok']) && (boolean) $result['ok'] === true) {
@@ -617,43 +608,69 @@ class MongoDBNew extends \lithium\data\Source {
 	 * @return object
 	 * @filter
 	 */
-	public function read($query, array $options = []) {
+	public function read($query, array $options = array()) {
 		$this->_checkConnection();
-
-		$defaults = ['return' => 'resource'];
+		$defaults = array('return' => 'resource');
 		$options += $defaults;
 
-		$params = compact('query', 'options');
+		$params = \compact('query', 'options');
+		$_config = $this->_config;
 
-		return Filters::run($this, __FUNCTION__, $params, function($params) {
-			$prefix = $this->_config['gridPrefix'];
-
+		return $this->_filter(__METHOD__, $params, function($self, $params) use ($_config) {
 			$query = $params['query'];
 			$options = $params['options'];
-			$args = $query->export($this);
+			$args = $query->export($self);
 			$source = $args['source'];
 			$model = $query->model();
 
 			if ($group = $args['group']) {
-				$result = $this->_group($group, $args, $options);
-				$config = ['class' => 'set', 'defaults' => false] + compact('query') + $result;
+				$result = $self->invokeMethod('_group', array($group, $args, $options));
+				$config = array('class' => 'set', 'defaults' => false) + \compact('query') + $result;
 				return $model::create($config['data'], $config);
 			}
-			$collection = $this->connection->{$source};
+			$collection = $self->connection->{$source};
 
-			if ($source === "{$prefix}.files") {
-				$collection = $this->connection->getGridFSBucket($prefix);
+			if ($source === "{$_config['gridPrefix']}.files") {
+				$collection = $self->connection->getGridFS($_config['gridPrefix']);
 			}
-			$result = $collection->find($args['conditions'], $args['fields']);
+
+            $fields = [];
+
+            if (\count($args['fields'])) {
+                $x = \array_values($args['fields']);
+
+                if (!\is_numeric($x[0])) {
+                    foreach ($args['fields'] as $x) {
+                        $fields[$x] = 1;
+                    }
+                } else {
+                    $fields = $args['fields'];
+                }
+            }
+
+			$_convert_fields = function ($projection, $item) use ($fields)
+			{
+				$projection[$item] = $fields[$item] ? 1 : 0;
+				return $projection;
+			};
+
+			$result = $collection->find(
+				$args['conditions'],
+				[
+					'sort' => $args['order'],
+					'limit' => $args['limit'],
+					'skip' => $args['offset'],
+					'projection' => array_reduce(array_keys($fields), $_convert_fields, []),
+				]
+			);
 
 			if ($query->calculate()) {
 				return $result;
 			}
 
-			$resource = $result->sort($args['order'])->limit($args['limit'])->skip($args['offset']);
-			$result = $this->_instance('result', compact('resource'));
-			$config = compact('result', 'query') + ['class' => 'set', 'defaults' => false];
-			return $model::create([], $config);
+			$result = $self->invokeMethod('_instance', array('result', ['resource' => $result]));
+			$config = \compact('result', 'query') + array('class' => 'set', 'defaults' => false);
+			return $model::create(array(), $config);
 		});
 	}
 
@@ -676,52 +693,47 @@ class MongoDBNew extends \lithium\data\Source {
 	 * @return boolean
 	 * @filter
 	 */
-	public function update($query, array $options = []) {
-		$this->_checkConnection();
-
-		$defaults = [
+	public function update($query, array $options = array()) {
+		$_config = $this->_config;
+		$defaults = array(
 			'upsert' => false,
 			'multiple' => true,
-			'w' => $this->_config['w'],
-			'wTimeoutMS' => $this->_config['wTimeoutMS'],
+			'w' => $_config['w'],
 			'fsync' => false
-		];
+		);
 		$options += $defaults;
+		$this->_checkConnection();
 
-		$params = compact('query', 'options');
+		$params = \compact('query', 'options');
+		$_exp = $this->_classes['exporter'];
 
-		return Filters::run($this, __FUNCTION__, $params, function($params) {
-			$exporter = $this->_classes['exporter'];
-			$prefix = $this->_config['gridPrefix'];
-
+		return $this->_filter(__METHOD__, $params, function($self, $params) use ($_config, $_exp) {
 			$options = $params['options'];
 			$query  = $params['query'];
-			$args   = $query->export($this, ['keys' => ['conditions', 'source', 'data']]);
+			$args   = $query->export($self, array('keys' => array('conditions', 'source', 'data')));
 			$source = $args['source'];
 			$data   = $args['data'];
 
 			if ($query->entity()) {
-				$data = $exporter::get('update', $data);
+				$data = $_exp::get('update', $data);
 			}
 
-			if ($source === "{$prefix}.files" && isset($data['update']['file'])) {
-				$args['data']['_id'] = $this->_saveFile($data['update']);
+			if ($source === "{$_config['gridPrefix']}.files" && isset($data['update']['file'])) {
+				$args['data']['_id'] = $self->invokeMethod('_saveFile', array($data['update']));
 			}
-			$update = $query->entity() ? $exporter::toCommand($data) : $data;
+			$update = $query->entity() ? $_exp::toCommand($data) : $data;
 
-			if (empty($update)) {
-				return true;
+			if ($options['multiple'] && !\preg_grep('/^\$/', \array_keys($update))) {
+				$update = array('$set' => $update);
 			}
-			if ($options['multiple'] && !preg_grep('/^\$/', array_keys($update))) {
-				$update = ['$set' => $update];
-			}
-			$result = $this->connection->{$source}->update($args['conditions'], $update, $options);
 
-			if ($this->_ok($result)) {
+			$result = $self->connection->{$source}->update($args['conditions'], $update, $options);
+
+			if($result) {
 				$query->entity() ? $query->entity()->sync() : null;
-				return true;
 			}
-			return false;
+
+			return $result;
 		});
 	}
 
@@ -733,43 +745,34 @@ class MongoDBNew extends \lithium\data\Source {
 	 * @return boolean
 	 * @filter
 	 */
-	public function delete($query, array $options = []) {
+	public function delete($query, array $options = array()) {
 		$this->_checkConnection();
+		$_config = $this->_config;
+		$defaults = array('justOne' => false, 'w' => $_config['w'], 'fsync' => false);
+		$options = \array_intersect_key($options + $defaults, $defaults);
+		$params = \compact('query', 'options');
 
-		$defaults = [
-			'justOne' => false,
-			'w' => $this->_config['w'],
-			'wTimeoutMS' => $this->_config['wTimeoutMS'],
-			'fsync' => false
-		];
-		$options = array_intersect_key($options + $defaults, $defaults);
-		$params = compact('query', 'options');
-
-		return Filters::run($this, __FUNCTION__, $params, function($params) {
-			$prefix = $this->_config['gridPrefix'];
-
+		return $this->_filter(__METHOD__, $params, function($self, $params) use ($_config) {
 			$query = $params['query'];
 			$options = $params['options'];
-			$args = $query->export($this, ['keys' => ['source', 'conditions']]);
+			$args = $query->export($self, array('keys' => array('source', 'conditions')));
 			$source = $args['source'];
 			$conditions = $args['conditions'];
 
-			if ($source === "{$prefix}.files") {
-				$result = $this->_deleteFile($conditions);
+			if ($source === "{$_config['gridPrefix']}.files") {
+				$result = $self->invokeMethod('_deleteFile', array($conditions));
 			} else {
-				$result = $this->connection->{$args['source']}->deleteOne($conditions, $options);
-				$result = $this->_ok($result);
+				$result = $self->connection->{$args['source']}->remove($conditions, $options);
 			}
 			if ($result && $query->entity()) {
-				$query->entity()->sync(null, [], ['dematerialize' => true]);
+				$query->entity()->sync(null, array(), array('dematerialize' => true));
 			}
 			return $result;
 		});
 	}
 
-	protected function _deleteFile($conditions, $options = []) {
-		$_config = $this->_config;
-		$defaults = ['w' => $_config['w'], 'wTimeoutMS' => $_config['wTimeoutMS']];
+	protected function _deleteFile($conditions, $options = array()) {
+		$defaults = array('w' => 1);
 		$options += $defaults;
 		$prefix = $this->_config['gridPrefix'];
 		return $this->connection->getGridFS($prefix)->remove($conditions, $options);
@@ -790,6 +793,7 @@ class MongoDBNew extends \lithium\data\Source {
 		}
 		return $result->isAcknowledged();
 	}
+
 	/**
 	 * Executes calculation-related queries, such as those required for `count`.
 	 *
@@ -799,25 +803,12 @@ class MongoDBNew extends \lithium\data\Source {
 	 *        to obtain the calculation result.
 	 * @return integer Result of the calculation.
 	 */
-	public function calculation($type, $query, array $options = []) {
+	public function calculation($type, $query, array $options = array()) {
 		$query->calculate($type);
 
 		switch ($type) {
 			case 'count':
-				$this->_checkConnection();
-
-				$defaults = ['return' => 'resource'];
-				$options += $defaults;
-
-				$params = compact('query', 'options');
-
-				return Filters::run($this, __FUNCTION__, $params, function($params) {
-					$query = $params['query'];
-					$options = $params['options'];
-					$source = $args['source'];
-					$collection = $this->connection->{$source};
-					return $this->countDocuments($query, $options);
-				});
+				return $this->read($query, $options)->count();
 		}
 	}
 
@@ -973,7 +964,7 @@ class MongoDBNew extends \lithium\data\Source {
 			}
 			$current = key($value);
 
-			if (!isset($ops[$current]) && $current[0] !== '$') {
+			if (!isset($ops[$current]) && (!is_string($current) || $current[0] !== '$')) {
 				$conditions[$key] = ['$in' => $cast($key, $value)];
 				continue;
 			}

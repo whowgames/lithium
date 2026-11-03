@@ -6,9 +6,9 @@
  * @license       http://opensource.org/licenses/bsd-license.php The BSD License
  */
 
-namespace lithium\data\source\mongo_db;
+namespace lithium\data\source\mongodb_new;
 
-use MongoGridFSFile;
+use MongoDB\Driver\Exception\RuntimeException;
 
 class Result extends \lithium\data\source\Result {
 	public function prev() {
@@ -25,8 +25,17 @@ class Result extends \lithium\data\source\Result {
 	 * @return boolean Return `true` on success or `false` if it is not valid.
 	 */
 	protected function _fetchFromResource() {
-		if ($this->_resource && $this->_resource->hasNext()) {
+		if (!$this->_resource) {
+			return false;
+		}
+
+		try {
 			$this->_resource->next();
+		} catch (RuntimeException $e) {
+			return false;
+		}
+
+		if ($this->_resource->valid()) {
 			$result = $this->_resource->current();
 
 			//TODO: Is there still a way to detect if the result is actually a GridFS file? If so, do we need to change its structure?
