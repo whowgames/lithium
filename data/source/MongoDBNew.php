@@ -657,6 +657,17 @@ class MongoDBNew extends \lithium\data\Source {
 				return $projection;
 			};
 
+			$conditions = static::toBson($args['conditions'] ?: []);
+
+			if ($query->calculate()) {
+				// Count server-side.
+				// `limit`/`skip` of 0 are invalid in the countDocuments pipeline, so only pass positive values.
+				return $collection->countDocuments(
+					$conditions,
+					\array_filter(['limit' => $args['limit'], 'skip' => $args['offset']])
+				);
+			}
+
 			$result = $collection->find(
 				$args['conditions'],
 				[
@@ -666,10 +677,6 @@ class MongoDBNew extends \lithium\data\Source {
 					'projection' => array_reduce(array_keys($fields), $_convert_fields, []),
 				]
 			);
-
-			if ($query->calculate()) {
-				return $result;
-			}
 
 			$result = $self->invokeMethod('_instance', array('result', ['resource' => $result]));
 			$config = \compact('result', 'query') + array('class' => 'set', 'defaults' => false);
@@ -816,8 +823,44 @@ class MongoDBNew extends \lithium\data\Source {
 
 		switch ($type) {
 			case 'count':
-				return $this->read($query, $options)->count();
+				return (integer) $this->read($query, $options);
 		}
+	}
+
+	/**
+	 * Converts the legacy-compatible wrapper classes (`MongoId`, `MongoDate`, `MongoRegex`,
+	 * `MongoCode`, `MongoBinData` from `lithium/util/`) into the native BSON types they wrap.
+	 *
+	 * The wrappers are plain PHP objects; passed to the driver as-is they are encoded as embedded
+	 * documents (e.g. `{oid: ObjectId(...)}`) and never match a stored value. Every value handed
+	 * to the driver must therefore go through this method.
+	 *
+	 * @param mixed $value Conditions, document data or a single value.
+	 * @return mixed The value with all wrappers (recursively) replaced by native BSON types.
+	 */
+	public static function toBson($value) {
+		if (\is_array($value)) {
+			foreach ($value as $key => $item) {
+				$value[$key] = static::toBson($item);
+			}
+			return $value;
+		}
+		if (!\is_object($value)) {
+			return $value;
+		}
+		switch (true) {
+		case $value instanceof \MongoId:
+			return $value->oid;
+		case $value instanceof \MongoDate:
+			return $value->dt;
+		case $value instanceof \MongoRegex:
+			return $value->_regex;
+		case $value instanceof \MongoCode:
+			return $value->js;
+		case $value instanceof \MongoBinData:
+			return $value->binary;
+		}
+		return $value;
 	}
 
 	/**

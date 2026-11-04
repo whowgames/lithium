@@ -20,6 +20,13 @@ class Result extends \lithium\data\source\Result {
 	}
 
 	/**
+	 * Whether the driver cursor has been positioned on its first document yet.
+	 *
+	 * @var boolean
+	 */
+	protected $_cursorStarted = false;
+
+	/**
 	 * Fetches the result from the resource and caches it.
 	 *
 	 * @return boolean Return `true` on success or `false` if it is not valid.
@@ -30,7 +37,12 @@ class Result extends \lithium\data\source\Result {
 		}
 
 		try {
-			$this->_resource->next();
+			if (!$this->_cursorStarted) {
+				$this->_cursorStarted = true;
+				$this->_resource->rewind();
+			} else {
+				$this->_resource->next();
+			}
 		} catch (RuntimeException $e) {
 			return false;
 		}

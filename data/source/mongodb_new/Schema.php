@@ -60,8 +60,17 @@ class Schema extends \lithium\data\DocumentSchema {
 				return is_string($v) && preg_match('/^[0-9a-f]{24}$/', $v) ? new MongoId($v) : $v;
 			},
 			'date' => function($v) {
-				$v = intval((is_numeric($v) ? $v : strtotime($v)) * 1000);
-				return !$v ? new MongoDate() : new MongoDate($v);
+				if ($v instanceof MongoDate) {
+					return $v;
+				}
+				if ($v instanceof \MongoDB\BSON\UTCDateTime) {
+					return new MongoDate($v);
+				}
+
+				// The MongoDate shim takes seconds (+ microseconds), like the legacy class.
+				$usec = is_float($v) ? intval(($v - intval($v)) * 1000000) : 0;
+				$v = is_numeric($v) ? intval($v) : strtotime($v);
+				return !$v ? new MongoDate() : new MongoDate($v, $usec);
 			},
 			'regex'   => function($v) { return new MongoRegex($v); },
 			'integer' => function($v) { return (integer) $v; },
