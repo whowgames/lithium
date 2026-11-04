@@ -12,7 +12,6 @@ use lithium\data\source\mongodb_new\Schema;
 use lithium\data\source\MongoDBNew;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\Javascript;
-use MongoDB\BSON\UTCDateTime;
 use MongoDB\BSON\Regex;
 use lithium\data\Connections;
 use lithium\data\model\Query;
@@ -49,7 +48,7 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		'tags'              => array('type' => 'string', 'array' => true),
 		'comments'          => 'ObjectId',
 		'authors'           => array('type' => 'ObjectId', 'array' => true),
-		'created'           => 'UTCDateTime',
+		'created'           => 'MongoDate',
 		'modified'          => 'datetime',
 		'voters'            => array('type' => 'id', 'array' => true),
 		'rank_count'        => array('type' => 'integer', 'default' => 0),
@@ -789,7 +788,7 @@ class MongoDBNewTest extends \lithium\test\Unit {
 	public function testCreateWithEmbeddedObjects() {
 		$data = array(
 			'_id' => new ObjectId(),
-			'created' => new UTCDateTime(\strtotime('-1 hour')),
+			'created' => new MongoDate(\strtotime('-1 hour')),
 			'list' => array('foo', 'bar', 'baz')
 		);
 		$entity = new Document(\compact('data') + array('exists' => false));
@@ -801,11 +800,11 @@ class MongoDBNewTest extends \lithium\test\Unit {
 	public function testUpdateWithEmbeddedObjects() {
 		$data = array(
 			'_id' => new ObjectId(),
-			'created' => new UTCDateTime(\strtotime('-1 hour')),
+			'created' => new MongoDate(\strtotime('-1 hour')),
 			'list' => array('foo', 'bar', 'baz')
 		);
 
-		$fields = array('updated' => array('type' => 'UTCDateTime'));
+		$fields = array('updated' => array('type' => 'MongoDate'));
 		$schema = new Schema(\compact('fields'));
 		$entity = new Document(\compact('data', 'schema', 'model') + array('exists' => true));
 		$entity->updated = \time();
@@ -815,7 +814,7 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$result = $query->export($this->_db);
 		$expected = array('_id', 'created', 'list', 'updated');
 		$this->assertEqual($expected, \array_keys($result['data']['update']));
-		$this->assertInstanceOf('UTCDateTime', $result['data']['update']['updated']);
+		$this->assertInstanceOf('MongoDate', $result['data']['update']['updated']);
 	}
 
 	/**

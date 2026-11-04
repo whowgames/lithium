@@ -9,17 +9,27 @@
 
 namespace lithium\data\source\mongodb_new;
 
-use MongoDB\BSON\ObjectId;
-use MongoDB\BSON\Javascript;
-use MongoDB\BSON\UTCDateTime;
-use MongoDB\BSON\Regex;
-use MongoDB\BSON\Binary;
+require_once __DIR__ . '/../../../util/MongoId.php';
+require_once __DIR__ . '/../../../util/MongoCode.php';
+require_once __DIR__ . '/../../../util/MongoDate.php';
+require_once __DIR__ . '/../../../util/MongoRegex.php';
+require_once __DIR__ . '/../../../util/MongoBinData.php';
+
+use MongoId;
+use MongoCode;
+use MongoDate;
+use MongoRegex;
+use MongoBinData;
 
 class Schema extends \lithium\data\DocumentSchema {
 
 	protected $_handlers = [];
 
 	protected $_types = [
+		'MongoId'                  => 'id',
+		'MongoDate'                => 'date',
+		'MongoCode'                => 'code',
+		'MongoBinData'             => 'binary',
 		'MongoDB\BSON\ObjectId'    => 'id',
 		'MongoDB\BSON\UTCDateTime' => 'date',
 		'MongoDB\BSON\Javascript'  => 'code',
@@ -47,22 +57,18 @@ class Schema extends \lithium\data\DocumentSchema {
 
 		$this->_handlers += [
 			'id' => function($v) {
-				return is_string($v) && preg_match('/^[0-9a-f]{24}$/', $v) ? new ObjectId($v) : $v;
+				return is_string($v) && preg_match('/^[0-9a-f]{24}$/', $v) ? new MongoId($v) : $v;
 			},
 			'date' => function($v) {
-				$mv = 0;
-				if(is_float($v)) {
-					$mv = intval(($v - intval($v)) * 1000000);
-				}
-				$v = is_numeric($v) ? intval($v) : strtotime($v);
-				return !$v ? new UTCDateTime() : new UTCDateTime($v, $mv);
+				$v = intval((is_numeric($v) ? $v : strtotime($v)) * 1000);
+				return !$v ? new MongoDate() : new MongoDate($v);
 			},
-			'regex'   => function($v) { return new Regex($v); },
+			'regex'   => function($v) { return new MongoRegex($v); },
 			'integer' => function($v) { return (integer) $v; },
 			'float'   => function($v) { return (float) $v; },
 			'boolean' => function($v) { return (boolean) $v; },
-			'code'    => function($v) { return new Javascript($v); },
-			'binary'  => function($v) { return new Binary($v); }
+			'code'    => function($v) { return new MongoCode($v); },
+			'binary'  => function($v) { return new MongoBinData($v); }
 		];
 	}
 }

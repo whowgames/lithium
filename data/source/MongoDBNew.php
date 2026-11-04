@@ -9,6 +9,8 @@
 
 namespace lithium\data\source;
 
+use MongoCode;
+use MongoRegex;
 use MongoDB\BSON\Javascript;
 use MongoDB\BSON\Regex;
 use MongoDB\Driver\ReadPreference;
@@ -154,11 +156,11 @@ class MongoDBNew extends \lithium\data\Source {
 	 * ```
 	 *  id      => MongoId
 	 *  date    => MongoDate
-	 *  regex   => Regex
+	 *  regex   => MongoRegex
 	 *  integer => integer
 	 *  float   => float
 	 *  boolean => boolean
-	 *  code    => Javascript
+	 *  code    => MongoCode
 	 *  binary  => MongoBinData
 	 * ```
 	 *
@@ -555,7 +557,7 @@ class MongoDBNew extends \lithium\data\Source {
 				$result = array('ok' => true);
 				$data['create']['_id'] = $self->invokeMethod('_saveFile', array($data['create']));
 			} else {
-				$result = $self->connection->{$source}->insert($data['create'], $options);
+				$result = $self->connection->{$source}->insertOne($data['create'], $options);
 			}
 
 			if ($result === true || isset($result['ok']) && (boolean) $result['ok'] === true) {
@@ -594,7 +596,7 @@ class MongoDBNew extends \lithium\data\Source {
 
 		if (isset($data['_id'])) {
 			$data += (array) get_object_vars($grid->get($data['_id']));
-			$grid->delete($data['_id']);
+			$grid->deleteOne($data['_id']);
 		}
 		unset($data['file']);
 		return $grid->{$method}($file, $data);
@@ -727,7 +729,7 @@ class MongoDBNew extends \lithium\data\Source {
 				$update = array('$set' => $update);
 			}
 
-			$result = $self->connection->{$source}->update($args['conditions'], $update, $options);
+			$result = $self->connection->{$source}->updateOne($args['conditions'], $update, $options);
 
 			if($result) {
 				$query->entity() ? $query->entity()->sync() : null;
@@ -779,7 +781,7 @@ class MongoDBNew extends \lithium\data\Source {
 	}
 
 	/**
-	 * Parse a `MongoCollection::<insert|update|delete>()` response and
+	 * Parse a `MongoCollection::<insert|update|delete><One|Many>()` response and
 	 * return `true` on success.
 	 *
 	 * @return boolean
@@ -860,7 +862,7 @@ class MongoDBNew extends \lithium\data\Source {
 					}
 					$fieldType = $on::schema()->type($key);
 
-					if ($fieldType === 'id' || $fieldType === 'MongoId') {
+					if ($fieldType === 'id' || $fieldType === 'MongoId' || $fieldType === 'MongoDB\BSON\ObjectId') {
 						$isArray = $on::schema()->is('array', $key);
 						$link = $isArray ? $rel::LINK_KEY_LIST : $rel::LINK_KEY;
 						break;
@@ -978,6 +980,9 @@ class MongoDBNew extends \lithium\data\Source {
 			$conditions = new Javascript($conditions);
 		}
 		if ($conditions instanceof Javascript) {
+			return ['$where' => $conditions];
+		}
+		if ($conditions instanceof MongoCode) {
 			return ['$where' => $conditions];
 		}
 	}

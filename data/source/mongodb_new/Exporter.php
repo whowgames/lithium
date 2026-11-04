@@ -116,7 +116,9 @@ class Exporter extends \lithium\core\StaticObject {
 				'indexed' => null,
 				'handlers' => [
 					'MongoDate' => function($value) { return $value; },
-					'MongoId' => function($value) { return $value; }
+					'MongoId' => function($value) { return $value; },
+					'MongoDB\BSON\UTCDateTime' => function($value) { return $value; },
+					'MongoDB\BSON\ObjectId' => function($value) { return $value; }
 				]
 			];
 
