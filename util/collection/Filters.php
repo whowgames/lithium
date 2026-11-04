@@ -182,7 +182,7 @@ class Filters extends \lithium\util\Collection {
 		$chain = new Filters($options);
 		$chain->rewind();
 		$next = $chain->current();
-		$next($class, $params, $chain);
+		return $next($class, $params, $chain);
 	}
 
 	/**
