@@ -103,7 +103,11 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 
 		$this->_handlers += array(
 			'MongoId' => function($value) { return (string) $value; },
-			'MongoDate' => function($value) { return $value->sec; }
+			'MongoDate' => function($value) { return $value->sec; },
+			'MongoDB\BSON\ObjectId' => function($value) { return (string) $value; },
+			'MongoDB\BSON\UTCDateTime' => function($value) {
+				return $value->toDateTime()->getTimestamp();
+			}
 		);
 
 		$this->set($data, array('init' => true));
