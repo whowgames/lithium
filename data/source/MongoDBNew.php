@@ -558,9 +558,10 @@ class MongoDBNew extends \lithium\data\Source {
 				$data['create']['_id'] = $self->invokeMethod('_saveFile', array($data['create']));
 			} else {
 				$result = $self->connection->{$source}->insertOne($data['create'], $options);
+				$data['create']['_id'] ??= $result->getInsertedId();
 			}
 
-			if ($result === true || isset($result['ok']) && (boolean) $result['ok'] === true) {
+			if ($self->invokeMethod('_ok', array($result))) {
 				if ($query->entity()) {
 					$query->entity()->sync($data['create']['_id']);
 				}
@@ -729,13 +730,15 @@ class MongoDBNew extends \lithium\data\Source {
 				$update = array('$set' => $update);
 			}
 
-			$result = $self->connection->{$source}->updateOne($args['conditions'], $update, $options);
+			$result = $options['multiple'] && !$query->entity()
+				? $self->connection->{$source}->updateMany($args['conditions'], $update, $options)
+				: $self->connection->{$source}->updateOne($args['conditions'], $update, $options);
 
 			if($result) {
 				$query->entity() ? $query->entity()->sync() : null;
 			}
 
-			return $result;
+			return $self->invokeMethod('_ok', array($result));
 		});
 	}
 
@@ -764,7 +767,9 @@ class MongoDBNew extends \lithium\data\Source {
 			if ($source === "{$_config['gridPrefix']}.files") {
 				$result = $self->invokeMethod('_deleteFile', array($conditions));
 			} else {
-				$result = $self->connection->{$args['source']}->remove($conditions, $options);
+				$result = $options['justOne']
+					? $self->connection->{$args['source']}->deleteOne($conditions, $options)
+					: $self->connection->{$args['source']}->deleteMany($conditions, $options);
 			}
 			if ($result && $query->entity()) {
 				$query->entity()->sync(null, array(), array('dematerialize' => true));
@@ -793,7 +798,8 @@ class MongoDBNew extends \lithium\data\Source {
 		if (is_array($result)) {
 			return !isset($result['err']) || $result['err'] === null;
 		}
-		return $result->isAcknowledged();
+		// mongodb/mongodb throws on write errors; a returned result means success
+		return true;
 	}
 
 	/**
