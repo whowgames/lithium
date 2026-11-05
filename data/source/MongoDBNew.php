@@ -557,7 +557,7 @@ class MongoDBNew extends \lithium\data\Source {
 				$result = array('ok' => true);
 				$data['create']['_id'] = $self->invokeMethod('_saveFile', array($data['create']));
 			} else {
-				$result = $self->connection->{$source}->insertOne($data['create'], $options);
+				$result = $self->connection->{$source}->insertOne(static::toBson($data['create']), $options);
 				$data['create']['_id'] ??= $result->getInsertedId();
 			}
 
@@ -669,7 +669,7 @@ class MongoDBNew extends \lithium\data\Source {
 			}
 
 			$result = $collection->find(
-				$args['conditions'],
+				$conditions,
 				[
 					'sort' => $args['order'],
 					'limit' => $args['limit'],
@@ -733,13 +733,22 @@ class MongoDBNew extends \lithium\data\Source {
 			}
 			$update = $query->entity() ? $_exp::toCommand($data) : $data;
 
+			if (!$update) {
+				$query->entity() ? $query->entity()->sync() : null;
+				return true;
+			} else {
+				$update = static::toBson($update);
+			}
+
 			if ($options['multiple'] && !\preg_grep('/^\$/', \array_keys($update))) {
 				$update = array('$set' => $update);
 			}
 
+			$conditions = static::toBson($args['conditions'] ?: []);
+
 			$result = $options['multiple'] && !$query->entity()
-				? $self->connection->{$source}->updateMany($args['conditions'], $update, $options)
-				: $self->connection->{$source}->updateOne($args['conditions'], $update, $options);
+				? $self->connection->{$source}->updateMany($conditions, $update, $options)
+				: $self->connection->{$source}->updateOne($conditions, $update, $options);
 
 			if($result) {
 				$query->entity() ? $query->entity()->sync() : null;

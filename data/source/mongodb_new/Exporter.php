@@ -49,7 +49,11 @@ class Exporter extends \lithium\core\StaticObject {
 			$result[$to] = $changes[$from];
 		}
 		unset($result['$set']['_id']);
-		return $result;
+
+		// An empty operand is encoded as a BSON array, which the server rejects.
+		return array_filter($result, function($value) {
+			return $value !== [];
+		});
 	}
 
 	protected static function _create($export, array $options) {
