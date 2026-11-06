@@ -73,12 +73,13 @@ class Group extends \lithium\util\Collection {
 	 */
 	public function add($test = null, array $options = array()) {
 		$resolve = function($self, $test) {
+			$lib = Libraries::path($test);
 			switch (true) {
 				case !$test:
 					return array();
 				case \is_object($test) && $test instanceof Unit:
 					return array(\get_class($test));
-				case \is_string($test) && !\file_exists(Libraries::path($test)):
+				case \is_string($test) && (!isset($lib) || !\file_exists($lib)):
 					return $self->invokeMethod('_resolve', array($test));
 				default:
 					return (array) $test;

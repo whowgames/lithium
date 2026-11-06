@@ -17,6 +17,8 @@ use lithium\action\Response;
  */
 class FirePhpTest extends \lithium\test\Unit {
 
+	public $firephp;
+
 	/**
 	 * Sets up and configures the logger and also the cache storage for testing.
 	 */

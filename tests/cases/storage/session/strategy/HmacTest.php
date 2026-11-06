@@ -13,6 +13,10 @@ use lithium\tests\mocks\storage\session\strategy\MockCookieSession;
 
 class HmacTest extends \lithium\test\Unit {
 
+	public $secret = null;
+	public $Hmac = null;
+	public $mock = null;
+
 	public function setUp() {
 		$this->secret = 'foobar';
 		$this->Hmac = new Hmac(array('secret' => $this->secret));

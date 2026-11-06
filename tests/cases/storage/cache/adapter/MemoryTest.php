@@ -12,6 +12,13 @@ use lithium\storage\cache\adapter\Memory;
 
 class MemoryTest extends \lithium\test\Unit {
 
+	/**
+	 * The current `Memory` adapter.
+	 *
+	 * @var Memory
+	 */
+	public $Memory = null;
+
 	public function setUp() {
 		$this->Memory = new Memory();
 	}

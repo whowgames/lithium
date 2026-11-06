@@ -14,6 +14,8 @@ use lithium\storage\cache\adapter\File;
 
 class FileTest extends \lithium\test\Unit {
 
+	public $File = null;
+
 	/**
 	 * Checks whether the 'empty' file exists in `resources/tmp/cache` and, if so, ensures
 	 * that it is restored at the end of the testing cycle.

@@ -221,7 +221,7 @@ abstract class Collection extends \lithium\util\Collection {
 	 *        index of an entity in the set.
 	 * @return boolean Result.
 	 */
-	public function offsetExists($offset) {
+	public function offsetExists($offset): bool {
 		$this->offsetGet($offset);
 		return \array_key_exists($offset, $this->_data);
 	}
@@ -232,7 +232,7 @@ abstract class Collection extends \lithium\util\Collection {
 	 * @param mixed $offset The offset.
 	 * @return mixed Returns an `Entity` object if exists otherwise returns `null`.
 	 */
-	public function offsetGet($offset) {
+	public function offsetGet($offset): mixed {
 		while (!\array_key_exists($offset, $this->_data) && $this->_populate()) {}
 
 		if (\array_key_exists($offset, $this->_data)) {
@@ -249,9 +249,9 @@ abstract class Collection extends \lithium\util\Collection {
 	 * @param mixed $data The entity object to add.
 	 * @return mixed Returns the set `Entity` object.
 	 */
-	public function offsetSet($offset, $data) {
+	public function offsetSet($offset, $data): void {
 		$this->offsetGet($offset);
-		return $this->_set($data, $offset);
+		$this->_set($data, $offset);
 	}
 
 	/**
@@ -259,7 +259,7 @@ abstract class Collection extends \lithium\util\Collection {
 	 *
 	 * @param integer $offset The offset to unset.
 	 */
-	public function offsetUnset($offset) {
+	public function offsetUnset($offset): void {
 		$this->offsetGet($offset);
 		\prev($this->_data);
 		if (\key($this->_data) === null) {
@@ -271,7 +271,7 @@ abstract class Collection extends \lithium\util\Collection {
 	/**
 	 * Rewinds the collection to the beginning.
 	 */
-	public function rewind() {
+	public function rewind(): mixed {
 		$this->_started = true;
 		\reset($this->_data);
 		$this->_valid = !empty($this->_data) || !\is_null($this->_populate());
@@ -284,7 +284,7 @@ abstract class Collection extends \lithium\util\Collection {
 	 * @param boolean $full If true, returns the complete key.
 	 * @return mixed
 	 */
-	public function key($full = false) {
+	public function key($full = false): mixed {
 		if ($this->_started === false) {
 			$this->current();
 		}
@@ -310,7 +310,7 @@ abstract class Collection extends \lithium\util\Collection {
 	 *
 	 * @return object `Record`
 	 */
-	public function current() {
+	public function current(): mixed {
 		if (!$this->_started) {
 			$this->rewind();
 		}
@@ -328,7 +328,7 @@ abstract class Collection extends \lithium\util\Collection {
 	 * @return mixed Returns the next document in the set, or `false`, if no more documents are
 	 *         available.
 	 */
-	public function next($self = null, $params = null, $chain = null) {
+	public function next($self = null, $params = null, $chain = null): mixed {
 		if (!$this->_started) {
 			$this->rewind();
 		}
@@ -345,7 +345,7 @@ abstract class Collection extends \lithium\util\Collection {
 	 *
 	 * @return boolean `true` if valid, `false` otherwise.
 	 */
-	public function valid() {
+	public function valid(): bool {
 		if (!$this->_started) {
 			$this->rewind();
 		}

@@ -12,6 +12,8 @@ use lithium\test\Controller;
 
 class ControllerTest extends \lithium\test\Unit {
 
+	public $controller = null;
+
 	public function setUp() {
 		$this->controller = new Controller();
 	}

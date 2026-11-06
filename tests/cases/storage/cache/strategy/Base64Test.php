@@ -12,6 +12,8 @@ use lithium\storage\cache\strategy\Base64;
 
 class Base64Test extends \lithium\test\Unit {
 
+	public $Base64 = null;
+
 	public function setUp() {
 		$this->Base64 = new Base64();
 	}
