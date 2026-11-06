@@ -558,7 +558,7 @@ class MongoDBNew extends \lithium\data\Source {
 				$data['create']['_id'] = $self->invokeMethod('_saveFile', array($data['create']));
 			} else {
 				$result = $self->connection->{$source}->insertOne(static::toBson($data['create']), $options);
-				$data['create']['_id'] ??= $result->getInsertedId();
+				$data['create']['_id'] ??= new \MongoId($result->getInsertedId());
 			}
 
 			if ($self->invokeMethod('_ok', array($result))) {
@@ -690,7 +690,7 @@ class MongoDBNew extends \lithium\data\Source {
 		$command = ['group' => $group + ['ns' => $args['source'], 'cond' => $conditions]];
 
 		$stats = $this->connection->command($command);
-		$data = isset($stats['retval']) ? $stats['retval'] : null;
+		$data = static::fromBson($stats['retval'] ?? null);
 		unset($stats['retval']);
 		return compact('data', 'stats');
 	}
@@ -868,6 +868,36 @@ class MongoDBNew extends \lithium\data\Source {
 			return $value->js;
 		case $value instanceof \MongoBinData:
 			return $value->binary;
+		}
+		return $value;
+	}
+
+	/**
+	 * Inverse of `toBson()`: wraps native BSON types returned by the driver in the
+	 * legacy-compatible classes, recursively, so application code keeps working with
+	 * `MongoId`/`MongoDate` (`->sec`, `->{'$id'}`, ...).
+	 */
+	public static function fromBson($value) {
+		if (\is_array($value)) {
+			foreach ($value as $key => $item) {
+				$value[$key] = static::fromBson($item);
+			}
+			return $value;
+		}
+		if (!\is_object($value)) {
+			return $value;
+		}
+		switch (true) {
+		case $value instanceof \MongoDB\BSON\ObjectId:
+			return new \MongoId($value);
+		case $value instanceof \MongoDB\BSON\UTCDateTime:
+			return new \MongoDate($value);
+		case $value instanceof \MongoDB\BSON\Regex:
+			return new \MongoRegex($value);
+		case $value instanceof \MongoDB\BSON\Javascript:
+			return new \MongoCode($value);
+		case $value instanceof \MongoDB\BSON\Binary:
+			return new \MongoBinData($value);
 		}
 		return $value;
 	}

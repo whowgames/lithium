@@ -48,7 +48,7 @@ class Result extends \lithium\data\source\Result {
 		}
 
 		if ($this->_resource->valid()) {
-			$result = $this->_resource->current();
+			$result = \lithium\data\source\MongoDBNew::fromBson($this->_resource->current());
 
 			//TODO: Is there still a way to detect if the result is actually a GridFS file? If so, do we need to change its structure?
 			/*
