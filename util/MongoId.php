@@ -26,18 +26,11 @@ class MongoId implements \JsonSerializable {
 
 	public function __isset($name) { return in_array($name, ['id'], true); }
 
-	public ?string $id {
-		get {
-			return $this->oid->__toString();
-		}
-		set(?string $value) {
-			$this->oid = new ObjectId($value);
-		}
-	}
-
-	public function __construct(string|MongoId|ObjectId $id = null) {
+	public function __construct(string|MongoId|ObjectId|null $id = null) {
 		if ($id instanceof ObjectId) {
 			$this->oid = $id;
+		} elseif ($id instanceof MongoId) {
+			$this->oid = $id->oid;
 		} else {
 			$this->oid = new ObjectId($id);
 		}
