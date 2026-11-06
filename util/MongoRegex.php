@@ -8,26 +8,25 @@ use MongoDB\BSON\Regex;
 /**
  * Wrapper for new MongoDB\BSON\Regex to make it behave like the legacy MongoRegex.
  */
-class MongoRegex {
+class MongoRegex implements \JsonSerializable {
 	public ?Regex $_regex = null;
 
-	public string $regex {
-		get {
-			return $this->_regex->getPattern();
-		}
-		set(string $value) {
-			$this->_regex = new Regex($value, $this->flags);
-		}
+	public function __get($name) {
+		return match ($name) {
+			'regex' => $this->_regex->getPattern(),
+			'flags' => $this->_regex->getFlags(),
+			default => null,
+		};
 	}
 
-	public string $flags {
-		get {
-			return $this->_regex->getFlags();
-		}
-		set(string $value) {
-			$this->_regex = new Regex($this->regex, $value);
-		}
+	public function __set($name, $value) {
+		match ($name) {
+			'regex' => $this->_regex = new Regex($value, $this->flags),
+			'flags' => $this->_regex = new Regex($this->regex, $value),
+		};
 	}
+
+	public function __isset($name) { return in_array($name, ['regex', 'flags'], true); }
 
 	public function __construct(string|Regex $regex) {
 		if ($regex instanceof Regex) {
@@ -49,7 +48,7 @@ class MongoRegex {
 	}
 
 	public function jsonSerialize(): mixed {
-		return $this->_regex->jsonSerialize();
+		return ['regex' => $this->regex, 'flags' => $this->flags];
 	}
 
 	public function __toString(): string {

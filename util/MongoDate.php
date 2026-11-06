@@ -8,26 +8,25 @@ use MongoDB\BSON\UTCDateTime;
 /**
  * Wrapper for new MongoDB\BSON\UTCDateTime to make it behave like the legacy MongoDate.
  */
-class MongoDate {
+class MongoDate implements \JsonSerializable {
 	public ?UTCDateTime $dt = null;
 
-	public int $sec {
-		get {
-			return $this->dt->toDateTime()->getTimestamp();
-		}
-		set(int $value) {
-			$this->dt = new UTCDateTime($value * 1000 + intdiv($this->usec, 1000));
-		}
+	public function __get($name) {
+		return match ($name) {
+			'sec' => $this->dt->toDateTime()->getTimestamp(),
+			'usec' => (int) $this->dt->toDateTime()->format('u'),
+			default => null,
+		};
 	}
 
-	public int $usec {
-		get {
-			return $this->dt->toDateTime()->getMicrosecond();
-		}
-		set(int $value) {
-			$this->dt = new UTCDateTime($this->sec * 1000 + intdiv($value, 1000));
-		}
+	public function __set($name, $value) {
+		match ($name) {
+			'sec' => $this->dt = new UTCDateTime($value * 1000 + intdiv($this->usec, 1000)),
+			'usec' => $this->dt = new UTCDateTime($this->sec * 1000 + intdiv($value, 1000)),
+		};
 	}
+
+	public function __isset($name) { return in_array($name, ['sec', 'usec'], true); }
 
 	public function __construct(int|UTCDateTime|null $sec = null, int $usec = 0){
 		if (is_null($sec)) {
@@ -41,14 +40,14 @@ class MongoDate {
 	}
 
 	public function jsonSerialize(): mixed {
-		return $this->dt->jsonSerialize();
+		return ['sec' => $this->sec, 'usec' => $this->usec];
 	}
 
 	public function toDateTime(): DateTime {
 		return $this->dt->toDateTime();
 	}
 
-	public function toDateTimeImmutable(): DateTime {
+	public function toDateTimeImmutable(): DateTimeImmutable {
 		return $this->dt->toDateTimeImmutable();
 	}
 

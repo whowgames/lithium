@@ -401,9 +401,9 @@ class MongoDBNew extends \lithium\data\Source {
 
 		if ($prefs = $this->_config['readPreference']) {
 			if (!is_array($prefs)) {
-				$options['readPreference'] = ReadPreference::{$prefs};
+				$options['readPreference'] = constant(ReadPreference::class . '::' . $prefs);
 			} else {
-				$options['readPreference'] = ReadPreference::{$prefs[0]};
+				$options['readPreference'] = constant(ReadPreference::class . '::' . $prefs[0]);
 				$options['readPreferenceTags'] = $prefs[1];
 			}
 		}

@@ -8,7 +8,7 @@ use MongoDB\BSON\Javascript;
 /**
  * Wrapper for new MongoDB\BSON\Javascript to make it behave like the legacy MongoCode.
  */
-class MongoCode {
+class MongoCode implements \JsonSerializable {
 	public ?Javascript $js = null;
 
 	public function __construct(string|Javascript $code, array|object|null $scope = null) {
@@ -19,16 +19,17 @@ class MongoCode {
 		}
 	}
 
-	public function getCode(): int {
+	public function getCode(): string {
 		return $this->js->getCode();
 	}
 
-	public function getScope(): int {
+	public function getScope(): ?object {
 		return $this->js->getScope();
 	}
 
 	public function jsonSerialize(): mixed {
-		return $this->js->jsonSerialize();
+		// MongoCode encodes as an empty object in the legacy driver. 🤷
+		return new \stdClass();
 	}
 
 	public function __toString(): string {

@@ -8,34 +8,33 @@ use MongoDB\BSON\Binary;
 /**
  * Wrapper for new MongoDB\BSON\Binary to make it behave like the legacy MongoBinData.
  */
-class MongoBinData {
-	const int GENERIC = 0 ;
-	const int FUNC = 1 ;
-	const int BYTE_ARRAY = 2 ;
-	const int UUID = 3 ;
-	const int UUID_RFC4122 = 4 ;
-	const int MD5 = 5 ;
-	const int CUSTOM = 128 ;
+class MongoBinData implements \JsonSerializable {
+	const GENERIC = 0 ;
+	const FUNC = 1 ;
+	const BYTE_ARRAY = 2 ;
+	const UUID = 3 ;
+	const UUID_RFC4122 = 4 ;
+	const MD5 = 5 ;
+	const CUSTOM = 128 ;
 
 	public ?Binary $binary = null;
 
-	public string $bin {
-		get {
-			return $this->getData();
-		}
-		set(string $value) {
-			$this->binary = new Binary($value, $this->getType());
-		}
+	public function __get($name) {
+		return match ($name) {
+			'bin' => $this->binary->getData(),
+			'type' => $this->binary->getType(),
+			default => null,
+		};
 	}
 
-	public int $type {
-		get {
-			return $this->getType();
-		}
-		set(int $value) {
-			$this->binary = new Binary($this->getData(), $value);
-		}
+	public function __set($name, $value) {
+		match ($name) {
+			'bin' => $this->binary = new Binary($value, $this->getType()),
+			'type' => $this->binary = new Binary($this->getData(), $value),
+		};
 	}
+
+	public function __isset($name) { return in_array($name, ['bin', 'type'], true); }
 
 	public function __construct(string|Binary $data, int $type = MongoBinData::BYTE_ARRAY) {
 		if ($data instanceof Binary) {
@@ -46,27 +45,27 @@ class MongoBinData {
 	}
 
 	public function getData(): string {
-		return $this->regex->getData();
+		return $this->binary->getData();
 	}
 
 	public function getType(): int {
-		return $this->regex->getType();
+		return $this->binary->getType();
 	}
 
 	public function getVectorType(): MongoDB\BSON\VectorType {
-		return $this->regex->getVectorType();
+		return $this->binary->getVectorType();
 	}
 
 	public function jsonSerialize(): mixed {
-		return $this->regex->jsonSerialize();
+		return ['bin' => $this->bin, 'type' => $this->type];
 	}
 
 	public function toArray(): array {
-		return $this->regex->toArray();
+		return $this->binary->toArray();
 	}
 
 	public function __toString(): string {
-		return $this->regex->__toString();
+		return $this->binary->__toString();
 	}
 }
 
