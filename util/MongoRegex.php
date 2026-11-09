@@ -34,7 +34,7 @@ class MongoRegex implements \JsonSerializable {
 		} else {
 			// MongoRegex expects a string containing delimiters and possibly flags;
 			// MongoDB\BSON\Regex expects the bare pattern and flags as separate arguments.
-			preg_match('/^\/(.*)\/([^/]*)$/', $regex, $matches);
+			preg_match('/^\/(.*)\/([^\/]*)$/', $regex, $matches);
 			$this->_regex = new Regex($matches[1], $matches[2]);
 		}
 	}
