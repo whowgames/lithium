@@ -98,8 +98,12 @@ class GridFSFile {
 	 */
 	public function write($filename = null) {
 		$filename = $filename ?? $this->getFilename();
-		$target = \fopen($filename, 'wb');
 
+		try {
+			$target = \fopen($filename, 'wb');
+		} catch (\ValueError $e) {
+			throw new \RuntimeException("Could not open `{$filename}` for writing.");
+		}
 		if (!$target) {
 			throw new \RuntimeException("Could not open `{$filename}` for writing.");
 		}
