@@ -976,7 +976,7 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$db = $this->_customPrefixDb();
 
 		MockMongoPost::config(array('meta' => array('source' => 'fs.files', 'connection' => 'temp')));
-		MockMongoPost::create(array('_id' => $id), array('exists' => true))->delete();
+		$this->assertIdentical(true, MockMongoPost::create(array('_id' => $id), array('exists' => true))->delete());
 		$this->assertIdentical(null, $db->connection->gridFsPrefix);
 		$this->assertEqual('deleteMany', $db->connection->queries[0]['type']);
 		$this->assertEqual('fs.files', $db->connection->queries[0]['collection']);
@@ -987,7 +987,7 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$db->connection->gridFsPrefix = null;
 
 		MockMongoPost::config(array('meta' => array('source' => 'custom.files', 'connection' => 'temp')));
-		MockMongoPost::create(array('_id' => $id), array('exists' => true))->delete();
+		$this->assertIdentical(true, MockMongoPost::create(array('_id' => $id), array('exists' => true))->delete());
 		$this->assertIdentical('custom', $db->connection->gridFsPrefix);
 		$this->assertFalse(isset($bucket->files[(string) $id]));
 		$this->assertCount(1, $bucket->files);

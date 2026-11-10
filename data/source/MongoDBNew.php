@@ -847,6 +847,8 @@ class MongoDBNew extends \lithium\data\Source {
 					? $self->connection->{$args['source']}->deleteOne($conditions, $options)
 					: $self->connection->{$args['source']}->deleteMany($conditions, $options);
 			}
+			$result = $self->invokeMethod('_ok', array($result));
+
 			if ($result && $query->entity()) {
 				$query->entity()->sync(null, array(), array('dematerialize' => true));
 			}

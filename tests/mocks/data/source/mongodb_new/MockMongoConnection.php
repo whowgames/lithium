@@ -9,6 +9,7 @@
 namespace lithium\tests\mocks\data\source\mongodb_new;
 
 use MongoDB\BSON\ObjectId;
+use MongoDB\DeleteResult;
 
 /**
  * Mock `MongoDB\Database` (and, through `__get()`, `MongoDB\Collection`) for `MongoDBNew`.
@@ -47,11 +48,21 @@ class MockMongoConnection extends \lithium\tests\mocks\data\source\MockMongoConn
 	}
 
 	public function deleteOne($filter, array $options = array()) {
-		return $this->_record(__FUNCTION__, \compact('filter', 'options')) ?? true;
+		return $this->_record(__FUNCTION__, \compact('filter', 'options')) ?? $this->_deleteResult();
 	}
 
 	public function deleteMany($filter, array $options = array()) {
-		return $this->_record(__FUNCTION__, \compact('filter', 'options')) ?? true;
+		return $this->_record(__FUNCTION__, \compact('filter', 'options')) ?? $this->_deleteResult();
+	}
+
+	/**
+	 * Returns a `MongoDB\DeleteResult`, as the real `deleteOne()`/`deleteMany()` do.
+	 */
+	protected function _deleteResult() {
+		return new class() extends DeleteResult {
+			public function __construct() {
+			}
+		};
 	}
 
 	public function find($filter = array(), $options = array()) {
