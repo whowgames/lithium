@@ -27,6 +27,20 @@ class Result extends \lithium\data\source\Result {
 	protected $_cursorStarted = false;
 
 	/**
+	 * The GridFS bucket, when the cursor reads from a GridFS files collection. Each record is
+	 * then returned with its file attached as `file` (see `GridFSFile`), like the legacy
+	 * `MongoDb` source did with `MongoGridFSFile`.
+	 *
+	 * @var \MongoDB\GridFS\Bucket|null
+	 */
+	protected $_bucket = null;
+
+	/**
+	 * Autoconfig.
+	 */
+	protected $_autoConfig = array('resource', 'bucket');
+
+	/**
 	 * Fetches the result from the resource and caches it.
 	 *
 	 * @return boolean Return `true` on success or `false` if it is not valid.
@@ -50,11 +64,9 @@ class Result extends \lithium\data\source\Result {
 		if ($this->_resource->valid()) {
 			$result = \lithium\data\source\MongoDBNew::fromBson($this->_resource->current());
 
-			//TODO: Is there still a way to detect if the result is actually a GridFS file? If so, do we need to change its structure?
-			/*
-			$isFile = ($result instanceof MongoGridFSFile);
-			$result = $isFile ? array('file' => $result) + $result->file : $result;
-			*/
+			if ($this->_bucket && \is_array($result)) {
+				$result = array('file' => new GridFSFile($this->_bucket, $result)) + $result;
+			}
 
 			$this->_key = $this->_iterator;
 			$this->_current = $result;

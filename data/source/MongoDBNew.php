@@ -14,6 +14,7 @@ use MongoRegex;
 use MongoDB\BSON\Javascript;
 use MongoDB\BSON\Regex;
 use MongoDB\Driver\ReadPreference;
+use lithium\data\source\mongodb_new\GridFSFile;
 use lithium\util\Inflector;
 use lithium\core\NetworkException;
 use Exception;
@@ -571,36 +572,86 @@ class MongoDBNew extends \lithium\data\Source {
 		});
 	}
 
+	/**
+	 * Returns the GridFS bucket for the configured `gridPrefix`.
+	 *
+	 * @return \MongoDB\GridFS\Bucket
+	 */
+	protected function _bucket() {
+		return $this->connection->selectGridFSBucket(['bucketName' => $this->_config['gridPrefix']]);
+	}
+
+	/**
+	 * Stores the contents of `$data['file']` in GridFS, replacing the stored file if
+	 * `$data['_id']` is set. `$data['file']` is either an entry of `$_FILES` or the file's
+	 * contents as a string.
+	 *
+	 * All other keys of `$data` are stored as top-level fields of the files collection
+	 * document, as the legacy `MongoGridFS::storeFile()`/`storeBytes()` did (the GridFS spec
+	 * would put them under `metadata`, which existing records and queries don't expect).
+	 *
+	 * @param array $data
+	 * @return \MongoId|null The id of the stored file, or `null` if there was nothing to store.
+	 */
 	protected function _saveFile($data) {
 		$uploadKeys = ['name', 'type', 'tmp_name', 'error', 'size'];
-		$grid = $this->connection->getGridFS($this->_config['gridPrefix']);
-		$file = null;
-		$method = null;
+		$bucket = $this->_bucket();
+		$stream = null;
 
 		switch (true) {
-			case  (is_array($data['file']) && array_keys($data['file']) == $uploadKeys):
+			case $data['file'] instanceof GridFSFile:
+				// An unchanged file loaded by a previous read; there is nothing new to store.
+				return null;
+			case (is_array($data['file']) && array_keys($data['file']) == $uploadKeys):
 				if (!$data['file']['error'] && is_uploaded_file($data['file']['tmp_name'])) {
-					$method = 'storeFile';
-					$file = $data['file']['tmp_name'];
+					$stream = fopen($data['file']['tmp_name'], 'rb');
 					$data['filename'] = $data['file']['name'];
 				}
 			break;
-			case $data['file']:
-				$method = 'storeBytes';
-				$file = $data['file'];
+			case is_string($data['file']) && $data['file'] !== '':
+				$stream = fopen('php://temp', 'w+b');
+				fwrite($stream, $data['file']);
+				rewind($stream);
 			break;
 		}
 
-		if (!$method || !$file) {
-			return;
-		}
-
-		if (isset($data['_id'])) {
-			$data += (array) get_object_vars($grid->get($data['_id']));
-			$grid->deleteOne($data['_id']);
+		if (!$stream) {
+			return null;
 		}
 		unset($data['file']);
-		return $grid->{$method}($file, $data);
+
+		$options = [];
+		$files = $bucket->getFilesCollection();
+
+		if (isset($data['_id'])) {
+			$id = static::toBson($data['_id']);
+			$options['_id'] = $id;
+
+			// Keep the fields of the replaced file that aren't being changed.
+			if ($existing = $files->findOne(['_id' => $id])) {
+				$data += static::fromBson((array) $existing);
+			}
+			try {
+				$bucket->delete($id);
+			} catch (\MongoDB\GridFS\Exception\FileNotFoundException $e) {
+			}
+		}
+
+		// Fields that GridFS maintains itself.
+		$reserved = ['_id', 'length', 'chunkSize', 'uploadDate', 'md5', 'filename'];
+		$filename = (string) ($data['filename'] ?? '');
+		$extra = array_diff_key($data, array_flip($reserved));
+
+		try {
+			$id = $bucket->uploadFromStream($filename, $stream, $options);
+		} finally {
+			fclose($stream);
+		}
+
+		if ($extra) {
+			$files->updateOne(['_id' => $id], ['$set' => static::toBson($extra)]);
+		}
+		return static::fromBson($id);
 	}
 
 	/**
@@ -632,9 +683,11 @@ class MongoDBNew extends \lithium\data\Source {
 				return $model::create($config['data'], $config);
 			}
 			$collection = $self->connection->{$source};
+			$bucket = null;
 
 			if ($source === "{$_config['gridPrefix']}.files") {
-				$collection = $self->connection->getGridFS($_config['gridPrefix']);
+				// Records are read from the files collection; `Result` attaches each file.
+				$bucket = $self->invokeMethod('_bucket');
 			}
 
             $fields = [];
@@ -678,7 +731,7 @@ class MongoDBNew extends \lithium\data\Source {
 				]
 			);
 
-			$result = $self->invokeMethod('_instance', array('result', ['resource' => $result]));
+			$result = $self->invokeMethod('_instance', array('result', ['resource' => $result, 'bucket' => $bucket]));
 			$config = \compact('result', 'query') + array('class' => 'set', 'defaults' => false);
 			return $model::create(array(), $config);
 		});
@@ -729,7 +782,14 @@ class MongoDBNew extends \lithium\data\Source {
 			}
 
 			if ($source === "{$_config['gridPrefix']}.files" && isset($data['update']['file'])) {
-				$args['data']['_id'] = $self->invokeMethod('_saveFile', array($data['update']));
+				// Replace the stored file in place (same `_id`); the remaining fields are then
+				// updated on the files collection document below.
+				$fileData = $data['update'];
+				if (!isset($fileData['_id']) && !\is_array($args['conditions']['_id'] ?? null)) {
+					$fileData['_id'] = $args['conditions']['_id'] ?? null;
+				}
+				$self->invokeMethod('_saveFile', array($fileData));
+				unset($data['update']['file']);
 			}
 			$update = $query->entity() ? $_exp::toCommand($data) : $data;
 
@@ -778,7 +838,7 @@ class MongoDBNew extends \lithium\data\Source {
 			$options = $params['options'];
 			$args = $query->export($self, array('keys' => array('source', 'conditions')));
 			$source = $args['source'];
-			$conditions = $args['conditions'];
+			$conditions = static::toBson($args['conditions'] ?: []);
 
 			if ($source === "{$_config['gridPrefix']}.files") {
 				$result = $self->invokeMethod('_deleteFile', array($conditions));
@@ -794,11 +854,29 @@ class MongoDBNew extends \lithium\data\Source {
 		});
 	}
 
+	/**
+	 * Deletes all GridFS files (files collection documents and their chunks) matching
+	 * `$conditions`.
+	 *
+	 * @param array $conditions
+	 * @param array $options Unused; kept for compatibility with the legacy signature.
+	 * @return boolean
+	 */
 	protected function _deleteFile($conditions, $options = array()) {
-		$defaults = array('w' => 1);
-		$options += $defaults;
-		$prefix = $this->_config['gridPrefix'];
-		return $this->connection->getGridFS($prefix)->remove($conditions, $options);
+		$bucket = $this->_bucket();
+		$files = $bucket->getFilesCollection()->find(
+			static::toBson($conditions ?: []),
+			['projection' => ['_id' => 1]]
+		);
+
+		foreach ($files as $file) {
+			try {
+				$bucket->delete($file['_id']);
+			} catch (\MongoDB\GridFS\Exception\FileNotFoundException $e) {
+				// Deleted concurrently; nothing left to do.
+			}
+		}
+		return true;
 	}
 
 	/**
