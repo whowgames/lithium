@@ -93,6 +93,7 @@ class Schema extends \lithium\core\DynamicObject implements \ArrayAccess {
 		if (\is_array($field)) {
 			return \array_intersect($field, \array_keys($this->_fields)) == $field;
 		}
+		return false;
 	}
 
 	/**
