@@ -20,8 +20,9 @@ use lithium\tests\mocks\data\MockPost;
 use lithium\tests\mocks\data\MockComment;
 use lithium\tests\mocks\core\MockCallable;
 use lithium\tests\mocks\data\source\MockMongoSource;
-use lithium\tests\mocks\data\source\MockMongoConnection;
+use lithium\tests\mocks\data\source\mongodb_new\MockMongoConnection;
 use lithium\tests\mocks\data\source\mongodb_new\MockResult;
+use lithium\data\source\mongodb_new\GridFSFile;
 use lithium\tests\mocks\data\source\MockMongoPost;
 
 class MongoDBNewTest extends \lithium\test\Unit {
@@ -864,86 +865,146 @@ class MongoDBNewTest extends \lithium\test\Unit {
 	}
 
 	public function testGridFsCRUDWithDefaultPrefix() {
-		$source = 'fs.files';
-		$data = array('filename' => 'lithium', 'file' => 'some_datas');
+		$connection = $this->_db->connection;
+		MockMongoPost::config(array('meta' => array('source' => 'fs.files')));
 
-		MockMongoPost::config(array('meta' => array('source' => $source)));
+		$data = array('filename' => 'lithium', 'file' => 'some_datas', 'owner' => 'me');
 		$this->assertTrue(MockMongoPost::create()->save($data));
-		$this->assertIdentical('fs', $this->_db->connection->gridFsPrefix);
-		$this->_db->connection->gridFsPrefix = null;
+		$this->assertIdentical('fs', $connection->gridFsPrefix);
 
-		MockMongoPost::config(array('meta' => array('source' => $source)));
-		$this->_db->connection->results = array(new MockResult(array('data' => $data)));
-		$this->assertNotEmpty(MockMongoPost::find('all'));
-		$this->assertIdentical('fs', $this->_db->connection->gridFsPrefix);
-		$this->_db->connection->gridFsPrefix = null;
+		$bucket = $connection->buckets['fs'];
+		$this->assertCount(1, $bucket->files);
+		$stored = \reset($bucket->files);
+		$id = $stored['doc']['_id'];
+		$this->assertIdentical('some_datas', $stored['bytes']);
+		$this->assertIdentical('lithium', $stored['doc']['filename']);
+		$this->assertIdentical('me', $stored['doc']['owner']);
+		$this->assertEmpty($connection->queries);
+		$connection->gridFsPrefix = null;
 
-		MockMongoPost::create($data + array('_id' => new ObjectId), array('exists' => true))->delete();
-		$this->assertIdentical('fs', $this->_db->connection->gridFsPrefix);
-		$this->_db->connection->gridFsPrefix = null;
+		$connection->results = array(new MockResult(array('data' => array($stored['doc']))));
+		$post = MockMongoPost::find('first');
+		$this->assertIdentical('fs', $connection->gridFsPrefix);
+		if ($this->assertTrue($post->file instanceof GridFSFile)) {
+			$this->assertIdentical('some_datas', $post->file->getBytes());
+			$this->assertIdentical('lithium', $post->file->getFilename());
+			$this->assertIdentical(10, $post->file->getSize());
+		}
+		$this->assertIdentical('me', $post->owner);
+		$connection->gridFsPrefix = null;
 
+		$this->assertTrue(MockMongoPost::create(array('_id' => $id), array('exists' => true))->delete());
+		$this->assertIdentical('fs', $connection->gridFsPrefix);
+		$this->assertEmpty($bucket->files);
+		$this->assertEqual(array('method' => 'delete', 'id' => $id), \end($bucket->calls));
+		$this->assertCount(1, $connection->queries);
+		$this->assertEqual('find', $connection->queries[0]['type']);
+	}
+
+	public function testGridFsUpdateReplacesFile() {
+		$connection = $this->_db->connection;
+		MockMongoPost::config(array('meta' => array('source' => 'fs.files')));
+
+		$id = new ObjectId();
+		$bucket = $connection->selectGridFSBucket(array('bucketName' => 'fs'));
+		$bucket->seed($id, 'old', array('filename' => 'lithium', 'owner' => 'me'));
+		$connection->gridFsPrefix = null;
+
+		$post = MockMongoPost::create(
+			array('_id' => $id, 'filename' => 'lithium', 'owner' => 'me'),
+			array('exists' => true)
+		);
+		$post->file = 'new contents';
+		$this->assertTrue($post->save());
+		$this->assertIdentical('fs', $connection->gridFsPrefix);
+
+		$this->assertEqual(array((string) $id), \array_keys($bucket->files));
+		$this->assertIdentical('new contents', $bucket->files[(string) $id]['bytes']);
+		$this->assertIdentical('lithium', $bucket->files[(string) $id]['doc']['filename']);
+		$this->assertIdentical('me', $bucket->files[(string) $id]['doc']['owner']);
+
+		$methods = \array_column($bucket->calls, 'method');
+		$this->assertEqual(array('delete', 'uploadFromStream'), $methods);
+		$this->assertEqual($id, $bucket->calls[1]['options']['_id']);
 	}
 
 	public function testGridFsCreateWithCustomPrefix() {
 		$data = array('filename' => 'lithium', 'file' => 'some_datas');
+		$db = $this->_customPrefixDb();
 
-		$db = new MongoDBNew($this->_testConfig + array('gridPrefix' => 'custom'));
-		$db->server = new MockMongoConnection();
-		$db->connection = new MockMongoConnection();
-		//$db->server->connected = true;
-		Connections::add('temp', array('object' => $db));
 		MockMongoPost::config(array('meta' => array('source' => 'fs.files', 'connection' => 'temp')));
-
-		MockMongoPost::config(array('meta' => array('source' => 'fs.files')));
-		$this->assertFalse(MockMongoPost::create()->save($data));
+		$this->assertTrue(MockMongoPost::create()->save($data));
 		$this->assertIdentical(null, $db->connection->gridFsPrefix);
+		$this->assertEqual('insertOne', $db->connection->queries[0]['type']);
+		$this->assertEqual('fs.files', $db->connection->queries[0]['collection']);
 
-		MockMongoPost::config(array('meta' => array('source' => 'custom.files')));
+		MockMongoPost::config(array('meta' => array('source' => 'custom.files', 'connection' => 'temp')));
 		$this->assertTrue(MockMongoPost::create()->save($data));
 		$this->assertIdentical('custom', $db->connection->gridFsPrefix);
+		$this->assertCount(1, $db->connection->buckets['custom']->files);
+		$this->assertCount(1, $db->connection->queries);
 		Connections::remove('temp');
 	}
 
 	public function testGridFsReadWithCustomPrefix() {
-		$data = array('filename' => 'lithium', 'file' => 'some_datas');
-		$result = new MockResult(array('data' => array(
-			array('filename' => 'lithium', 'file' => 'some_datas')
-		)));
+		$id = new ObjectId();
+		$data = array('_id' => $id, 'filename' => 'lithium', 'file' => 'some_datas');
+		$db = $this->_customPrefixDb();
 
-		$db = new MongoDBNew($this->_testConfig + array('gridPrefix' => 'custom'));
-		$db->server = new MockMongoConnection();
-		$db->connection = new MockMongoConnection();
-		//$db->server->connected = true;
-		Connections::add('temp', array('object' => $db));
 		MockMongoPost::config(array('meta' => array('source' => 'fs.files', 'connection' => 'temp')));
-		$db->connection->results = array($result);
-		$this->assertNotEmpty(MockMongoPost::find('all'));
+		$db->connection->results = array(new MockResult(array('data' => array($data))));
+		$post = MockMongoPost::find('first');
 		$this->assertIdentical(null, $db->connection->gridFsPrefix);
+		$this->assertIdentical('some_datas', $post->file);
 
-		MockMongoPost::config(array('meta' => array('source' => 'custom.files')));
-		$db->connection->results = array($result);
-		$this->assertNotEmpty(MockMongoPost::find('all'));
+		$bucket = $db->connection->selectGridFSBucket(array('bucketName' => 'custom'));
+		$bucket->seed($id, 'from gridfs', array('filename' => 'lithium'));
+		$db->connection->gridFsPrefix = null;
+
+		MockMongoPost::config(array('meta' => array('source' => 'custom.files', 'connection' => 'temp')));
+		$db->connection->results = array(new MockResult(array('data' => array($bucket->files[(string) $id]['doc']))));
+		$post = MockMongoPost::find('first');
 		$this->assertIdentical('custom', $db->connection->gridFsPrefix);
+		if ($this->assertTrue($post->file instanceof GridFSFile)) {
+			$this->assertIdentical('from gridfs', $post->file->getBytes());
+		}
 		Connections::remove('temp');
 	}
 
 	public function testGridFsDeleteWithCustomPrefix() {
-		$data = array('_id' => new ObjectId);
+		$id = new ObjectId();
+		$db = $this->_customPrefixDb();
 
+		MockMongoPost::config(array('meta' => array('source' => 'fs.files', 'connection' => 'temp')));
+		MockMongoPost::create(array('_id' => $id), array('exists' => true))->delete();
+		$this->assertIdentical(null, $db->connection->gridFsPrefix);
+		$this->assertEqual('deleteMany', $db->connection->queries[0]['type']);
+		$this->assertEqual('fs.files', $db->connection->queries[0]['collection']);
+
+		$bucket = $db->connection->selectGridFSBucket(array('bucketName' => 'custom'));
+		$bucket->seed($id, 'some_datas');
+		$bucket->seed(new ObjectId(), 'other');
+		$db->connection->gridFsPrefix = null;
+
+		MockMongoPost::config(array('meta' => array('source' => 'custom.files', 'connection' => 'temp')));
+		MockMongoPost::create(array('_id' => $id), array('exists' => true))->delete();
+		$this->assertIdentical('custom', $db->connection->gridFsPrefix);
+		$this->assertFalse(isset($bucket->files[(string) $id]));
+		$this->assertCount(1, $bucket->files);
+		$this->assertCount(1, $db->connection->queries);
+		Connections::remove('temp');
+	}
+
+	/**
+	 * Returns a `MongoDBNew` source with `gridPrefix` `custom` and mock connections,
+	 * registered as connection `temp`.
+	 */
+	protected function _customPrefixDb() {
 		$db = new MongoDBNew($this->_testConfig + array('gridPrefix' => 'custom'));
 		$db->server = new MockMongoConnection();
 		$db->connection = new MockMongoConnection();
-		//$db->server->connected = true;
 		Connections::add('temp', array('object' => $db));
-		MockMongoPost::config(array('meta' => array('source' => 'fs.files', 'connection' => 'temp')));
-
-		MockMongoPost::create($data, array('exists' => true))->delete();
-		$this->assertIdentical(null, $db->connection->gridFsPrefix);
-
-		MockMongoPost::config(array('meta' => array('source' => 'custom.files')));
-		MockMongoPost::create($data, array('exists' => true))->delete();
-		$this->assertIdentical('custom', $db->connection->gridFsPrefix);
-		Connections::remove('temp');
+		return $db;
 	}
 
 	public function testRespondsToParentCall() {
