@@ -92,8 +92,6 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$this->expectException('Could not connect to the database.');
 		$this->assertFalse($db->connect());
 		$this->assertTrue($db->disconnect());
-
-		$this->assertTrue(false);
 	}
 
 	public function testGoodConnectionBadDatabase() {
@@ -101,39 +99,29 @@ class MongoDBNewTest extends \lithium\test\Unit {
 
 		$this->expectException('Could not connect to the database.');
 		$db->connect();
-
-		$this->assertTrue(false);
 	}
 
 	public function testSources() {
 		$this->_db->connection->results = array(array());
 		$this->assertEqual(array(), $this->_db->sources());
-
-		$this->assertTrue(false);
 	}
 
 	public function testDescribe() {
 		$result = $this->_db->describe('test')->fields();
 		$expected = array('_id' => array('type' => 'id'));
 		$this->assertEqual($expected, $result);
-
-		$this->assertTrue(false);
 	}
 
 	public function testName() {
 		$result = $this->_db->name('{(\'Li\':"∆")}');
 		$expected = '{(\'Li\':"∆")}';
 		$this->assertEqual($expected, $result);
-
-		$this->assertTrue(false);
 	}
 
 	public function testSchema() {
 		$result = $this->_db->schema($this->_query);
 		$expected = array();
 		$this->assertEqual($expected, $result);
-
-		$this->assertTrue(false);
 	}
 
 	public function testCreateSuccess() {
@@ -148,8 +136,6 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$this->assertEqual('posts', $query['collection']);
 		$this->assertEqual(array('title', '_id'), \array_keys($query['data']));
 		$this->assertInstanceOf('ObjectId', $query['data']['_id']);
-
-		$this->assertTrue(false);
 	}
 
 	public function testConditions() {
@@ -209,8 +195,6 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$conditions = array('key' => array('or' => array(1, 2)));
 		$result = $this->_db->conditions($conditions, null);
 		$this->assertEqual(array('key' => array('$or' => array(1, 2))), $result);
-
-		$this->assertTrue(false);
 	}
 
 	public function testMongoConditionalOperators() {
@@ -258,8 +242,6 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$result = $this->_db->conditions($conditions, null);
 		$expected = array('key' => new Regex('/regex/i'));
 		$this->assertEqual($expected, $result);
-
-		$this->assertTrue(false);
 	}
 
 	public function testReadNoConditions() {
@@ -281,8 +263,6 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$this->assertEqual(1, $result->count());
 		$this->assertEqual('Test Post', $result->first()->title);
 		$this->_db->connection = $connection;
-
-		$this->assertTrue(false);
 	}
 
 	public function testReadWithConditions() {
@@ -386,8 +366,6 @@ class MongoDBNewTest extends \lithium\test\Unit {
 			'conditions' => array('_id' => $original['_id'])
 		);
 		$this->assertEqual($expected, \array_pop($this->_db->connection->queries));
-
-		$this->assertTrue(false);
 	}
 
 	public function testDelete() {
@@ -424,8 +402,6 @@ class MongoDBNewTest extends \lithium\test\Unit {
 			'options' => array('justOne' => false, 'safe' => false, 'fsync' => false)
 		);
 		$this->assertEqual($expected, \array_pop($this->_db->connection->queries));
-
-		$this->assertTrue(false);
 	}
 
 	public function testCreate() {
@@ -436,15 +412,11 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$expected = $data;
 		$result = $result->to('array');
 		$this->assertEqual($expected, $result);
-
-		$this->assertTrue(false);
 	}
 
 	public function testCalculation() {
 		$this->_db->connection->results = array(new MockResult(array('data' => array(5))));
 		$this->assertIdentical(5, $this->_db->calculation('count', $this->_query));
-
-		$this->assertTrue(false);
 	}
 
 	public function testEnabled() {
@@ -452,14 +424,10 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$this->assertTrue(MongoDBNew::enabled('arrays'));
 		$this->assertTrue(MongoDBNew::enabled('booleans'));
 		$this->assertTrue(MongoDBNew::enabled('relationships'));
-
-		$this->assertTrue(false);
 	}
 
 	public function testArbitraryMethodCalls() {
 		$this->assertInternalType('array', $this->_db->listDBs());
-
-		$this->assertTrue(false);
 	}
 
 	public function testDocumentSorting() {
@@ -541,8 +509,6 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$this->assertEqual($expected, \array_pop($this->_db->connection->queries));
 		$result = $documents->result()->resource()->query['sort'];
 		$this->assertEqual(array('position' => -1), $result);
-
-		$this->assertTrue(false);
 	}
 
 	public function testMongoIdPreservation() {
@@ -561,8 +527,6 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$result = \array_pop($this->_db->connection->queries);
 		$this->assertEqual(array('_id' => $post->_id), $result['conditions']);
 		$this->assertEqual(array('$set' => array('title' => 'An updated post')), $result['update']);
-
-		$this->assertTrue(false);
 	}
 
 	public function testRelationshipGeneration() {
@@ -605,48 +569,36 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$result = $this->_db->relationship($from, 'hasMany', 'Permissions', \compact('to'));
 		$this->assertEqual('key', $result->link());
 		$this->assertEqual(array('_id' => 'group'), $result->key());
-
-		$this->assertTrue(false);
 	}
 
 	public function testCreateNoConnectionException() {
 		$db = new MongoDBNew(array('host' => '__invalid__', 'autoConnect' => false));
 		$this->expectException('Could not connect to the database.');
 		$result = $db->create(null);
-
-		$this->assertTrue(false);
 	}
 
 	public function testReadNoConnectionException() {
 		$db = new MongoDBNew(array('host' => '__invalid__', 'autoConnect' => false));
 		$this->expectException('Could not connect to the database.');
 		$result = $db->read(null);
-
-		$this->assertTrue(false);
 	}
 
 	public function testUpdateNoConnectionException() {
 		$db = new MongoDBNew(array('host' => '__invalid__', 'autoConnect' => false));
 		$this->expectException('Could not connect to the database.');
 		$result = $db->update(null);
-
-		$this->assertTrue(false);
 	}
 
 	public function testDeleteNoConnectionException() {
 		$db = new MongoDBNew(array('host' => '__invalid__', 'autoConnect' => false));
 		$this->expectException('Could not connect to the database.');
 		$result = $db->delete(null);
-
-		$this->assertTrue(false);
 	}
 
 	public function testSourcesNoConnectionException() {
 		$db = new MongoDBNew(array('host' => null, 'autoConnect' => false));
 		$this->expectException('Could not connect to the database.');
 		$result = $db->sources(null);
-
-		$this->assertTrue(false);
 	}
 
 	public function testAtomicUpdate() {
@@ -704,8 +656,6 @@ class MongoDBNewTest extends \lithium\test\Unit {
 			)
 		);
 		$this->assertEqual($expected, $result);
-
-		$this->assertTrue(false);
 	}
 
 	/**
@@ -721,8 +671,6 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$result = \array_shift($this->_db->connection->queries);
 		$expected = array('$set' => array('foo' => 'bar'));
 		$this->assertEqual($expected, $result['update']);
-
-		$this->assertTrue(false);
 	}
 
 	public function testCastingConditionsValues() {
@@ -773,16 +721,12 @@ class MongoDBNewTest extends \lithium\test\Unit {
 			$this->assertInstanceOf('ObjectId', $result['$or'][$i][$key]);
 			$this->assertEqual($conditions['$or'][$i][$key], (string) $result['$or'][$i][$key]);
 		}
-
-		$this->assertTrue(false);
 	}
 
 	public function testMultiOperationConditions() {
 		$conditions = array('loc' => array('$near' => array(50, 50), '$maxDistance' => 5));
 		$result = $this->_db->conditions($conditions, $this->_query);
 		$this->assertEqual($conditions, $result);
-
-		$this->assertTrue(false);
 	}
 
 	public function testCreateWithEmbeddedObjects() {
