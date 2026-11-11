@@ -6,17 +6,23 @@
 use MongoDB\BSON\Javascript;
 
 /**
- * Wrapper for new MongoDB\BSON\Javascript to make it behave like the legacy MongoCode.
+ * Replacement for the legacy `MongoCode`, stored as `MongoDB\BSON\Javascript`.
+ *
+ * Like the legacy class, the code is kept in a private property, so `get_object_vars()`,
+ * `(array)` casts and `json_encode()` give an empty array/object.
  */
-class MongoCode implements \JsonSerializable {
-	public ?Javascript $js = null;
+class MongoCode {
+	private Javascript $js;
 
 	public function __construct(string|Javascript $code, array|object|null $scope = null) {
-		if ($code instanceof Javascript) {
-			$this->js = $code;
-		} else {
-			$this->js = new Javascript($code, is_null($scope) ? array() : $scope);
-		}
+		$this->js = $code instanceof Javascript ? $code : new Javascript($code, $scope ?? []);
+	}
+
+	/**
+	 * Returns the value as `MongoDB\BSON\Javascript`, for passing to the driver.
+	 */
+	public function toBson(): Javascript {
+		return $this->js;
 	}
 
 	public function getCode(): string {
@@ -27,13 +33,8 @@ class MongoCode implements \JsonSerializable {
 		return $this->js->getScope();
 	}
 
-	public function jsonSerialize(): mixed {
-		// MongoCode encodes as an empty object in the legacy driver. 🤷
-		return new \stdClass();
-	}
-
 	public function __toString(): string {
-		return $this->js->__toString();
+		return $this->js->getCode();
 	}
 }
 

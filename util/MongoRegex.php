@@ -6,53 +6,50 @@
 use MongoDB\BSON\Regex;
 
 /**
- * Wrapper for new MongoDB\BSON\Regex to make it behave like the legacy MongoRegex.
+ * Replacement for the legacy `MongoRegex`, stored as `MongoDB\BSON\Regex`.
+ *
+ * Like the legacy class, `$regex` (the bare pattern) and `$flags` are real public properties,
+ * so they show up in `get_object_vars()`, `(array)` casts, `foreach` and `json_encode()`.
  */
-class MongoRegex implements \JsonSerializable {
-	public ?Regex $_regex = null;
+class MongoRegex {
+	public $regex;
 
-	public function __get($name) {
-		return match ($name) {
-			'regex' => $this->_regex->getPattern(),
-			'flags' => $this->_regex->getFlags(),
-			default => null,
-		};
-	}
+	public $flags;
 
-	public function __set($name, $value) {
-		match ($name) {
-			'regex' => $this->_regex = new Regex($value, $this->flags),
-			'flags' => $this->_regex = new Regex($this->regex, $value),
-		};
-	}
-
-	public function __isset($name) { return in_array($name, ['regex', 'flags'], true); }
-
+	/**
+	 * @param string|Regex $regex A delimited pattern with optional flags (`/^foo/i`), or a
+	 *        `MongoDB\BSON\Regex`.
+	 */
 	public function __construct(string|Regex $regex) {
 		if ($regex instanceof Regex) {
-			$this->_regex = $regex;
-		} else {
-			// MongoRegex expects a string containing delimiters and possibly flags;
-			// MongoDB\BSON\Regex expects the bare pattern and flags as separate arguments.
-			preg_match('/^\/(.*)\/([^\/]*)$/', $regex, $matches);
-			$this->_regex = new Regex($matches[1], $matches[2]);
+			$this->regex = $regex->getPattern();
+			$this->flags = $regex->getFlags();
+			return;
 		}
+		if (!\preg_match('/^\/(.*)\/([^\/]*)$/s', $regex, $matches)) {
+			throw new \InvalidArgumentException("Invalid regex `{$regex}`: expected `/pattern/flags`.");
+		}
+		$this->regex = $matches[1];
+		$this->flags = $matches[2];
+	}
+
+	/**
+	 * Returns the value as `MongoDB\BSON\Regex`, for passing to the driver.
+	 */
+	public function toBson(): Regex {
+		return new Regex($this->regex, $this->flags);
 	}
 
 	public function getFlags(): string {
-		return $this->_regex->getFlags();
+		return $this->flags;
 	}
 
 	public function getPattern(): string {
-		return $this->_regex->getPattern();
-	}
-
-	public function jsonSerialize(): mixed {
-		return ['regex' => $this->regex, 'flags' => $this->flags];
+		return $this->regex;
 	}
 
 	public function __toString(): string {
-		return $this->_regex->__toString();
+		return "/{$this->regex}/{$this->flags}";
 	}
 }
 

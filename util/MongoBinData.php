@@ -6,66 +6,59 @@
 use MongoDB\BSON\Binary;
 
 /**
- * Wrapper for new MongoDB\BSON\Binary to make it behave like the legacy MongoBinData.
+ * Replacement for the legacy `MongoBinData`, stored as `MongoDB\BSON\Binary`.
+ *
+ * Like the legacy class, `$bin` (the raw bytes) and `$type` are real public properties, so
+ * they show up in `get_object_vars()`, `(array)` casts and `foreach`. As in the legacy
+ * class, `json_encode()` fails when the bytes aren't valid UTF-8.
  */
-class MongoBinData implements \JsonSerializable {
-	const GENERIC = 0 ;
-	const FUNC = 1 ;
-	const BYTE_ARRAY = 2 ;
-	const UUID = 3 ;
-	const UUID_RFC4122 = 4 ;
-	const MD5 = 5 ;
-	const CUSTOM = 128 ;
+class MongoBinData {
+	const GENERIC = 0;
+	const FUNC = 1;
+	const BYTE_ARRAY = 2;
+	const UUID = 3;
+	const UUID_RFC4122 = 4;
+	const MD5 = 5;
+	const CUSTOM = 128;
 
-	public ?Binary $binary = null;
+	public $bin;
 
-	public function __get($name) {
-		return match ($name) {
-			'bin' => $this->binary->getData(),
-			'type' => $this->binary->getType(),
-			default => null,
-		};
-	}
-
-	public function __set($name, $value) {
-		match ($name) {
-			'bin' => $this->binary = new Binary($value, $this->getType()),
-			'type' => $this->binary = new Binary($this->getData(), $value),
-		};
-	}
-
-	public function __isset($name) { return in_array($name, ['bin', 'type'], true); }
+	public $type;
 
 	public function __construct(string|Binary $data, int $type = MongoBinData::BYTE_ARRAY) {
 		if ($data instanceof Binary) {
-			$this->binary = $data;
-		} else {
-			$this->binary = new Binary($data, $type);
+			$type = $data->getType();
+			$data = $data->getData();
 		}
+		$this->bin = $data;
+		$this->type = $type;
+	}
+
+	/**
+	 * Returns the value as `MongoDB\BSON\Binary`, for passing to the driver.
+	 */
+	public function toBson(): Binary {
+		return new Binary($this->bin, $this->type);
 	}
 
 	public function getData(): string {
-		return $this->binary->getData();
+		return $this->bin;
 	}
 
 	public function getType(): int {
-		return $this->binary->getType();
+		return $this->type;
 	}
 
 	public function getVectorType(): MongoDB\BSON\VectorType {
-		return $this->binary->getVectorType();
-	}
-
-	public function jsonSerialize(): mixed {
-		return ['bin' => $this->bin, 'type' => $this->type];
+		return $this->toBson()->getVectorType();
 	}
 
 	public function toArray(): array {
-		return $this->binary->toArray();
+		return $this->toBson()->toArray();
 	}
 
 	public function __toString(): string {
-		return $this->binary->__toString();
+		return '<Mongo Binary Data>';
 	}
 }
 

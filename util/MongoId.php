@@ -6,67 +6,64 @@
 use MongoDB\BSON\ObjectId;
 
 /**
- * Wrapper for new MongoDB\BSON\ObjectId to make it behave like the legacy MongoId.
+ * Replacement for the legacy `MongoId`, stored as `MongoDB\BSON\ObjectId`.
+ *
+ * Like the legacy class, the id is kept in a private property, so `get_object_vars()` and
+ * `(array)` casts give an empty array, and the hex string is read through the magic
+ * `$id` property (`$mongoId->{'$id'}`); `id` is accepted as an alias.
  */
 class MongoId implements \JsonSerializable {
-	public ?ObjectId $oid = null;
+	private ObjectId $objectId;
+
+	public function __construct(string|MongoId|ObjectId|null $id = null) {
+		if ($id instanceof ObjectId) {
+			$this->objectId = $id;
+		} elseif ($id instanceof MongoId) {
+			$this->objectId = $id->toBson();
+		} else {
+			$this->objectId = new ObjectId($id);
+		}
+	}
 
 	public function __get($name) {
 		return match ($name) {
-			'id' => $this->oid->__toString(),
+			'$id', 'id' => (string) $this->objectId,
 			default => null,
 		};
 	}
 
 	public function __set($name, $value) {
 		match ($name) {
-			'id' => $this->oid = new ObjectId($value),
+			'$id', 'id' => $this->objectId = new ObjectId($value),
 		};
 	}
 
-	public function __isset($name) { return in_array($name, ['id'], true); }
+	public function __isset($name) {
+		return \in_array($name, ['$id', 'id'], true);
+	}
 
-	public function __construct(string|MongoId|ObjectId|null $id = null) {
-		if ($id instanceof ObjectId) {
-			$this->oid = $id;
-		} elseif ($id instanceof MongoId) {
-			$this->oid = $id->oid;
-		} else {
-			$this->oid = new ObjectId($id);
-		}
+	/**
+	 * Returns the value as `MongoDB\BSON\ObjectId`, for passing to the driver.
+	 */
+	public function toBson(): ObjectId {
+		return $this->objectId;
 	}
 
 	public static function getHostname(): string {
-		return gethostname();
+		return \gethostname();
 	}
 
 	public function getTimestamp(): int {
-		return $this->oid->getTimestamp();
+		return $this->objectId->getTimestamp();
 	}
 
 	public function jsonSerialize(): mixed {
-		return ['$id' => (string) $this->oid];
+		return ['$id' => (string) $this->objectId];
 	}
 
 	public function __toString(): string {
-		return $this->oid->__toString();
+		return (string) $this->objectId;
 	}
-
-	/*
-	 * Unused by our code:
-	 *
-	public function getInc(): int {
-	}
-
-	public function getPID(): int {
-	}
-
-	public static function isValid(mixed $value): bool {
-	}
-
-	public static function __set_state(array $props): MongoId {
-	}
-	 */
 }
 
 ?>

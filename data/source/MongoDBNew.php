@@ -939,15 +939,11 @@ class MongoDBNew extends \lithium\data\Source {
 		}
 		switch (true) {
 		case $value instanceof \MongoId:
-			return $value->oid;
 		case $value instanceof \MongoDate:
-			return $value->dt;
 		case $value instanceof \MongoRegex:
-			return $value->_regex;
 		case $value instanceof \MongoCode:
-			return $value->js;
 		case $value instanceof \MongoBinData:
-			return $value->binary;
+			return $value->toBson();
 		}
 		return $value;
 	}
