@@ -9,12 +9,22 @@ use lithium\data\Connections;
 /**
  * Setup test database
  */
-Connections::add('test', array(
-	'test' => array(
-		'type' => 'MongoDb',
-		'host' => 'localhost',
-		'database' => 'lithium_test'
-	)
-));
+if (PHP_VERSION_ID < 80000) {
+	Connections::add('test', array(
+		'test' => array(
+			'type' => 'MongoDb',
+			'host' => 'localhost',
+			'database' => 'lithium_test'
+		)
+	));
+} else {
+	Connections::add('test', array(
+		'test' => array(
+			'type' => 'MongoDBNew',
+			'host' => 'mongo',
+			'database' => 'lithium_test'
+		)
+	));
+}
 
 ?>

@@ -12,6 +12,8 @@ use lithium\storage\cache\strategy\Json;
 
 class JsonTest extends \lithium\test\Unit {
 
+	public $Json = null;
+
 	public function setUp() {
 		$this->Json = new Json();
 	}

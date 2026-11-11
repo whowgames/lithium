@@ -50,7 +50,7 @@ class Docblock extends \lithium\core\StaticObject {
 		if (\strpos($description, "\n\n")) {
 			list($description, $text) = \explode("\n\n", $description, 2);
 		}
-		$text = \trim($text);
+		$text = isset($text) ? \trim($text) : '';
 		$description = \trim($description);
 		return \compact('description', 'text', 'tags');
 	}

@@ -103,7 +103,11 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 
 		$this->_handlers += array(
 			'MongoId' => function($value) { return (string) $value; },
-			'MongoDate' => function($value) { return $value->sec; }
+			'MongoDate' => function($value) { return $value->sec; },
+			'MongoDB\BSON\ObjectId' => function($value) { return (string) $value; },
+			'MongoDB\BSON\UTCDateTime' => function($value) {
+				return $value->toDateTime()->getTimestamp();
+			}
 		);
 
 		$this->set($data, array('init' => true));
@@ -118,7 +122,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 * @return mixed Returns the value of the field specified in `$name`, and wraps complex data
 	 *         types in sub-`Document` objects.
 	 */
-	public function &__get($name) {
+	public function &__get($name): mixed {
 		if (\strpos($name, '.')) {
 			return $this->_getNested($name);
 		}
@@ -176,20 +180,19 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 *                Otherwise, only syncs the current object. Defaults to `true`.
 	 * @return void
 	 */
-	public function sync($id = null, array $data = array(), array $options = array()) {
+	public function sync($id = null, array $data = array(), array $options = array()): void {
 		$defaults = array('recursive' => true);
 		$options += $defaults;
 
-		if (!$options['recursive']) {
-			return parent::sync($id, $data, $options);
-		}
-
-		foreach ($this->_updated as $key => $val) {
-			if (\is_object($val) && \method_exists($val, 'sync')) {
-				$nested = isset($data[$key]) ? $data[$key] : array();
-				$this->_updated[$key]->sync(null, $nested, $options);
+		if ($options['recursive']) {
+			foreach ($this->_updated as $key => $val) {
+				if (\is_object($val) && \method_exists($val, 'sync')) {
+					$nested = isset($data[$key]) ? $data[$key] : array();
+					$this->_updated[$key]->sync(null, $nested, $options);
+				}
 			}
 		}
+
 		parent::sync($id, $data, $options);
 	}
 
@@ -235,7 +238,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 * @param $value The value to write, i.e. `'Lorem Ipsum'`.
 	 * @return void
 	 */
-	public function __set($name, $value = null) {
+	public function __set($name, $value = null): void {
 		$this->set(array($name => $value));
 	}
 
@@ -273,7 +276,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 * @param $name The field name, as specified with an object property.
 	 * @return boolean True if the field specified in `$name` exists, false otherwise.
 	 */
-	public function __isset($name) {
+	public function __isset($name): bool {
 		return isset($this->_updated[$name]);
 	}
 
@@ -289,7 +292,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 * @param string $name The name of the field to remove.
 	 * @return void
 	 */
-	public function __unset($name) {
+	public function __unset($name): void {
 		$parts = \explode('.', $name, 2);
 		if (isset($parts[1])) {
 			unset($this->{$parts[0]}[$parts[1]]);
@@ -311,7 +314,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 * @param array $options
 	 * @return void
 	 */
-	public function set(array $data, array $options = array()) {
+	public function set(array $data, array $options = array()): void {
 		$defaults = array('init' => false);
 		$options += $defaults;
 
@@ -346,7 +349,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 *              or the name of a field in an individual document.
 	 * @return mixed Returns either a sub-object in the document, or a scalar field value.
 	 */
-	public function offsetGet($offset) {
+	public function offsetGet($offset): mixed {
 		return $this->__get($offset);
 	}
 
@@ -358,8 +361,8 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 * @param mixed $value The value to assign to the field.
 	 * @return void
 	 */
-	public function offsetSet($offset, $value) {
-		return $this->set(array($offset => $value));
+	public function offsetSet($offset, $value): void {
+		$this->set(array($offset => $value));
 	}
 
 	/**
@@ -369,7 +372,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 *              individual document.
 	 * @return boolean Returns `true` if `$offset` is a field in the document, otherwise `false`.
 	 */
-	public function offsetExists($offset) {
+	public function offsetExists($offset): bool {
 		return $this->__isset($offset);
 	}
 
@@ -379,8 +382,8 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 * @param string $key The name of a field in an individual document.
 	 * @return void
 	 */
-	public function offsetUnset($key) {
-		return $this->__unset($key);
+	public function offsetUnset($key): void {
+		$this->__unset($key);
 	}
 
 	/**
@@ -388,7 +391,8 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 *
 	 * @return mixed The current item after rewinding.
 	 */
-	public function rewind() {
+	#[\ReturnTypeWillChange]
+	public function rewind(): mixed {
 		\reset($this->_data);
 		\reset($this->_updated);
 		$this->_valid = (\count($this->_updated) > 0);
@@ -401,16 +405,16 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 *
 	 * @return boolean
 	 */
-	public function valid() {
+	public function valid(): bool {
 		return $this->_valid;
 	}
 
-	public function current() {
+	public function current(): mixed {
 		$current = \current($this->_data);
 		return isset($this->_removed[\key($this->_data)]) ? null : $current;
 	}
 
-	public function key() {
+	public function key(): mixed {
 		$key = \key($this->_data);
 		return isset($this->_removed[$key]) ? false : $key;
 	}
@@ -422,7 +426,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 * @param array $options
 	 * @return mixed
 	 */
-	public function to($format, array $options = array()) {
+	public function to($format, array $options = array()): mixed {
 		$options['internal'] = false;
 		return parent::to($format, $options);
 	}
@@ -431,19 +435,16 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 	 * Returns the next `Document` in the set, and advances the object's internal pointer. If the
 	 * end of the set is reached, a new document will be fetched from the data source connection
 	 * handle (`$_handle`). If no more records can be fetched, returns `null`.
-	 *
-	 * @return mixed Returns the next record in the set, or `null`, if no more records are
-	 *         available.
 	 */
-	public function next() {
+	#[\ReturnTypeWillChange]
+	public function next(): mixed {
 		$prev = \key($this->_data);
 		$this->_valid = (\next($this->_data) !== false);
 		$cur = \key($this->_data);
 
 		if (isset($this->_removed[$cur])) {
 			return $this->next();
-		}
-		if (!$this->_valid && $cur !== $prev && $cur !== null) {
+		} elseif (!$this->_valid && $cur !== $prev && $cur !== null) {
 			$this->_valid = true;
 		}
 		return $this->_valid ? $this->__get(\key($this->_data)) : null;
@@ -475,7 +476,7 @@ class Document extends \lithium\data\Entity implements \Iterator, \ArrayAccess, 
 		return $this->_updated[$field] += $value;
     }
 
-    public function count()
+    public function count(): int
     {
         return \count($this->_data);
     }

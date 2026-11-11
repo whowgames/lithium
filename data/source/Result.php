@@ -72,7 +72,7 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	 *
 	 * @return boolean `true` if valid, `false` otherwise.
 	 */
-	public function valid() {
+	public function valid(): bool {
 		if (!$this->_init) {
 			$this->_valid = $this->_fetch();
 		}
@@ -82,7 +82,7 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	/**
 	 * Rewinds the result set to the first position.
 	 */
-	public function rewind() {
+	public function rewind(): void {
 		$this->_iterator = 0;
 		$this->_started = false;
 		$this->_key = null;
@@ -95,7 +95,7 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	 *
 	 * @return array The current result (or `null` if there is none).
 	 */
-	public function current() {
+	public function current(): mixed {
 		if (!$this->_init) {
 			$this->_fetch();
 		}
@@ -108,7 +108,7 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	 *
 	 * @return integer The current iterator position.
 	 */
-	public function key() {
+	public function key(): mixed {
 		if (!$this->_init) {
 			$this->_fetch();
 		}
@@ -137,14 +137,14 @@ abstract class Result extends \lithium\core\DynamicObject implements \Iterator {
 	 *
 	 * @return mixed The next result (or `false` if there is none).
 	 */
-	public function next() {
-		if ($this->_started === false) {
-			return $this->current();
-		}
-		$this->_valid = $this->_fetch();
-		if (!$this->_valid) {
-			$this->_key = null;
-			$this->_current = false;
+	#[\ReturnTypeWillChange]
+	public function next(): mixed {
+		if ($this->_started !== false) {
+			$this->_valid = $this->_fetch();
+			if (!$this->_valid) {
+				$this->_key = null;
+				$this->_current = false;
+			}
 		}
 		return $this->current();
 	}

@@ -14,6 +14,8 @@ class MessageTest extends \lithium\test\Unit {
 
 	public $request = null;
 
+	public $message = null;
+
 	public function setUp() {
 		$this->message = new Message();
 	}

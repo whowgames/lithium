@@ -96,6 +96,13 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	protected $_data = array();
 
 	/**
+	 * Whether the collection has been closed.
+	 *
+	 * @var bool
+	 */
+	protected $_closed = false;
+
+	/**
 	 * Allows a collection's items to be automatically assigned from class construction options.
 	 *
 	 * @var array
@@ -394,7 +401,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @param string $offset An offset to check for.
 	 * @return boolean `true` if offset exists, `false` otherwise.
 	 */
-	public function offsetExists($offset) {
+	public function offsetExists($offset): bool {
 		return \array_key_exists($offset, $this->_data);
 	}
 
@@ -404,7 +411,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @param string $offset The offset to retrieve.
 	 * @return mixed Value at offset.
 	 */
-	public function offsetGet($offset) {
+	public function offsetGet($offset): mixed {
 		return $this->_data[$offset];
 	}
 
@@ -415,11 +422,12 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 * @param mixed $value The value to set.
 	 * @return mixed The value which was set.
 	 */
-	public function offsetSet($offset, $value) {
+	public function offsetSet($offset, $value): void {
 		if (\is_null($offset)) {
-			return $this->_data[] = $value;
+			$this->_data[] = $value;
+		} else {
+			$this->_data[$offset] = $value;
 		}
-		return $this->_data[$offset] = $value;
 	}
 
 	/**
@@ -427,7 +435,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *
 	 * @param string $offset The offset to unset.
 	 */
-	public function offsetUnset($offset) {
+	public function offsetUnset($offset): void {
 		\prev($this->_data);
 		if (\key($this->_data) === null) {
 			$this->rewind();
@@ -440,7 +448,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *
 	 * @return mixed The current item after rewinding.
 	 */
-	public function rewind() {
+	public function rewind(): mixed {
 		\reset($this->_data);
 		return \current($this->_data);
 	}
@@ -460,7 +468,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *
 	 * @return boolean `true` if valid, `false` otherwise.
 	 */
-	public function valid() {
+	public function valid(): bool {
 		return \key($this->_data) !== null;
 	}
 
@@ -469,7 +477,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *
 	 * @return mixed The current item or `false` on failure.
 	 */
-	public function current() {
+	public function current(): mixed {
 		return \current($this->_data);
 	}
 
@@ -478,7 +486,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *
 	 * @return scalar Scalar on success or `null` on failure.
 	 */
-	public function key() {
+	public function key(): mixed {
 		return \key($this->_data);
 	}
 
@@ -500,7 +508,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *
 	 * @return The current item after moving or `false` on failure.
 	 */
-	public function next($self = null, $params = null, $chain = null) {
+	public function next($self = null, $params = null, $chain = null): mixed {
 		\next($this->_data);
 		return \current($this->_data);
 	}
@@ -519,7 +527,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *
 	 * @return integer Returns the number of items in the collection.
 	 */
-	public function count() {
+	public function count(): int {
 		$count = \iterator_count($this);
 		$this->rewind();
 		return $count;
