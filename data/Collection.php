@@ -329,6 +329,7 @@ abstract class Collection extends \lithium\util\Collection {
 	 * @return mixed Returns the next document in the set, or `false`, if no more documents are
 	 *         available.
 	 */
+	#[\ReturnTypeWillChange]
 	public function next($self = null, $params = null, $chain = null): mixed {
 		if (!$this->_started) {
 			$this->rewind();

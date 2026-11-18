@@ -509,6 +509,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *
 	 * @return The current item after moving or `false` on failure.
 	 */
+	#[\ReturnTypeWillChange]
 	public function next($self = null, $params = null, $chain = null): mixed {
 		\next($this->_data);
 		return \current($this->_data);
