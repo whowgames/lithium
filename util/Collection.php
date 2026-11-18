@@ -448,6 +448,7 @@ class Collection extends \lithium\core\DynamicObject implements \ArrayAccess, \I
 	 *
 	 * @return mixed The current item after rewinding.
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind(): mixed {
 		\reset($this->_data);
 		return \current($this->_data);

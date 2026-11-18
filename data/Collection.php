@@ -271,6 +271,7 @@ abstract class Collection extends \lithium\util\Collection {
 	/**
 	 * Rewinds the collection to the beginning.
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind(): mixed {
 		$this->_started = true;
 		\reset($this->_data);
