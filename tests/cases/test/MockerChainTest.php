@@ -12,6 +12,15 @@ use lithium\test\Mocker;
 
 class MockerChainTest extends \lithium\test\Unit {
 
+	/**
+	 * Skip the test.
+	 *
+	 * @return void
+	 */
+	public function skip() {
+		$this->skipIf(true, 'MockerChainTest is manually disabled.');
+	}
+
 	public function setUp() {
 		Mocker::register();
 	}

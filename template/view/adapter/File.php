@@ -102,7 +102,7 @@ class File extends \lithium\template\view\Renderer implements \ArrayAccess {
 	 * @param array $options
 	 * @return string
 	 */
-	public function render($template, $data = array(), array $options = array()) {
+	public function render($template, $data = array(), array $options = array()): string {
 		$defaults = array('context' => array());
 		$options += $defaults;
 
@@ -130,7 +130,7 @@ class File extends \lithium\template\view\Renderer implements \ArrayAccess {
 	 * @param array $params
 	 * @return string
 	 */
-	public function template($type, array $params) {
+	public function template($type, array $params): string {
 		$library = Libraries::get(isset($params['library']) ? $params['library'] : true);
 		$params['library'] = $library['path'];
 		$path = $this->_paths($type, $params);
@@ -155,7 +155,7 @@ class File extends \lithium\template\view\Renderer implements \ArrayAccess {
 	 * @param  string  $offset Key / variable name to check.
 	 * @return boolean Returns `true` if the value is set, otherwise `false`.
 	 */
-	public function offsetExists($offset) {
+	public function offsetExists($offset): bool {
 		return \array_key_exists($offset, $this->_data);
 	}
 
@@ -172,7 +172,7 @@ class File extends \lithium\template\view\Renderer implements \ArrayAccess {
 	 * @param  string $offset Key / variable name to check.
 	 * @return mixed
 	 */
-	public function offsetGet($offset) {
+	public function offsetGet($offset): mixed {
 		return isset($this->_data[$offset]) ? $this->_data[$offset] : null;
 	}
 
@@ -190,7 +190,7 @@ class File extends \lithium\template\view\Renderer implements \ArrayAccess {
 	 * @param  mixed  $value  Value you wish to set to `$offset`.
 	 * @return void
 	 */
-	public function offsetSet($offset, $value) {
+	public function offsetSet($offset, $value): void {
 		$this->_data[$offset] = $value;
 	}
 
@@ -207,7 +207,7 @@ class File extends \lithium\template\view\Renderer implements \ArrayAccess {
 	 * @param  string $offset Key / variable name to check.
 	 * @return void
 	 */
-	public function offsetUnset($offset) {
+	public function offsetUnset($offset): void {
 		unset($this->_data[$offset]);
 	}
 
