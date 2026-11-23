@@ -1026,6 +1026,26 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$this->assertFalse($db->respondsTo('foobarbaz'));
 	}
 
+	public function testWritesPassWriteConcern() {
+		$model = $this->_model;
+		$this->_db->connection->queries = array();
+
+		$this->_query->data(array('title' => 'Test Post'));
+		$this->_db->create($this->_query);
+		$query = new Query(\compact('model') + array(
+			'data' => array('title' => 'New Title'), 'conditions' => array('title' => 'Test Post')
+		));
+		$this->_db->update($query, array('w' => 2));
+		$this->_db->delete(new Query(\compact('model') + array('conditions' => array('title' => 'x'))));
+
+		$queries = $this->_db->connection->queries;
+		$this->assertEqual(array('insertOne', 'updateMany', 'deleteMany'), \array_column($queries, 'type'));
+		$this->assertEqual(array(0, 2, 1), \array_map(function($q) {
+			return $q['options']['writeConcern']->getW();
+		}, $queries));
+		$this->assertFalse(isset($queries[0]['options']['w']) || isset($queries[0]['options']['fsync']));
+	}
+
 	public function testResultDoesNotHideCursorErrors() {
 		$cursor = new class(array('data' => array(array('_id' => 1), array('_id' => 2)))) extends MockResult {
 			public function next(): void {

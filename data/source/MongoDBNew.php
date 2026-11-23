@@ -14,6 +14,7 @@ use MongoRegex;
 use MongoDB\BSON\Javascript;
 use MongoDB\BSON\Regex;
 use MongoDB\Driver\ReadPreference;
+use MongoDB\Driver\WriteConcern;
 use lithium\data\source\mongodb_new\GridFSFile;
 use lithium\util\Inflector;
 use lithium\core\NetworkException;
@@ -220,8 +221,6 @@ class MongoDBNew extends \lithium\data\Source {
 	 *          Use the array format for multiple hosts:
 	 *          `array('167.221.1.5:11222', '167.221.1.6')`
 	 *        - `'database'` _string_: The name of the database to connect to. Defaults to `null`.
-	 *        - `'timeout'` _integer_: The number of milliseconds a connection attempt will wait
-	 *          before timing out and throwing an exception. Defaults to `100`.
 	 *        - `'schema'` _\Closure_: A closure or anonymous function which returns the schema
 	 *          information for a model class. See the `$_schema` property for more information.
 	 *        - `'gridPrefix'` _string_: The default prefix for MongoDB's `chunks` and `files`
@@ -246,7 +245,6 @@ class MongoDBNew extends \lithium\data\Source {
 			'login'      => null,
 			'password'   => null,
 			'database'   => null,
-			'timeout'    => 100,
 			'replicaSet' => null,
 			'schema'     => null,
 			'gridPrefix' => 'fs',
@@ -384,8 +382,10 @@ class MongoDBNew extends \lithium\data\Source {
 		}
 		$this->_isConnected = false;
 
+		// No `connectTimeoutMS`: the legacy adapter never applied `timeout`, so the driver default
+		// (10 s) is what production runs with; a short value fails requests on a slow handshake.
 		$options = [
-			'connectTimeoutMS' => $this->_config['timeout'],
+			'compressors' => 'zstd,snappy,zlib',
 		];
 
 		// Unserialize everything as a PHP array, as was done in the legacy `mongo` extension.
@@ -559,7 +559,9 @@ class MongoDBNew extends \lithium\data\Source {
 				$result = array('ok' => true);
 				$data['create']['_id'] = $self->invokeMethod('_saveFile', array($data['create']));
 			} else {
-				$result = $self->connection->{$source}->insertOne(static::toBson($data['create']), $options);
+				$result = $self->connection->{$source}->insertOne(
+					static::toBson($data['create']), $self->invokeMethod('_writeOptions', array($options))
+				);
 				$data['create']['_id'] ??= new \MongoId($result->getInsertedId());
 			}
 
@@ -806,6 +808,7 @@ class MongoDBNew extends \lithium\data\Source {
 			}
 
 			$conditions = static::toBson($args['conditions'] ?: []);
+			$options = $self->invokeMethod('_writeOptions', array($options));
 
 			$result = $options['multiple'] && !$query->entity()
 				? $self->connection->{$source}->updateMany($conditions, $update, $options)
@@ -844,9 +847,10 @@ class MongoDBNew extends \lithium\data\Source {
 			if ($source === "{$_config['gridPrefix']}.files") {
 				$result = $self->invokeMethod('_deleteFile', array($conditions));
 			} else {
+				$writeOptions = $self->invokeMethod('_writeOptions', array($options));
 				$result = $options['justOne']
-					? $self->connection->{$args['source']}->deleteOne($conditions, $options)
-					: $self->connection->{$args['source']}->deleteMany($conditions, $options);
+					? $self->connection->{$args['source']}->deleteOne($conditions, $writeOptions)
+					: $self->connection->{$args['source']}->deleteMany($conditions, $writeOptions);
 			}
 			$result = $self->invokeMethod('_ok', array($result));
 
@@ -880,6 +884,19 @@ class MongoDBNew extends \lithium\data\Source {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Turns the legacy `w` option into a driver `writeConcern`; `mongodb/mongodb` ignores `w`
+	 * and `fsync` and would use the server's default write concern instead.
+	 *
+	 * @param array $options Write options, including `w`.
+	 * @return array
+	 */
+	protected function _writeOptions(array $options) {
+		$options['writeConcern'] ??= new WriteConcern($options['w'], $this->_config['wTimeoutMS']);
+		unset($options['w'], $options['fsync']);
+		return $options;
 	}
 
 	/**
