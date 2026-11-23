@@ -540,6 +540,8 @@ class MongoDBNew extends \lithium\data\Source {
 	 */
 	public function create($query, array $options = array()) {
 		$_config = $this->_config;
+		// Unacknowledged on purpose: the legacy adapter (via alcaeus) inserted with w=0 too, so a
+		// failed insert is not reported. Pass `'w' => 1` where an insert must be confirmed.
 		$defaults = array('w' => 0, 'fsync' => false);
 		$options += $defaults;
 		$this->_checkConnection();
