@@ -1046,6 +1046,16 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$this->assertFalse(isset($queries[0]['options']['w']) || isset($queries[0]['options']['fsync']));
 	}
 
+	public function testWrappersSerializeLikeLegacyAdapter() {
+		$id = 'C:7:"MongoId":24:{5f1e2d3c4b5a69788796a5b4}';
+		$this->assertEqual($id, \serialize(new \MongoId('5f1e2d3c4b5a69788796a5b4')));
+		$this->assertEqual('5f1e2d3c4b5a69788796a5b4', (string) \unserialize($id));
+
+		$date = 'O:9:"MongoDate":2:{s:3:"sec";i:1700000000;s:4:"usec";i:123000;}';
+		$this->assertEqual($date, \serialize(new \MongoDate(1700000000, 123000)));
+		$this->assertEqual(1700000000, \unserialize($date)->sec);
+	}
+
 	public function testResultDoesNotHideCursorErrors() {
 		$cursor = new class(array('data' => array(array('_id' => 1), array('_id' => 2)))) extends MockResult {
 			public function next(): void {
