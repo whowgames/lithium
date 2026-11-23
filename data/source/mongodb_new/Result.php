@@ -8,8 +8,6 @@
 
 namespace lithium\data\source\mongodb_new;
 
-use MongoDB\Driver\Exception\RuntimeException;
-
 class Result extends \lithium\data\source\Result {
 	public function prev() {
 		return null;
@@ -50,15 +48,11 @@ class Result extends \lithium\data\source\Result {
 			return false;
 		}
 
-		try {
-			if (!$this->_cursorStarted) {
-				$this->_cursorStarted = true;
-				$this->_resource->rewind();
-			} else {
-				$this->_resource->next();
-			}
-		} catch (RuntimeException $e) {
-			return false;
+		if (!$this->_cursorStarted) {
+			$this->_cursorStarted = true;
+			$this->_resource->rewind();
+		} else {
+			$this->_resource->next();
 		}
 
 		if ($this->_resource->valid()) {

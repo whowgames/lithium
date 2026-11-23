@@ -301,7 +301,8 @@ class MongoDBNew extends \lithium\data\Source {
 
 		$this->_operators += [
 			'like' => function($key, $value) {
-				return new Regex($value);
+				// `$value` is delimited (`/pattern/flags`); `Regex` takes the bare pattern.
+				return (new MongoRegex($value))->toBson();
 			},
 			'$exists' => function($key, $value) {
 				return ['$exists' => (boolean) $value];

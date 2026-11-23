@@ -241,7 +241,7 @@ class MongoDBNewTest extends \lithium\test\Unit {
 
 		$conditions = array('key' => array('like' => '/regex/i'));
 		$result = $this->_db->conditions($conditions, null);
-		$expected = array('key' => new Regex('/regex/i'));
+		$expected = array('key' => new Regex('regex', 'i'));
 		$this->assertEqual($expected, $result);
 	}
 
@@ -1024,6 +1024,20 @@ class MongoDBNewTest extends \lithium\test\Unit {
 		$db->server = new MockMongoConnection();
 		$this->assertTrue($db->respondsTo('listDBs'));
 		$this->assertFalse($db->respondsTo('foobarbaz'));
+	}
+
+	public function testResultDoesNotHideCursorErrors() {
+		$cursor = new class(array('data' => array(array('_id' => 1), array('_id' => 2)))) extends MockResult {
+			public function next(): void {
+				throw new \MongoDB\Driver\Exception\RuntimeException('cursor id 42 not found');
+			}
+		};
+		$result = new \lithium\data\source\mongodb_new\Result(array('resource' => $cursor));
+
+		$this->assertEqual(array('_id' => 1), $result->current());
+		$this->assertException('MongoDB\Driver\Exception\RuntimeException', function() use ($result) {
+			$result->next();
+		});
 	}
 
 }
