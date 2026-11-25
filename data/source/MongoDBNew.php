@@ -718,6 +718,12 @@ class MongoDBNew extends \lithium\data\Source {
 			$conditions = static::toBson($args['conditions'] ?: []);
 
 			if ($query->calculate()) {
+				// countDocuments() aggregates over every document; an unfiltered count reads the
+				// collection metadata instead, as the legacy count command did.
+				if (!$conditions && !$args['limit'] && !$args['offset']) {
+					return $collection->estimatedDocumentCount();
+				}
+
 				// Count server-side.
 				// `limit`/`skip` of 0 are invalid in the countDocuments pipeline, so only pass positive values.
 				return $collection->countDocuments(
