@@ -16,6 +16,8 @@ use lithium\test\Mocker;
 
 class AdaptableTest extends \lithium\test\Unit {
 
+	public $adaptable;
+
 	public function setUp() {
 		$this->adaptable = new Adaptable();
 		Mocker::register();

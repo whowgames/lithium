@@ -85,6 +85,8 @@ class ComplexityTest extends \lithium\test\Unit {
 		),
 	);
 
+	public $report = null;
+
 	/**
 	 * Set up a new report which will later be used in the tests.
 	 *

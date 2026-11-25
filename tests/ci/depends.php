@@ -12,7 +12,11 @@ if (isset($argv[1]) && 'APC' === \strtoupper($argv[1]) && PHP_VERSION_ID < 50500
 } else {
 	PhpExtensions::install('xcache');
 }
-PhpExtensions::install('mongo');
+if (PHP_VERSION_ID < 80000) {
+	PhpExtensions::install('mongo');
+} else {
+	PhpExtensions::install('mongodb');
+}
 
 /**
  * Class to install native PHP extensions mainly
@@ -63,6 +67,14 @@ class PhpExtensions {
 			'configure' => array(),
 			'ini' => array(
 				'extension=mongo.so'
+			)
+		),
+		'mongodb' => array(
+			'url' => 'http://pecl.php.net/get/mongodb-2.5.5.tgz',
+			'require' => array(),
+			'configure' => array(),
+			'ini' => array(
+				'extension=mongodb.so'
 			)
 		)
 	);

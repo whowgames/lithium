@@ -3,3 +3,4 @@
 
 # Vim
 .*.sw[a-z]
+.idea/

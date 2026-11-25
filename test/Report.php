@@ -249,7 +249,18 @@ class Report extends \lithium\core\DynamicObject {
 			if (!$class = Libraries::locate('test.filter', $filter)) {
 				throw new ClassNotFoundException("`{$class}` is not a valid test filter.");
 			}
-			$options['name'] = \strtolower(\join('', \array_slice(\explode("\\", $class), -1)));
+			$name = \strtolower(
+				\join('',
+					\array_slice(
+						\explode("\\", $class),
+						-1
+					)
+				)
+			);
+			if (!is_array($options)) {
+				$options = array();
+			}
+			$options['name'] = $name;
 			$results[$class] = $options + array('apply' => array(), 'analyze' => array());
 		}
 		return $this->_filters = $results;

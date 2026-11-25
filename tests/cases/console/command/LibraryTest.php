@@ -18,6 +18,10 @@ class LibraryTest extends \lithium\test\Unit {
 
 	public $request;
 
+	public $library;
+
+	public $testConf;
+
 	protected $_backup = array();
 
 	protected $_testPath = null;

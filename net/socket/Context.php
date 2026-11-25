@@ -123,7 +123,7 @@ class Context extends \lithium\net\Socket {
 		if (!\is_object($data)) {
 			$data = $this->_instance($this->_classes['request'], (array) $data + $this->_config);
 		}
-		return \stream_context_set_option(
+		return \stream_context_set_options(
 			$this->_resource, $data->to('context', array('timeout' => $this->_timeout))
 		);
 	}

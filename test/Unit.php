@@ -37,6 +37,8 @@ use Closure;
  */
 class Unit extends \lithium\core\DynamicObject {
 
+	public $classes = array();
+
 	/**
 	 * The Reference to a test reporter class.
 	 *
@@ -57,6 +59,8 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @var string
 	 */
 	protected $_expected = array();
+
+	protected $_methods = null;
 
 	/**
 	 * Internal types and how to test for them
@@ -161,8 +165,8 @@ class Unit extends \lithium\core\DynamicObject {
 	 * @return array
 	 */
 	public function methods() {
-		static $methods;
-		return $methods ?: $methods = \array_values(\preg_grep('/^test/', \get_class_methods($this)));
+		$this->_methods;
+		return $this->_methods ?: $this->_methods = \array_values(\preg_grep('/^test/', \get_class_methods($this)));
 	}
 
 	/**

@@ -12,6 +12,8 @@ use lithium\storage\cache\adapter\XCache;
 
 class XCacheTest extends \lithium\test\Unit {
 
+	public $XCache;
+
 	/**
 	 * Skip the test if XCache extension is unavailable.
 	 *

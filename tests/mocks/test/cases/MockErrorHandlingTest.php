@@ -10,6 +10,15 @@ namespace lithium\tests\mocks\test\cases;
 
 class MockErrorHandlingTest extends \lithium\test\Unit {
 
+	/**
+	 * Skip the test.
+	 *
+	 * @return void
+	 */
+	public function skip() {
+		$this->skipIf(true, 'MockErrorHandlingTest is manually disabled.');
+	}
+
 	public function testNotEnoughParams() {
 		$this->_arrayPermute();
 	}

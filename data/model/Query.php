@@ -705,7 +705,7 @@ class Query extends \lithium\core\DynamicObject {
 	 *        conversion.
 	 * @return array Map between aliases and their corresponding dotted relation paths.
 	 */
-	public function paths(Source $source = null) {
+	public function paths(?Source $source = null) {
 		if ($source) {
 			$this->applyStrategy($source);
 		}
@@ -719,7 +719,7 @@ class Query extends \lithium\core\DynamicObject {
 	 *        conversion.
 	 * @return array Map between aliases and their corresponding fully-namespaced model names.
 	 */
-	public function models(Source $source = null) {
+	public function models(?Source $source = null) {
 		if ($source) {
 			$this->applyStrategy($source);
 		}
@@ -733,7 +733,7 @@ class Query extends \lithium\core\DynamicObject {
 	 * @param array $params Query parameters.
 	 * @return mixed Returns the value as set in the `Query` object's constructor.
 	 */
-	public function __call($method, array $params = array()) {
+	public function __call($method, ?array $params = array()) {
 		if ($params) {
 			$this->_config[$method] = \current($params);
 			return $this;

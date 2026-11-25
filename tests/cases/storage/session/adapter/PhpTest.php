@@ -14,6 +14,12 @@ use lithium\tests\mocks\storage\session\adapter\MockPhp;
 
 class PhpTest extends \lithium\test\Unit {
 
+	protected $_session = null;
+
+	public $php = null;
+
+	protected $_gc_divisor = null;
+
 	public function setUp() {
 		$this->_session = isset($_SESSION) ? $_SESSION : array();
 		$this->_destroySession();
